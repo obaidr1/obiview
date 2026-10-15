@@ -16,6 +16,7 @@ if Gdk.Display.get_default() is None:
 
 root = Path(__file__).resolve().parents[1]
 temporary = tempfile.TemporaryDirectory(prefix='bildblick-ui-')
+os.environ['XDG_CONFIG_HOME']=str(Path(temporary.name)/'config')
 sample = Path(temporary.name)/'sample.png'
 image = Image.new('RGB',(960,600),'#162e48')
 draw = ImageDraw.Draw(image)
@@ -52,7 +53,7 @@ def screenshot(name):
 def tick(window):
     global step
     try:
-        if time.monotonic()-started>30:
+        if time.monotonic()-started>90:
             raise TimeoutError('GUI test timed out')
         if window.busy or not window.folder_files:
             return True
@@ -207,7 +208,129 @@ def tick(window):
             screenshot('adjust')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
             assert not window.dialogs
-            print('PASS: GTK image operations/navigation/slideshow/fullscreen/menu/resize/Ctrl+R/save dialog + screenshot')
+        elif step == 22:
+            window.resize_dialog()
+            dialog=window.dialogs[-1]
+            dialog.dpi.set_value(300)
+            dialog.units.set_active_id('cm')
+            dialog.width.set_value(2.54)
+            assert dialog.settings.dimensions()==(300,188)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 23:
+            assert window.model.image.size==(300,188) and window.model.dpi==300
+            window.undo()
+            dialog=window.selection_dialog()
+            dialog.widgets['width'].set_value(320)
+            dialog.widgets['ratio'].set_active_id('1')
+            dialog.response(Gtk.ResponseType.ACCEPT)
+            assert window.selection==(0,0,320,320)
+            # Edge resize and right-button movement retain the selection.
+            ox,oy=window.origin; scale=window.scale
+            window.begin_drag(None,ox+320*scale,oy+160*scale)
+            window.end_drag(None,20*scale,0)
+            assert window.selection[2]==340
+            class RightDrag:
+                def get_current_button(self): return 3
+            window.begin_drag(RightDrag(),ox+100*scale,oy+100*scale)
+            window.end_drag(RightDrag(),10*scale,20*scale)
+            assert window.selection==(10,20,350,340)
+            window.copy_image()
+            window.crop_toggle.set_active(False)
+            window.clear_image()
+            assert window.model.image is None
+            window.paste_image()
+        elif step == 24:
+            assert window.model.image.size==(340,320)
+            assert window.model.source_path is None and window.model.dirty
+            # Saving a clipboard document must work without an original file.
+            window.request_save(Path(temporary.name)/'clipboard.png')
+        elif step == 25:
+            assert (Path(temporary.name)/'clipboard.png').is_file()
+            dialog=window.canvas_dialog()
+            dialog.widgets['left'].set_value(1); dialog.widgets['right'].set_value(3)
+            dialog.widgets['top'].set_value(2); dialog.widgets['bottom'].set_value(4)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 26:
+            assert window.model.image.size==(344,326)
+            window.undo()
+            dialog=window.border_dialog(); dialog.widgets['style'].set_active_id('double')
+            screenshot('frame')
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 27:
+            assert window.model.image.size==(384,364)
+            window.undo()
+            dialog=window.fine_rotation_dialog(); dialog.widgets['angle'].set_value(90)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 28:
+            assert window.model.image.size==(320,340)
+            window.undo()
+            dialog=window.effects_dialog(); dialog.widgets['name'].set_active_id('sepia')
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 29:
+            assert window.model.dirty
+            window.undo()
+            window.selection=(0,0,100,100)
+            dialog=window.red_eye_dialog(); dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 30:
+            window.undo()
+            dialog=window.text_dialog(); dialog.widgets['text'].get_buffer().set_text('Bildblick')
+            dialog.widgets['font'].set_font('Sans Bold Italic 48')
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 31:
+            assert window.model.dirty
+            window.undo()
+            window.adjust_dialog(); window.adjust_sliders['gamma'].set_value(20)
+            window.adjust_sliders['red'].set_value(10)
+        elif step == 32:
+            if window.preview_running or window.preview_timer or window.preview_pixbuf is None: return True
+            window.editor_dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 33:
+            assert window.model.dirty
+            window.undo()
+            dialog=window.preferences_dialog(); color=Gdk.RGBA(); color.parse('#344455')
+            dialog.widgets['background'].set_rgba(color); dialog.response(Gtk.ResponseType.ACCEPT)
+            assert window.background=='#344455' and window.viewer_config.exists()
+            dialog=window.print_image()
+            dialog.widgets['mode'].set_active_id('custom')
+            dialog.widgets['height_cm'].set_value(10)
+            assert abs(dialog.widgets['width_cm'].get_value()-10*340/320)<.02
+            values=dialog.values(); dialog.response(Gtk.ResponseType.CANCEL)
+            target=Path(temporary.name)/'print.pdf'
+            window.run_print(values,export_path=target)
+            assert target.read_bytes().startswith(b'%PDF-') and target.stat().st_size>1000
+        elif step == 34:
+            dialog=window.file_action('rename')
+            dialog.widgets['name'].set_text('renamed.png'); dialog.response(Gtk.ResponseType.ACCEPT)
+            assert window.model.path.name=='renamed.png' and window.model.path.is_file()
+            assert not (Path(temporary.name)/'clipboard.png').exists()
+            window.lookup_action('custom-selection').activate(None)
+            screenshot('selection')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            dialog=window.palette_dialog(); dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 35:
+            assert window.model.dirty
+            window.undo()
+            dialog=window.paint_dialog()
+        elif step == 36:
+            dialog=window.dialogs[-1]
+            dialog.begin(None,100,100); dialog.end(None,150,100)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 37:
+            assert window.model.dirty
+            window.undo()
+            window.select_all()
+            window.selection=(10,10,50,40)
+            window.extra_key(Gdk.KEY_y,Gdk.ModifierType.CONTROL_MASK)
+        elif step == 38:
+            assert window.model.image.size==(40,30)
+            window.undo()
+            window.extra_key(Gdk.KEY_z,Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK)
+            assert window.model.image.size==(40,30)
+            window.undo()
+            # A second native window starts empty, with the same compact surface size.
+            second=window.new_window(); second.allow_close=True; second.close()
+            assert not window.dialogs and window.scrim_depth==0
+            print('PASS: GTK core + physical resize/DPI, selection move/resize, clipboard, frame, canvas, rotation, effects, text, gamma/RGB, preferences, print PDF, rename, palette, painting, shortcuts')
             window.cleanup()
             app.quit()
             return False

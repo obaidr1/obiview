@@ -2,6 +2,7 @@
 from PIL import Image, ImageEnhance, ImageChops, ImageOps
 
 CONTROLS = {
+    'gamma':'Gamma', 'red':'Rot', 'green':'Grün', 'blue':'Blau',
     'brightness': 'Helligkeit', 'contrast': 'Kontrast', 'highlights': 'Lichter',
     'shadows': 'Schatten', 'temperature': 'Temperatur', 'saturation': 'Sättigung',
     'vibrance': 'Dynamik', 'grain': 'Körnung', 'vignette': 'Vignette', 'sharpness': 'Schärfe',
@@ -24,6 +25,12 @@ def adjusted(image, values, look='Original'):
         amount = values.get(key, 0)
         if amount:
             rgb = enhancer(rgb).enhance(1 + amount / 100)
+    gamma = 2 ** (values.get('gamma',0)/50)
+    if gamma != 1:
+        rgb = rgb.point(lambda x:round(255*(x/255)**(1/gamma)))
+    if any(values.get(k,0) for k in ('red','green','blue')):
+        rgb = Image.merge('RGB',tuple(channel.point(lambda x,a=values.get(key,0):round(max(0,min(255,x+a*2.55))))
+                                      for channel,key in zip(rgb.split(),('red','green','blue'))))
     lights, shadows = values.get('highlights', 0), values.get('shadows', 0)
     if lights or shadows:
         rgb = rgb.point(lambda x: max(0,min(255,round(x + lights*.65*(x/255)**3 + shadows*.65*(1-x/255)**3))))

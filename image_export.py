@@ -16,6 +16,8 @@ def write_image(model, filename, fmt, settings):
         image = image.resize((settings.output_width,settings.output_height),Image.Resampling.LANCZOS)
     rgba = image
     opts = {}
+    if fmt in ('JPEG','PNG','TIFF','BMP','PDF'):
+        opts['dpi'] = (model.dpi,model.dpi)
     if fmt in ('JPEG', 'BMP', 'PDF', 'PPM'):
         image = flattened(image)
     else:
@@ -25,7 +27,9 @@ def write_image(model, filename, fmt, settings):
     if settings.keep_icc and model.icc and fmt in ('JPEG', 'PNG', 'WEBP', 'TIFF', 'PDF'):
         opts['icc_profile'] = model.icc
     if settings.keep_exif and model.exif and fmt in ('JPEG', 'PNG', 'WEBP'):
-        opts['exif'] = model.exif
+        exif = Image.Exif(); exif.load(model.exif)
+        exif[282] = model.dpi; exif[283] = model.dpi; exif[296] = 2
+        opts['exif'] = exif.tobytes()
     if settings.keep_xmp and model.xmp and fmt in ('JPEG', 'WEBP'):
         opts['xmp'] = model.xmp
     if settings.keep_comment and model.comment and fmt in ('JPEG', 'GIF'):

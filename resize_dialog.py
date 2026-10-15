@@ -3,6 +3,7 @@ import gi
 gi.require_version('Gtk','4.0')
 from gi.repository import Gtk
 from resize_settings import ResizeSettings
+from image_tools import to_pixels
 from ui_theme import card, label, accessible
 
 
@@ -36,6 +37,8 @@ class ResizeDialog(Gtk.Dialog):
         self.units = Gtk.ComboBoxText()
         self.units.append('pixels','Pixel')
         self.units.append('percent','Prozent')
+        self.units.append('cm','Zentimeter')
+        self.units.append('inch','Zoll')
         self.units.set_active_id('pixels')
         grid.attach(Gtk.Label(label='Einheit',xalign=0),0,1,1,1)
         grid.attach(self.units,1,1,1,1)
@@ -67,10 +70,23 @@ class ResizeDialog(Gtk.Dialog):
         grid.attach(self.method,1,6,1,1)
         self.summary = Gtk.Label(xalign=0,wrap=True)
         grid.attach(self.summary,0,7,2,1)
-        note = Gtk.Label(label='Ändert die Bildpixel. Die Originaldatei bleibt bis zum Speichern unverändert.',
+        self.dpi = Gtk.SpinButton.new_with_range(1,9600,1)
+        self.dpi.set_value(parent.model.dpi)
+        self.dpi.connect('value-changed',lambda *_:self.sync_fields())
+        grid.attach(Gtk.Label(label='DPI (Druckauflösung)',xalign=0),0,8,1,1)
+        grid.attach(self.dpi,1,8,1,1)
+        self.resolution = Gtk.ComboBoxText()
+        self.resolution.append('none','Auflösung wählen …')
+        for w,h in ((640,480),(800,600),(1024,768),(1280,720),(1920,1080),(3840,2160)):
+            self.resolution.append(f'{w}x{h}',f'{w} × {h}')
+        self.resolution.set_active_id('none')
+        self.resolution.connect('changed',self.resolution_changed)
+        grid.attach(Gtk.Label(label='Größenvorgabe',xalign=0),0,9,1,1)
+        grid.attach(self.resolution,1,9,1,1)
+        note = Gtk.Label(label='50 % = halb, 200 % = doppelt. Gesperrtes Verhältnis passt in die Größenvorgabe. DPI allein ändert keine Pixel und erzeugt keine zusätzlichen Details.',
                          xalign=0,wrap=True,max_width_chars=55)
         note.add_css_class('dim-label')
-        grid.attach(note,0,8,2,1)
+        grid.attach(note,0,10,2,1)
         scroll = Gtk.ScrolledWindow(vexpand=True)
         scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         scroll.set_child(body)
@@ -83,15 +99,23 @@ class ResizeDialog(Gtk.Dialog):
     def dimension_changed(self,widget,axis):
         if self.syncing:
             return
-        self.settings.set_dimension(axis,widget.get_value(),self.percent)
+        unit = self.units.get_active_id()
+        value = widget.get_value()
+        if unit in ('cm','inch'):
+            value = to_pixels(value,unit,self.dpi.get_value())
+        self.settings.set_dimension(axis,value,self.percent)
         self.sync_fields()
 
     def sync_fields(self):
         self.syncing = True
         try:
+            unit = self.units.get_active_id()
+            factor = self.dpi.get_value()/2.54 if unit=='cm' else self.dpi.get_value() if unit=='inch' else 1
+            fractional = self.percent or unit in ('cm','inch')
             for widget,value in zip((self.width,self.height),self.settings.values(self.percent)):
-                widget.set_digits(2 if self.percent else 0)
-                widget.set_range(.01 if self.percent else 1,8_000_000_000 if self.percent else 80_000_000)
+                value /= factor
+                widget.set_digits(3 if unit in ('cm','inch') else 2 if self.percent else 0)
+                widget.set_range(.001 if fractional else 1,8_000_000_000 if self.percent else 80_000_000)
                 widget.set_increments(1,10)
                 widget.set_value(value)
         finally:
@@ -116,6 +140,17 @@ class ResizeDialog(Gtk.Dialog):
         self.settings.preset(amount)
         self.sync_fields()
 
+    def resolution_changed(self,widget):
+        ident = widget.get_active_id()
+        if ident == 'none': return
+        width,height = map(int,ident.split('x'))
+        if self.settings.locked:
+            factor = min(width/self.settings.original[0],height/self.settings.original[1])
+            self.settings.preset(factor*100)
+        else:
+            self.settings.width,self.settings.height = width,height
+        self.sync_fields()
+
     def on_response(self,_dialog,answer):
         if answer==Gtk.ResponseType.ACCEPT:
             # Commit typed numeric text even when focus has not left the field.
@@ -126,7 +161,8 @@ class ResizeDialog(Gtk.Dialog):
             except ValueError as error:
                 self.summary.set_text(str(error))
                 return
-            self.on_apply(width,height,self.method.get_active_id())
+            self.dpi.update()
+            self.on_apply(width,height,self.method.get_active_id(),self.dpi.get_value())
         parent = self.get_transient_for()
         parent.set_scrim(False)
         if self in parent.dialogs:

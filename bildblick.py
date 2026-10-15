@@ -12,17 +12,22 @@ from image_model import ImageModel, crop_box
 from advanced_ui import AdvancedFeatures
 from save_dialog import SaveAsDialog
 from editor_ui import EditorUI
+from tool_dialogs import ImageToolsUI
+from file_tools_ui import FileToolsUI
+from image_tools import selection_drag
+from PIL import ImageColor
 from ui_theme import install_theme, label, icon_button
 from copy import copy
 from dataclasses import replace
 
 
-class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
+class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app, title='Bildblick', default_width=720, default_height=640)
         self.add_css_class('viewer')
         self.theme = install_theme()
         self.model = ImageModel()
+        self.setup_tools()
         self.pixbuf = None
         self.scale = 1.0
         self.fit = True
@@ -74,11 +79,11 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.crop_toggle.update_property([Gtk.AccessibleProperty.LABEL],['Ausschnitt auswählen'])
         self.crop_toggle.connect('toggled', self.toggle_crop)
         toolbar.append(self.crop_toggle)
-        self.crop_button = icon_button('edit-cut-symbolic','Auswahl zuschneiden (Eingabe)',self.apply_crop)
+        self.crop_button = icon_button('edit-cut-symbolic','Auswahl zuschneiden (Eingabe oder Strg+Y)',self.apply_crop)
         toolbar.append(self.crop_button)
         self.undo_button = icon_button('edit-undo-symbolic','Rückgängig (Strg+Z)',self.undo)
         toolbar.append(self.undo_button)
-        self.redo_button = icon_button('edit-redo-symbolic','Wiederholen (Strg+Y)',self.redo)
+        self.redo_button = icon_button('edit-redo-symbolic','Wiederholen (Strg+Umschalt+Z)',self.redo)
         toolbar.append(self.redo_button)
         toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
         for icon,title,callback in [
@@ -111,7 +116,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.status.set_ellipsize(3)
         root.append(self.status)
         drag = Gtk.GestureDrag()
-        drag.set_button(1)
+        drag.set_button(0)
         drag.connect('drag-begin', self.begin_drag)
         drag.connect('drag-update', self.update_drag)
         drag.connect('drag-end', self.end_drag)
@@ -305,13 +310,13 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         return False
 
     def draw(self, _area, cr, width, height):
-        cr.set_source_rgb(245/255, 245/255, 243/255)
+        cr.set_source_rgb(*(v/255 for v in ImageColor.getrgb(self.background)[:3]))
         cr.paint()
         if not self.pixbuf:
             return
         iw, ih = self.model.image.size
         if self.fit:
-            scale = min(max(1,width-8)/iw, max(1,height-8)/ih, 1.0)
+            scale = min(max(1,width-8)/iw, max(1,height-8)/ih, float('inf') if self.fit_upscale else 1.0)
             if abs(scale-self.scale) > .0001:
                 self.scale = scale
                 GLib.idle_add(self.update_status)
@@ -342,22 +347,41 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def to_image(self, x, y):
         return ((x-self.origin[0])/self.scale, (y-self.origin[1])/self.scale)
 
-    def begin_drag(self, _gesture, x, y):
+    def begin_drag(self, gesture, x, y):
         self.drag_start = None
-        if self.busy:
+        if self.busy or self.model.image is None:
             return
-        if self.model.image and self.crop_toggle.get_active():
-            ix, iy = self.to_image(x, y)
-            if 0 <= ix < self.model.image.width and 0 <= iy < self.model.image.height:
-                self.drag_start = (x, y)
-                self.selection = None
-                self.refresh()
+        button = gesture.get_current_button() if gesture else 1
+        if button not in (1,3):
+            return
+        ix,iy = self.to_image(x,y)
+        if not (0 <= ix < self.model.image.width and 0 <= iy < self.model.image.height):
+            return
+        self.stop_slideshow()
+        self.drag_mode = 'new'
+        self.drag_box = self.selection
+        if self.selection:
+            x1,y1,x2,y2 = self.selection
+            if button == 3 and x1 <= ix <= x2 and y1 <= iy <= y2:
+                self.drag_mode = 'move'
+            elif button == 1:
+                tolerance = 7/self.scale
+                horizontal = ('w' if abs(ix-x1)<tolerance else 'e' if abs(ix-x2)<tolerance else '') if y1-tolerance<=iy<=y2+tolerance else ''
+                vertical = ('n' if abs(iy-y1)<tolerance else 's' if abs(iy-y2)<tolerance else '') if x1-tolerance<=ix<=x2+tolerance else ''
+                self.drag_mode = horizontal+vertical or 'new'
+        if button == 3 and self.drag_mode != 'move':
+            return
+        self.crop_toggle.set_active(True)
+        self.drag_start = (x,y)
+        if self.drag_mode == 'new': self.selection = None
+        self.refresh()
 
     def update_drag(self, _gesture, dx, dy):
         if self.drag_start:
             x,y = self.drag_start
-            self.selection = (crop_box(self.to_image(x,y), self.to_image(x+dx,y+dy), self.model.image.size)
-                              if abs(dx) >= 3 and abs(dy) >= 3 else None)
+            if self.drag_mode != 'new' or (abs(dx)>=3 and abs(dy)>=3):
+                self.selection = selection_drag(self.drag_box,self.to_image(x,y),self.to_image(x+dx,y+dy),
+                                                self.model.image.size,self.drag_mode)
             self.crop_button.set_sensitive(self.selection is not None)
             self.lookup_action('crop').set_enabled(self.selection is not None)
             self.canvas.queue_draw()
@@ -422,9 +446,11 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
             return True
         ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
         if ctrl:
-            actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:self.save_dialog, Gdk.KEY_z:self.undo}
+            actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:lambda:self.save_current() if self.model.image else None, Gdk.KEY_z:self.undo, Gdk.KEY_v:self.paste_image,
+                       Gdk.KEY_c:lambda:self.copy_image() if self.model.image else None}
         else:
-            actions = {Gdk.KEY_plus:lambda:self.zoom(1.25), Gdk.KEY_equal:lambda:self.zoom(1.25),
+            actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:lambda:self.save_dialog() if self.model.image else None,
+                       Gdk.KEY_d:self.clear_image, Gdk.KEY_plus:lambda:self.zoom(1.25), Gdk.KEY_equal:lambda:self.zoom(1.25),
                        Gdk.KEY_minus:lambda:self.zoom(.8), Gdk.KEY_1:self.actual_size,
                        Gdk.KEY_f:self.fit_image, Gdk.KEY_r:lambda:self.rotate(True),
                        Gdk.KEY_Return:self.apply_crop,

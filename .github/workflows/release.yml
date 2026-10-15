@@ -23,7 +23,7 @@ jobs:
       - name: Install test and packaging dependencies
         run: >-
           dnf -y install git gh tar gzip python3 python3-gobject python3-cairo
-          python3-pillow gtk4 ImageMagick poppler-utils ffmpeg-free util-linux
+          python3-pillow gtk4 fontconfig ImageMagick poppler-utils ffmpeg-free util-linux
           desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth dbus-daemon adwaita-icon-theme openbox
       - uses: actions/checkout@v4
         with:

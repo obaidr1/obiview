@@ -79,6 +79,15 @@ class ImageModel:
         self.comment = b''
 
     @property
+    def dpi(self):
+        try:
+            values = self.image.info.get('dpi',(96,96)) if self.image else (96,96)
+            value = values[0] if isinstance(values,(tuple,list)) else 96
+            return float(value) if math.isfinite(float(value)) and 1 <= float(value) <= 9600 else 96
+        except (TypeError,ValueError):
+            return 96
+
+    @property
     def dirty(self):
         return self.revision != self.saved_revision
 
@@ -128,6 +137,8 @@ class ImageModel:
         self.next_revision = 1
 
     def replace(self, image):
+        if 'dpi' not in image.info:
+            image.info['dpi'] = (self.dpi,self.dpi)
         self.history.append((self.image, self.revision))
         self.history = self.history[-20:]
         while len(self.history) > 1 and sum(i.width*i.height*4 for i,_ in self.history) > 128*1024*1024:
@@ -156,7 +167,7 @@ class ImageModel:
             self.history.append((self.image, self.revision))
             self.image, self.revision = self.future.pop()
 
-    def resize(self, width, height, method='lanczos'):
+    def resize(self, width, height, method='lanczos', dpi=None):
         width, height = int(width), int(height)
         if min(width, height) < 1 or width * height > 80_000_000:
             raise ValueError('Größe muss positiv sein und darf 80 Megapixel nicht überschreiten.')
@@ -164,7 +175,12 @@ class ImageModel:
                    'bilinear':Image.Resampling.BILINEAR,'nearest':Image.Resampling.NEAREST}
         if method not in filters:
             raise ValueError('Unbekannte Interpolation')
-        self.replace(self.image.resize((width, height), filters[method]))
+        result = self.image.resize((width, height), filters[method])
+        if dpi is not None:
+            if not math.isfinite(dpi) or not 1 <= dpi <= 9600:
+                raise ValueError('DPI muss zwischen 1 und 9600 liegen.')
+            result.info['dpi'] = (dpi,dpi)
+        self.replace(result)
 
     def effect(self, name, amount=1.0):
         alpha = self.image.getchannel('A')
@@ -214,7 +230,7 @@ class ImageModel:
         fmt = FORMATS.get(path.suffix.lower())
         if fmt not in ('TIFF','GIF','PDF','WEBP'):
             raise ValueError('Mehrseiten-Export: TIFF, GIF, WebP oder PDF wählen.')
-        if path.resolve() == self.source_path.resolve():
+        if self.source_path and path.resolve() == self.source_path.resolve():
             raise ValueError('Für den Mehrseiten-Export einen neuen Dateinamen wählen.')
         frames, durations, pixels = [], [], 0
         for index in range(self.frame_count):

@@ -41,8 +41,8 @@ class EditorUI:
             row.append(button)
         looks.append(row)
         self.inspector.append(looks)
-        for title, keys in [('Licht',('brightness','contrast','highlights','shadows')),
-                            ('Farbe',('temperature','saturation','vibrance')),
+        for title, keys in [('Licht',('brightness','contrast','gamma','highlights','shadows')),
+                            ('Farbe',('temperature','saturation','vibrance','red','green','blue')),
                             ('Effekte',('grain','vignette','sharpness'))]:
             section = card(title)
             section.set_spacing(3)

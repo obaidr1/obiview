@@ -43,7 +43,8 @@ class AdvancedFeatures:
         self.menu_model, self.actions = build_menus(self)
         self.menu_bar = Gtk.PopoverMenuBar.new_from_model(self.menu_model)
         self.get_application().set_accels_for_action('win.resize',[RESIZE_ACCELERATOR])
-        self.get_application().set_accels_for_action('win.save-as',['<Primary>s','<Primary><Shift>s'])
+        self.get_application().set_accels_for_action('win.save-as',['<Primary><Shift>s'])
+        self.get_application().set_accels_for_action('win.save-current',['<Primary>s'])
         self.previous = icon_button('go-previous-symbolic','Vorheriges Bild (Pfeil links)',lambda:self.navigate(-1))
         self.next_button = icon_button('go-next-symbolic','Nächstes Bild (Pfeil rechts)',lambda:self.navigate(1))
         self.page_previous = icon_button('go-up-symbolic','Vorherige Seite (Bild auf)',lambda:self.change_frame(-1))
@@ -162,7 +163,7 @@ class AdvancedFeatures:
         self.selection = None
         self.crop_toggle.set_active(False)
         self.refresh(True)
-        if self.folder != model.source_path.parent:
+        if model.source_path and self.folder != model.source_path.parent:
             self.set_folder(model.source_path.parent)
 
     def edit(self, operation, after=None):
@@ -224,6 +225,7 @@ class AdvancedFeatures:
             if self.folder != path or token != self.folder_generation:
                 return
             self.folder_files = files
+            if hasattr(self,'remember_folder'): self.remember_folder(path)
             self.rebuild_thumbnails()
             self.update_advanced()
             if open_first:
@@ -420,7 +422,7 @@ class AdvancedFeatures:
             if isinstance(dialog,ResizeDialog):
                 dialog.present()
                 return
-        dialog = ResizeDialog(self,lambda w,h,method:self.edit(lambda m:m.resize(w,h,method)))
+        dialog = ResizeDialog(self,lambda w,h,method,dpi:self.edit(lambda m:m.resize(w,h,method,dpi)))
         self.dialogs.append(dialog)
         dialog.present()
 
@@ -597,9 +599,36 @@ class AdvancedFeatures:
     def extra_key(self, key, modifiers):
         ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
         key = Gdk.keyval_to_lower(key)
-        if ctrl and key == Gdk.KEY_r:
+        shift = modifiers & Gdk.ModifierType.SHIFT_MASK
+        if ctrl and shift and key==Gdk.KEY_s:
+            if self.model.image: self.save_dialog()
+        elif ctrl and key==Gdk.KEY_a:
+            if self.model.image: self.select_all()
+        elif ctrl and key==Gdk.KEY_x:
+            if self.model.image: self.cut_selection()
+        elif ctrl and key==Gdk.KEY_f:
+            self.search_files()
+        elif ctrl and key==Gdk.KEY_t:
+            if self.model.image: self.text_dialog()
+        elif ctrl and key==Gdk.KEY_n:
+            self.new_window()
+        elif shift and not ctrl and key==Gdk.KEY_c:
+            if self.model.image: self.selection_dialog()
+        elif shift and not ctrl and key==Gdk.KEY_r:
+            self.reopen()
+        elif key==Gdk.KEY_F2:
+            if self.model.image: self.file_action('rename')
+        elif key==Gdk.KEY_F12:
+            if self.model.image: self.paint_dialog()
+        elif shift and key in (Gdk.KEY_Left,Gdk.KEY_Right,Gdk.KEY_Up,Gdk.KEY_Down) and self.selection:
+            from image_tools import selection_drag
+            delta={Gdk.KEY_Left:(-1,0),Gdk.KEY_Right:(1,0),Gdk.KEY_Up:(0,-1),Gdk.KEY_Down:(0,1)}[key]
+            self.selection=selection_drag(self.selection,(0,0),delta,self.model.image.size,'move'); self.refresh()
+        elif ctrl and key == Gdk.KEY_r:
             self.resize_dialog()
         elif ctrl and key == Gdk.KEY_y:
+            self.apply_crop()
+        elif ctrl and key == Gdk.KEY_z and modifiers & Gdk.ModifierType.SHIFT_MASK:
             self.redo()
         elif ctrl and key == Gdk.KEY_p:
             if self.model.image:
