@@ -53,7 +53,15 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.save_button.add_css_class('primary')
         self.header = header
         root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.set_child(root)
+        self.shell = Gtk.Overlay()
+        self.shell.set_child(root)
+        self.set_child(self.shell)
+        self.scrim_depth = 0
+        self.modal_scrim = Gtk.Box(hexpand=True,vexpand=True)
+        self.modal_scrim.add_css_class('scrim')
+        self.modal_scrim.set_can_target(False)
+        self.modal_scrim.set_visible(False)
+        self.shell.add_overlay(self.modal_scrim)
         toolbar = Gtk.Box(spacing=8, margin_start=16, margin_end=16, margin_top=4, margin_bottom=8)
         toolbar.add_css_class('tool-strip')
         root.append(toolbar)
@@ -131,7 +139,12 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
             parent.append(button)
         return button
 
+    def set_scrim(self, active):
+        self.scrim_depth = max(0,self.scrim_depth + (1 if active else -1))
+        self.modal_scrim.set_visible(self.scrim_depth > 0)
+
     def message(self, title, text, callback=None):
+        self.set_scrim(True)
         dialog = Gtk.MessageDialog(transient_for=self, modal=True, text=title, secondary_text=text)
         if callback:
             dialog.add_button('Abbrechen', Gtk.ResponseType.CANCEL)
@@ -139,6 +152,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         else:
             dialog.add_button('OK', Gtk.ResponseType.OK)
         def response(dlg, answer):
+            self.set_scrim(False)
             dlg.destroy()
             self.dialogs.remove(dlg)
             if callback and answer == Gtk.ResponseType.ACCEPT:
@@ -403,11 +417,13 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def key_pressed(self, _controller, key, _code, modifiers):
         if self.busy:
             return False
+        focus = self.get_focus()
+        while focus is not None:
+            if isinstance(focus,(Gtk.Editable,Gtk.Scale,Gtk.SpinButton)):
+                return False
+            focus = focus.get_parent()
         if self.extra_key(key,modifiers):
             return True
-        focus = self.get_focus()
-        if isinstance(focus, (Gtk.Editable, Gtk.Scale, Gtk.SpinButton)):
-            return False
         ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
         if ctrl:
             actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:self.save_dialog, Gdk.KEY_z:self.undo}

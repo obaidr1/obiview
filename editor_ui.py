@@ -45,6 +45,7 @@ class EditorUI:
                             ('Farbe',('temperature','saturation','vibrance')),
                             ('Effekte',('grain','vignette','sharpness'))]:
             section = card(title)
+            section.set_spacing(3)
             if title == 'Licht':
                 self.histogram = Gtk.DrawingArea(content_height=46)
                 accessible(self.histogram,'RGB-Histogramm des Bildes')
@@ -76,6 +77,7 @@ class EditorUI:
         self.inspector.append(row)
         self.inspector_scroll = Gtk.ScrolledWindow(vexpand=True)
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
+        self.inspector_scroll.set_hexpand(False)
         self.inspector_scroll.set_child(self.inspector)
         self.inspector_scroll.set_size_request(304,-1)
         workspace = Gtk.Box(spacing=8, vexpand=True)
@@ -172,13 +174,17 @@ class EditorUI:
         self.inspector.set_sensitive(loaded and not self.busy)
         pending = self.has_preview()
         self.apply_adjustments.set_sensitive(pending)
+        if pending and not self.busy:
+            self.undo_button.set_sensitive(True)
+            self.lookup_action('undo').set_enabled(True)
         self.reset_adjustments.set_sensitive(pending)
         self.preview_note.set_text('Vorschau · noch nicht angewendet' if pending else 'Alle Anpassungen sind übernommen.')
         identity = (id(self.model.image),self.model.revision)
         if identity != self.preview_identity and loaded:
             self.preview_identity = identity
-            thumb = self.model.image.copy()
-            thumb.thumbnail((256,256))
+            source = self.model.image
+            factor = min(256/source.width,256/source.height,1)
+            thumb = source.resize((max(1,round(source.width*factor)),max(1,round(source.height*factor))))
             self.histogram_values = thumb.convert('RGB').histogram()
             self.histogram.queue_draw()
         self.empty_state.set_visible(not loaded)

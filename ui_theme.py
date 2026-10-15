@@ -7,11 +7,13 @@ CSS = '''
 @define-color surface #f5f5f3;
 @define-color card #fafaf9;
 @define-color line #dededb;
+@define-color accent_color #242424;
+@define-color theme_selected_bg_color #242424;
 @define-color accent_bg_color #242424;
 @define-color accent_fg_color #ffffff;
 @define-color window_bg_color #f5f5f3;
 @define-color window_fg_color #242424;
-window { background: @surface; color: @ink; font-family: Inter, "Cantarell", sans-serif; font-size: 14px; }
+window { border-radius: 24px; background: @surface; color: @ink; font-family: Inter, "Cantarell", sans-serif; font-size: 14px; }
 headerbar { background: @surface; border: none; box-shadow: none; padding: 10px 16px; }
 headerbar .title { font-weight: 600; }
 button { background: transparent; background-image: none; color: @ink; border: 1px solid transparent; border-radius: 24px; min-height: 34px; padding: 4px 14px; box-shadow: none; text-shadow: none; }
@@ -27,6 +29,7 @@ button:focus-visible, entry:focus-within, spinbutton:focus-within, scale:focus-v
 .dialog-title { font-size: 22px; font-weight: 600; }
 .brand { font-size: 17px; font-weight: 600; letter-spacing: -.5px; }
 .card { background: @card; border: 1px solid white; border-radius: 20px; padding: 16px; }
+.inspector button { padding: 2px 8px; min-height: 28px; }
 .inspector { padding: 8px 16px 16px 8px; }
 .tool-strip { padding: 4px 16px; }
 .workspace { background: @surface; }
@@ -35,7 +38,9 @@ button:focus-visible, entry:focus-within, spinbutton:focus-within, scale:focus-v
 .sidebar { background: #eeefeb; border-radius: 18px; padding: 12px; }
 scale { padding: 10px 0; }
 scale trough { min-height: 3px; background: @line; border-radius: 8px; }
-scale highlight { min-height: 3px; background: #8c8c87; }
+scale highlight { min-height: 3px; background: #8c8c87; border: none; box-shadow: none; background-image: none; }
+.inspector scale { padding: 5px 0; min-height: 0; }
+.scrim { background: alpha(black,.35); }
 scale slider { min-width: 14px; min-height: 14px; background: white; border: 1px solid #b6b6b0; border-radius: 100%; box-shadow: 0 2px 5px alpha(black,.1); }
 scale:disabled { opacity: .4; }
 entry, spinbutton, dropdown, combobox button { background: white; color: @ink; border: 1px solid @line; border-radius: 12px; min-height: 34px; box-shadow: none; }
@@ -44,7 +49,7 @@ spinbutton entry { border: none; background: transparent; }
 spinbutton button { border-radius: 8px; min-height: 30px; padding: 2px 8px; }
 switch { background: #d8d8d3; border: 1px solid #aaa; border-radius: 20px; min-height: 24px; }
 switch:checked { background: @ink; }
-switch slider { background: white; border-radius: 50%; min-width: 22px; min-height: 22px; }
+switch slider { border: 1px solid #a0a09a; box-shadow: none; background: white; border-radius: 50%; min-width: 22px; min-height: 22px; }
 checkbutton check, checkbutton radio { border: 1px solid #95958f; background: white; color: white; }
 checkbutton check:checked, checkbutton radio:checked { background: @ink; }
 .choice { border: 1px solid transparent; border-radius: 14px; padding: 10px; min-height: 48px; }

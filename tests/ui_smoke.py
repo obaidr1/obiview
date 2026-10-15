@@ -166,9 +166,11 @@ def tick(window):
             window.toggle_sidebar()
             window.set_default_size(1280,900)
         elif step == 17:
+            assert window.inspector_scroll.get_width()<400, window.inspector_scroll.get_width()
             screenshot('editor')
             window.save_dialog()
             window.dialogs[-1].format.set_active_id('JPEG')
+            window.dialogs[-1].resolution_tiles['full'].set_active(True)
         elif step == 18:
             if window.dialogs[-1].preview_busy or window.dialogs[-1].preview_timer:
                 return True

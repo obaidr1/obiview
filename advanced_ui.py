@@ -66,7 +66,7 @@ class AdvancedFeatures:
         header.pack_end(menu_button)
         # Keep the complete menu model and actions available in the application menu.
         root.prepend(self.menu_bar)
-        toolbar.prepend(nav)
+
         root.remove(self.canvas_overlay)
         self.pane = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL, wide_handle=True)
         self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=200)
@@ -87,6 +87,10 @@ class AdvancedFeatures:
         self.pane.set_position(210)
         root.insert_child_after(self.pane,toolbar)
         self.sidebar.set_visible(False)
+        root.remove(self.status)
+        self.status.set_hexpand(True)
+        nav.append(self.status)
+        root.append(nav)
 
     def cleanup(self, *_):
         self.closed = True
@@ -512,6 +516,9 @@ class AdvancedFeatures:
         chooser.show()
 
     def print_image(self):
+        if self.has_preview():
+            self.edit(lambda _m:None,after=self.print_image)
+            return
         self.stop_slideshow()
         operation = Gtk.PrintOperation()
         operation.set_n_pages(1)

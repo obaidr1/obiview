@@ -17,6 +17,7 @@ class SaveAsDialog(Gtk.Dialog):
     def __init__(self, parent, settings, on_save):
         super().__init__(title='Bild exportieren', transient_for=parent, modal=True,
                          default_width=540, default_height=800)
+        parent.set_scrim(True)
         self.on_save = on_save
         self.profiles = SaveProfiles()
         self.chooser = None
@@ -149,7 +150,17 @@ class SaveAsDialog(Gtk.Dialog):
         row.append(self.remove_metadata)
         metadata.append(row)
         body.append(metadata)
-        destination = card('Speicherort')
+        destination_card = card()
+        destination_expander = Gtk.Expander(label='Speicherort')
+        destination = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8,margin_top=12)
+        destination_expander.set_child(destination)
+        destination_card.append(destination_expander)
+        destination_summary = label(str(path.parent),'small muted')
+        destination_summary.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
+        destination_summary.set_max_width_chars(48)
+        destination_summary.set_tooltip_text(str(path.parent))
+        self.folder.connect('changed',lambda w:destination_summary.set_text(w.get_text()))
+        destination_card.append(destination_summary)
         destination.append(label('Dateiname','small muted'))
         destination.append(accessible(self.name,'Dateiname'))
         folder_row = Gtk.Box(spacing=8)
@@ -159,7 +170,7 @@ class SaveAsDialog(Gtk.Dialog):
         folder_row.append(browse)
         destination.append(label('Zielordner','small muted'))
         destination.append(folder_row)
-        body.append(destination)
+        body.append(destination_card)
         advanced = Gtk.Expander(label='Erweiterte Optionen & Profile')
         options = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,margin_top=12)
         advanced.set_child(options)
@@ -463,6 +474,7 @@ class SaveAsDialog(Gtk.Dialog):
         if self.chooser:
             self.chooser.destroy()
         parent = self.get_transient_for()
+        parent.set_scrim(False)
         if self in parent.dialogs:
             parent.dialogs.remove(self)
         self.destroy()

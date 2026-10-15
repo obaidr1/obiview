@@ -24,7 +24,7 @@ jobs:
         run: >-
           dnf -y install git gh tar gzip python3 python3-gobject python3-cairo
           python3-pillow gtk4 ImageMagick poppler-utils ffmpeg-free util-linux
-          desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth dbus-daemon adwaita-icon-theme
+          desktop-file-utils xorg-x11-server-Xvfb xorg-x11-xauth dbus-daemon adwaita-icon-theme openbox
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -40,7 +40,7 @@ jobs:
           GDK_BACKEND: x11
           GSK_RENDERER: cairo
           BILDBLICK_SCREENSHOT_LOG: '1'
-        run: xvfb-run -a -s '-screen 0 1440x1050x24' dbus-run-session -- /usr/bin/python3 tests/ui_smoke.py
+        run: xvfb-run -a -s '-screen 0 1440x1050x24' dbus-run-session -- sh -c 'openbox >/tmp/openbox.log 2>&1 & /usr/bin/python3 tests/ui_smoke.py'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

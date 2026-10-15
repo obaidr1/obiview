@@ -3,11 +3,13 @@ import gi
 gi.require_version('Gtk','4.0')
 from gi.repository import Gtk
 from resize_settings import ResizeSettings
+from ui_theme import card, label, accessible
 
 
 class ResizeDialog(Gtk.Dialog):
     def __init__(self,parent,on_apply):
-        super().__init__(title='Größe ändern',transient_for=parent,modal=True,resizable=False)
+        super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=620)
+        parent.set_scrim(True)
         self.settings = ResizeSettings(*parent.model.image.size)
         self.on_apply = on_apply
         self.syncing = False
@@ -16,7 +18,14 @@ class ResizeDialog(Gtk.Dialog):
         self.apply_button = self.add_button('Größe ändern',Gtk.ResponseType.ACCEPT)
         self.apply_button.add_css_class('suggested-action')
         self.set_default_response(Gtk.ResponseType.ACCEPT)
-        grid = Gtk.Grid(column_spacing=16,row_spacing=12,margin_top=20,margin_bottom=20,margin_start=20,margin_end=20)
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
+                       margin_top=8,margin_bottom=16,margin_start=24,margin_end=24)
+        body.append(label('Größe ändern','dialog-title'))
+        body.append(label('Mehr Platz für Details. Oder weniger Dateigröße.','muted',wrap=True))
+        section = card('Abmessungen')
+        grid = Gtk.Grid(column_spacing=16,row_spacing=14)
+        section.append(grid)
+        body.append(section)
         grid.attach(Gtk.Label(label=f'Original: {self.settings.width} × {self.settings.height} Pixel',xalign=0),0,0,2,1)
         self.units = Gtk.ComboBoxText()
         self.units.append('pixels','Pixel')
@@ -26,25 +35,27 @@ class ResizeDialog(Gtk.Dialog):
         grid.attach(self.units,1,1,1,1)
         self.width = Gtk.SpinButton.new_with_range(1,80_000_000,1)
         self.height = Gtk.SpinButton.new_with_range(1,80_000_000,1)
-        for row,(label,widget,axis) in enumerate((('Breite',self.width,'width'),('Höhe',self.height,'height')),2):
+        for row,(title,widget,axis) in enumerate((('Breite',self.width,'width'),('Höhe',self.height,'height')),2):
+            accessible(widget,title+' des Bildes')
+            widget.set_hexpand(True)
             widget.set_numeric(True)
             widget.set_activates_default(True)
             widget.connect('value-changed',self.dimension_changed,axis)
-            grid.attach(Gtk.Label(label=label,xalign=0),0,row,1,1)
+            grid.attach(Gtk.Label(label=title,xalign=0),0,row,1,1)
             grid.attach(widget,1,row,1,1)
         self.lock = Gtk.CheckButton(label='Seitenverhältnis beibehalten',active=True)
         self.lock.connect('toggled',self.lock_changed)
         grid.attach(self.lock,0,4,2,1)
-        presets = Gtk.Box(spacing=4)
-        for amount in (25,50,75,100,150,200):
+        presets = Gtk.Box(spacing=8,homogeneous=True)
+        for amount in (25,50,100,200):
             button = Gtk.Button(label=f'{amount} %')
             button.connect('clicked',lambda _button,p=amount:self.use_preset(p))
             presets.append(button)
         grid.attach(presets,0,5,2,1)
         self.method = Gtk.ComboBoxText()
-        for ident,label in [('lanczos','Lanczos – hohe Qualität'),('bicubic','Bikubisch'),
+        for ident,title in [('lanczos','Lanczos – hohe Qualität'),('bicubic','Bikubisch'),
                             ('bilinear','Bilinear'),('nearest','Nächster Nachbar – Pixelgrafik')]:
-            self.method.append(ident,label)
+            self.method.append(ident,title)
         self.method.set_active_id('lanczos')
         grid.attach(Gtk.Label(label='Interpolation',xalign=0),0,6,1,1)
         grid.attach(self.method,1,6,1,1)
@@ -54,9 +65,13 @@ class ResizeDialog(Gtk.Dialog):
                          xalign=0,wrap=True,max_width_chars=55)
         note.add_css_class('dim-label')
         grid.attach(note,0,8,2,1)
-        self.get_content_area().append(grid)
+        scroll = Gtk.ScrolledWindow(vexpand=True)
+        scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
+        scroll.set_child(body)
+        self.get_content_area().append(scroll)
         self.units.connect('changed',self.unit_changed)
         self.connect('response',self.on_response)
+        self.connect('close-request',lambda *_:(self.on_response(self,Gtk.ResponseType.CANCEL),True)[1])
         self.sync_fields()
 
     def dimension_changed(self,widget,axis):
@@ -107,6 +122,7 @@ class ResizeDialog(Gtk.Dialog):
                 return
             self.on_apply(width,height,self.method.get_active_id())
         parent = self.get_transient_for()
+        parent.set_scrim(False)
         if self in parent.dialogs:
             parent.dialogs.remove(self)
         self.destroy()
