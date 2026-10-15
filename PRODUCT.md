@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.4.1 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.5.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -72,7 +72,7 @@ Vorschaubilder werden zunächst für 100 Dateien geladen; weitere können angefo
 
 ### 3. Zuschnitt und Ausgabegröße festlegen
 
-Eine rechteckige Auswahl wird mit der Maus aufgezogen und ausdrücklich als Zuschnitt übernommen. Die Größenänderung bietet Pixel und Prozent, ein gekoppeltes Seitenverhältnis, Vorlagen und Interpolation.
+Eine rechteckige Auswahl wird mit der Maus aufgezogen und ausdrücklich als Zuschnitt übernommen. Die Größenänderung bietet Pixel, Prozent, cm, Zoll, DPI, ein gekoppeltes Seitenverhältnis, Auflösungsvorlagen und Interpolation. Auswahlrahmen besitzen veränderbare Kanten, Maus-/Tastaturverschiebung und feste Verhältnisvorgaben.
 
 Undo und Redo ermöglichen die Rückkehr zu vorherigen Bildzuständen. Die Historie ist auf höchstens 20 Schritte begrenzt und wird bei großen Bildern durch ein Speicherbudget reduziert.
 
@@ -94,15 +94,15 @@ Der Kopiermodus erstellt bitgenaue Kopien mit neuen Namen. Die CLI verwendet den
 
 **Erwartetes Ergebnis:** Wiederkehrende Konvertierungen können mit einer einheitlichen Konfiguration ausgeführt werden, ohne die Quelldateien umzubenennen oder zu überschreiben.
 
-## Bildanpassungen und Export in Version 0.4.1
+## Bildanpassungen und Export in Version 0.5.0
 
-Der separate Bildanpassungsdialog enthält vier Looks und zehn Regler für Licht, Farbe und Effekte. Änderungen werden zunächst als Vorschau gezeigt. Eine ausdrückliche Übernahme erzeugt einen Bearbeitungsschritt in der Historie. Zurücksetzen verwirft nur offene Anpassungen. Vor dem Speichern oder weiteren Bildoperationen werden ausstehende Anpassungen in voller Auflösung übernommen. Der Bildwechsel berücksichtigt auch ungespeicherte Vorschauen.
+Der separate Bildanpassungsdialog enthält vier Looks und vierzehn Regler für Licht, Farbe und Effekte. Änderungen werden zunächst als Vorschau gezeigt. Eine ausdrückliche Übernahme erzeugt einen Bearbeitungsschritt in der Historie. Zurücksetzen verwirft nur offene Anpassungen. Vor dem Speichern oder weiteren Bildoperationen werden ausstehende Anpassungen in voller Auflösung übernommen. Der Bildwechsel berücksichtigt auch ungespeicherte Vorschauen.
 
 Der Exportdialog stellt JPG, PNG und WebP direkt dar und ordnet weitere Formate, Spezialoptionen und Profile in aufklappbare Bereiche. Qualität, Zielauflösung und die gemeinsame Metadatenentfernung sind unmittelbar zugänglich. Die Dateigrößenanzeige entsteht durch echtes Kodieren im Hintergrund. Ein Export mit anderen Pixelmaßen erhält die Arbeitsdatei unverändert.
 
 Die Gestaltung ist in [docs/DESIGN.md](docs/DESIGN.md) dokumentiert. Ein separates dunkles Erscheinungsbild gehört derzeit nicht zum Umfang.
 
-## Umfang von Version 0.4.1
+## Umfang von Version 0.5.0
 
 ### Anzeige und Navigation
 
@@ -119,7 +119,7 @@ Die Gestaltung ist in [docs/DESIGN.md](docs/DESIGN.md) dokumentiert. Ein separat
 - Größenänderung mit vier Interpolationsverfahren.
 - Graustufen, Negativ und automatischer Kontrast.
 - Helligkeit, Kontrast, Sättigung, Schärfe und Weichzeichnung.
-- Text mit Position, Größe und Farbe.
+- Text im Auswahlrechteck mit Schriftfamilie, Stil, Punktgröße und Farbe; separate Zeichenwerkzeuge.
 - Bildwasserzeichen mit begrenzter Größe und derzeit fester Deckkraft von 50 %.
 
 ### Speichern und Ausgabe
@@ -149,7 +149,7 @@ Metadatenübernahme ist selektiv und formatabhängig. IPTC, Vorschaubilder und S
 
 HEIC/HEIF, komplexe AVIF-Alpha-Varianten und einzelne Spezialformate können nicht verarbeitet werden. Für Kamera-RAW, DICOM, XCF und WPG fehlen repräsentative Tests über die relevanten Varianten hinweg.
 
-Freie Malwerkzeuge, Rote-Augen-Korrektur, Zwischenablage-Workflows, Scanner, Bildschirmaufnahme, frei belegbare Tastenkürzel und Kontaktbögen sind noch nicht implementiert.
+Bildschirmaufnahme, frei belegbare Tastenkürzel, Kontaktbögen, OCR und vollständige Metadatenbearbeitung sind noch nicht implementiert. Scanner und Medien benötigen optionale Systemmodule; ihre Hardware-/Codec-Abnahme steht aus.
 
 ## Architektur und Zustandsmodell
 
@@ -159,7 +159,7 @@ Laden, Bearbeiten und Speichern laufen über Hintergrundaufträge. Ergebnisse we
 
 Native Zusatzdecoder werden nur für zugelassene Formate aufgerufen. Die Ausführung unterliegt Zeit-, Speicher- und Ausgabebegrenzungen. Die ImageMagick-Konfiguration unterbindet Netzwerk- und Delegatenzugriffe für diese Aufrufe.
 
-Benutzerdaten beschränken sich auf ausdrücklich gespeicherte Bilder und Exportprofile. Das Installationspaket enthält keine persönlichen Bildsammlungen oder Profilkonfigurationen.
+Benutzerdaten umfassen ausdrücklich gespeicherte Bilder, Exportprofile, Ansichtsoptionen und die letzten zehn Bildordner. Das Installationspaket enthält keine persönlichen Bildsammlungen oder Profilkonfigurationen.
 
 ## Gestaltung und Sprache
 
@@ -171,7 +171,7 @@ Tastaturbedienung ist Teil des Bedienkonzepts. Ein systematischer Accessibility-
 
 ## Qualität und Abnahme
 
-Der aktuelle automatische Prüfstand umfasst 62 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
+Der aktuelle automatische Prüfstand umfasst 82 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
 
 Der grafische Integrationstest läuft erfolgreich in einer Fedora-44-Sitzung mit Xvfb und Openbox in GitHub Actions. Er deckt Navigation, Bildoperationen, Menüs, Strg+R, Speicherdialog, Vorschau, Übernahme und verkleinerten Export ab. Screenshots prüfen die Anordnung und ein kompaktes Fenster. Lokal bleibt der Display-Zugriff eingeschränkt; Status 77 bedeutet dort „nicht ausgeführt“.
 
@@ -195,7 +195,7 @@ Manuelle Prüfungen auf einer normalen Desktop-Sitzung durchführen, gefundene L
 
 ### Priorität 2: Häufige Alltagsaufgaben ergänzen
 
-Zwischenablage, präzise Auswahlvorgaben, besser einstellbare Wasserzeichen und dauerhafte allgemeine Anwendungseinstellungen prüfen. Eine Erweiterung erfolgt anhand konkreter Arbeitsabläufe und mit passenden Tests.
+Zwischenablage, präzise Auswahl, Zeichnen, Rahmen, DPI und dauerhafte Ansichtsoptionen sind umgesetzt. Nächste Kandidaten sind genauer einstellbare Wasserzeichen, mehr Druckseitenoptionen und Bildlisten für Diashows. Eine Erweiterung erfolgt anhand konkreter Arbeitsabläufe und mit passenden Tests.
 
 ### Priorität 3: Format- und Metadatenqualität verbessern
 
@@ -216,3 +216,16 @@ Messbare Qualitätsziele sind nachvollziehbare Fehlerberichte, keine unbestätig
 ## Lizenz
 
 Bildblick wird unter der [MIT-Lizenz](LICENSE) bereitgestellt. Installation und Bedienung sind in [README.md](README.md) beschrieben.
+
+## Neue Arbeitsabläufe in 0.5.0
+
+- Auswahl in die Zwischenablage kopieren, in einem neuen Fenster einfügen und unabhängig speichern.
+- Frei drehen, Rote Augen korrigieren, Gamma und RGB-Kanäle einstellen; zehn Effekte und reduzierte Farbpaletten anwenden.
+- Schriftfamilie, Stil und Punktgröße wählen; im Auswahlrechteck umbrechen. Stift und Formen in einem eigenen Zeichendialog nutzen.
+- Leinwandseiten getrennt vergrößern oder kürzen, mehrteilige Rahmen ergänzen und Bilder horizontal/vertikal zusammensetzen.
+- Gespeicherte Dateien umbenennen, kopieren, verschieben, extern öffnen oder nach Bestätigung in den Papierkorb legen.
+- Druckgröße und Position festlegen; optional mit SANE scannen oder lokale Medien über GTK/GStreamer wiedergeben.
+
+Alle Ergänzungen bleiben in separaten Dialogen. Das Hauptfenster behält 720 × 640 Pixel als Startgröße. **Strg+Y** schneidet jetzt zu; **Strg+Umschalt+Z** wiederholt. **Strg+S** speichert die aktuelle Datei mit Ersetzungsabfrage; **S** öffnet Speichern unter.
+
+Die aktuelle, funktionsweise Menüübersicht steht in [docs/FEATURES.md](docs/FEATURES.md). Hardwareabhängige Integrationen sind implementiert, aber noch keine Zusage für jeden Scanner, Drucker oder Mediencodec. Eine vollständige Umsetzung sämtlicher denkbarer Spezialformate und Zusatzmodule wird nicht behauptet.

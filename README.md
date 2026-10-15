@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.4.1 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.5.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -34,13 +34,14 @@ Das [Produktdokument](PRODUCT.md) beschreibt Zielgruppe, Bedienkonzept, Produktu
 | --- | --- |
 | Anzeige | Zoom, Einpassen, 100-%-Ansicht, Vollbild, Transparenzraster |
 | Navigation | Ordner öffnen, natürlich sortierte Dateinamen, Vorschaubilder, Namensfilter |
-| Bearbeitung | Drehen, Spiegeln, Zuschneiden, Größe ändern, Rückgängig und Wiederholen |
-| Farben und Details | Graustufen, Negativ, Autokontrast, Helligkeit, Kontrast, Sättigung, Schärfen, Weichzeichnen |
-| Ergänzungen | Text mit Position, Größe und Farbe; Bildwasserzeichen |
+| Bearbeitung | Freie Drehung, Spiegeln, präzise Auswahl, Zuschneiden, Pixel/Prozent/cm/Zoll/DPI, Rückgängig und Wiederholen |
+| Farben und Details | Gamma, RGB-Balance, Helligkeit, Kontrast, Sättigung, Rote Augen, Histogramm, Farbkanäle, Palette und zehn Effekte |
+| Ergänzungen | Text im Auswahlrahmen mit Schriftwahl, Zeichnen, Rahmen, Leinwand, Bildwasserzeichen, Panorama |
 | Export | Formatwahl, JPEG-/GIF-/PNG-/WebP-Optionen, Metadaten-Schalter, Profile |
 | Serien | Stapelkonvertierung, skalierte Ausgaben, umbenannte Kopien, Vorschau und Abbruch |
 | Mehrere Seiten | Seiten-/Framewechsel, Animation, Export nach TIFF, GIF, WebP oder PDF |
-| Desktop | Anwendungsmenü, eigenes Symbol, „Öffnen mit“, GTK-Druckdialog |
+| Desktop | Anwendungsmenü, Zwischenablage, mehrere Fenster, Dateiaktionen, eigene Druckgröße und Position |
+| Optionale Systemfunktionen | Scannen über SANE; Audio/Video über GTK/GStreamer |
 | Automatisierung | CLI mit JSON-Ergebnis, Vorschau und Fehlerstatus |
 
 Die Druckanbindung ist implementiert; eine physische Druckausgabe wurde bislang nicht bestätigt. Die zentralen grafischen Abläufe werden zusätzlich in einer GTK-Sitzung in GitHub Actions geprüft. Details zum Teststand findest du unter [Entwicklung und Tests](#entwicklung-und-tests).
@@ -58,13 +59,14 @@ Bildblick benötigt eine grafische Linux-Sitzung und folgende Systembibliotheken
 | Pycairo | Bildfläche und Druckanbindung |
 | Pillow ab Version 12 | Bildoperationen und Standard-Codecs |
 | GdkPixbuf | Darstellung von Bilddaten und Symbolen |
+| Fontconfig (`fc-match`) und installierte Schriften | Schriftfamilien und Stile für eingefügten Text |
 
 Auf dem Referenzsystem wurden Python 3.14, GTK 4.22 und Pillow 12.3 verwendet. Andere Distributionen können funktionieren, sind jedoch noch nicht als vollständige Konfiguration geprüft.
 
 Fedora-Pakete für die Grundausstattung:
 
 ```bash
-sudo dnf install python3 python3-gobject python3-cairo python3-pillow gtk4
+sudo dnf install python3 python3-gobject python3-cairo python3-pillow gtk4 fontconfig
 ```
 
 Zusätzliche Formate nutzen optional installierte Decoder:
@@ -73,18 +75,20 @@ Zusätzliche Formate nutzen optional installierte Decoder:
 sudo dnf install ImageMagick poppler-utils ffmpeg-free util-linux
 ```
 
+Scannen benötigt zusätzlich `sane-backends` und einen eingerichteten Scanner. Die Medienwiedergabe benötigt das GTK-Medienbackend und passende GStreamer-Codecs. Beides ist optional; die App meldet fehlende Unterstützung.
+
 Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Codec-Builds ab. Der Installer lädt keine Abhängigkeiten herunter und installiert keine Systempakete.
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.4.1-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.5.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.4.1-linux.tar.gz
-cd Bildblick-0.4.1
+tar -xzf Bildblick-0.5.0-linux.tar.gz
+cd Bildblick-0.5.0
 ./install.sh
 ```
 
@@ -119,6 +123,8 @@ Nach einer Aktualisierung eine laufende Instanz schließen und Bildblick erneut 
 | Menüeintrag | `~/.local/share/applications/local.bildblick.Viewer.desktop` |
 | Symbol | `~/.local/share/icons/hicolor/scalable/apps/local.bildblick.Viewer.svg` |
 | Exportprofile | `~/.config/bildblick/save-profiles.json` |
+| Ansichtsoptionen | `~/.config/bildblick/viewer.json` |
+| Die letzten zehn Bildordner | `~/.config/bildblick/recent.json` |
 
 `XDG_DATA_HOME` und `XDG_CONFIG_HOME` werden für die entsprechenden Daten- und Konfigurationsorte berücksichtigt. Der Terminal-Starter liegt unabhängig davon unter `~/.local/bin`.
 
@@ -129,13 +135,13 @@ Zur Deinstallation die oben genannten Anwendungsdateien, den Starter, Menüeintr
 Bildblick verwendet eine helle, monochrome Oberfläche mit abgerundeten Karten und schwarzen Hauptaktionen. Das Hauptfenster startet mit **720 × 640 Pixeln**. Eine sichtbare Menüleiste und eine einzelne kompakte Symbolleiste stehen oberhalb der Bildfläche; die Statuszeile liegt unten. Öffnen, Speichern, Ausschnitt, Historie, Bildinformationen, Zoom, Navigation, Größenänderung und Bildanpassungen sind direkt erreichbar. Die Bildfläche enthält keine schwebenden Bedienelemente oder Bearbeitungsleiste.
 
 - **Looks:** Original, Film, Fade und Warm.
-- **Licht:** RGB-Histogramm, Helligkeit, Kontrast, Lichter und Schatten.
-- **Farbe:** Temperatur, Sättigung und Dynamik.
+- **Licht:** RGB-Histogramm, Helligkeit, Kontrast, Gamma, Lichter und Schatten.
+- **Farbe:** Temperatur, Sättigung, Dynamik sowie Rot-, Grün- und Blau-Balance.
 - **Effekte:** Körnung, Vignette und Schärfe.
 
 **Bild → Bildanpassungen** oder das Einstellungs-Symbol öffnet einen eigenen Dialog mit Bildvorschau, Looks und Reglern. Auch Vorschaubilder öffnen sich in einem separaten Fenster. Regler zeigen zunächst eine Vorschau. **Anwenden** übernimmt sie als rückgängig machbaren Bearbeitungsschritt; **Zurücksetzen** verwirft die Vorschau. Speichern und weitere Bildoperationen übernehmen offene Anpassungen vor ihrer Ausführung. Die Vorschau ist für schnelle Rückmeldung verkleinert; beim Anwenden wird das Bild in voller Auflösung verarbeitet. Das Histogramm basiert auf dem Vorschaubild und dient zur Orientierung.
 
-Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Tastenkürzel bleiben erhalten. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
+Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Die wichtigsten Aktionen besitzen Tastenkürzel; die Tabelle unten nennt die aktuelle Zuordnung. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
 
 ## Erste Schritte
 
@@ -151,17 +157,29 @@ Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, w
 
 | Kürzel | Aktion |
 | --- | --- |
-| `Strg+O` | Bild öffnen |
-| `Strg+S`, `Strg+Umschalt+S` | Speichern unter |
+| `O`, `Strg+O` | Bild öffnen |
+| `S`, `Strg+Umschalt+S` | Speichern unter |
+| `Strg+S` | Aktuelle Datei speichern; Ersetzen wird bestätigt |
 | `Strg+R` | Größe ändern |
-| `Strg+Z` / `Strg+Y` | Rückgängig / Wiederholen |
+| `Strg+Z` / `Strg+Umschalt+Z` | Rückgängig / Wiederholen |
+| `Strg+Y`, `Enter` | Auswahl zuschneiden |
+| `Strg+C` / `Strg+V` | Auswahl oder ganzes Bild kopieren / Bild als neues Dokument einfügen |
+| `Strg+X` / `Strg+A` | Auswahl ausschneiden / alles auswählen |
+| `Umschalt+C` | Eigene Auswahl |
+| `Umschalt` + Pfeiltasten | Auswahl um einen Pixel verschieben |
+| `Strg+T` | Text in die Auswahl einfügen |
+| `Strg+N` | Neues Fenster |
+| `D` | Bild vom Bildschirm entfernen, Datei behalten |
+| `Umschalt+R` | Gespeicherte Datei erneut öffnen |
+| `Strg+F` | Dateinamen in den Vorschaubildern suchen |
+| `F2` | Datei umbenennen |
+| `F12` | Zeichnen |
 | `Strg+P` | Drucken |
 | `R` | 90° im Uhrzeigersinn drehen |
 | `+` / `−` | Vergrößern / Verkleinern |
 | `F` / `1` | Einpassen / 100 % |
 | `←` / `→` | Vorherige / nächste Datei im Ordner |
 | `Bild auf` / `Bild ab` | Vorherige / nächste Seite oder Frame |
-| `Enter` | Aktuelle Auswahl zuschneiden |
 | `Esc` | Auswahlmodus verlassen |
 | `F5` | Diashow starten oder stoppen |
 | `F11` | Vollbild umschalten |
@@ -170,14 +188,42 @@ Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, w
 
 **Bild → Größe ändern**, der sichtbare Größen-Button und `Strg+R` öffnen denselben Dialog.
 
-- Breite und Höhe lassen sich in **Pixeln** oder **Prozent** eingeben.
+- Breite und Höhe lassen sich in **Pixeln**, **Prozent**, **Zentimetern** oder **Zoll** eingeben.
 - Bei aktiviertem Seitenverhältnis passt die Änderung eines Feldes das andere an.
 - Prozentwerte beziehen sich auf die Bildgröße beim Öffnen des Dialogs.
 - Vorlagen bieten 25, 50, 100 und 200 Prozent; weitere Werte können direkt eingegeben werden.
+- Auflösungsvorgaben reichen von 640 × 480 bis 3840 × 2160 sowie Bildschirmgröße. Bei gesperrtem Verhältnis wird das Bild in diese Abmessungen eingepasst.
+- **DPI** bestimmt die physische Druckgröße. Eine reine DPI-Änderung bei unveränderten Pixelmaßen erzeugt keine Details und ist rückgängig machbar. JPEG, PNG, TIFF, BMP und PDF erhalten die Druckauflösung beim Export. Die technische Druckauflösung bleibt auch bei deaktivierten privaten Metadaten erhalten.
 - Als Interpolation stehen Lanczos, bikubisch, bilinear und nächster Nachbar bereit.
 - Die Zielgröße und Megapixelzahl werden vor dem Anwenden angezeigt.
 
 Die Größenänderung verändert den Bearbeitungsstand und kann rückgängig gemacht werden. Eine Änderung des Zoomfaktors verändert dagegen nur die Ansicht.
+
+## Auswahl, Korrekturen und Ergänzungen
+
+Ein Rechteck lässt sich direkt mit der linken Maustaste aufziehen. Ziehen an Kanten oder Ecken ändert es; die rechte Maustaste verschiebt es innerhalb des Bildes. **Bearbeiten → Eigene Auswahl** bietet Position, Pixel-/cm-/Zoll-Maße, DPI und feste Seitenverhältnisse. Bei festem Verhältnis bestimmt die Breite die Höhe. **Auswahl maximieren und zentrieren** vergrößert den Ausschnitt mit seinem Verhältnis bis zum Bildrand.
+
+**Strg+C** kopiert die Auswahl, ohne Auswahl das ganze Bild. **Datei → Neues Fenster**, danach **Strg+V**, erzeugt daraus ein separat speicherbares Dokument. **Strg+X** kopiert die Auswahl und ersetzt deren Pixel durch Weiß. **Außerhalb der Auswahl löschen** erhält die Leinwandgröße und füllt die Umgebung weiß. **Einfarbige Ränder entfernen** erkennt transparenten Rand oder die Hintergrundfarbe oben links; die Toleranz ist einstellbar.
+
+**Bild → Frei drehen** verwendet Gradangaben, positive Werte im Uhrzeigersinn. Erweiterte Bildfläche und Randfarbe sind wählbar. **Rote Augen korrigieren** benötigt eine enge Auswahl um das Auge und verändert nur rot dominierte Pixel darin.
+
+**Effekte** enthält 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kantenerkennung, Median, Explosion, Pixelieren, Sepia und Regentropfen. Die Effekte verarbeiten Bildpixel und sind rückgängig machbar. Relief, Kanten und Sepia haben eine feste Charakteristik; die Stärke beeinflusst die anderen Effekte. **Farben reduzieren** bietet 2–256 Farben und Dithering. **Farbkanäle tauschen** vertauscht RGB-Kanäle; ein eigener Histogrammdialog zeigt die volle Bildverteilung.
+
+**Rahmen hinzufügen** bietet einfache, doppelte und plastische Rahmen mit Breiten und Farbauswahl. **Leinwand erweitern** stellt jede Seite getrennt ein: positive Werte fügen Fläche hinzu, negative schneiden Rand ab. **Bilder zusammenfügen** setzt mehrere Bilder horizontal oder vertikal mit Abstand zusammen; es ist keine perspektivische Panoramaverschmelzung.
+
+**Text einfügen** verwendet die gewählte Schriftfamilie, Schriftstil, Punktgröße und Farbe. Text wird innerhalb der Auswahl umgebrochen und begrenzt. Ohne Auswahl beginnt er mit 20 Pixel Abstand oben links. Die Umrechnung von Punkt in Pixel berücksichtigt die Bild-DPI. **Bearbeiten → Zeichnen** öffnet einen eigenen Dialog für Stift, Linie, Pfeil, Rechteck und Ellipse. Einzelne Striche können dort zurückgenommen werden; Anwenden erzeugt einen gemeinsamen Undo-Schritt.
+
+## Dateien, Ansicht und Druck
+
+Das Datei-Menü enthält **Erneut öffnen**, **Öffnen mit**, **Dateien suchen**, **Letzte Ordner**, **Umbenennen**, **Kopieren**, **Verschieben** und **In den Papierkorb**. Dateiaktionen verwenden gespeicherte Dateien; offene Änderungen müssen zuerst gespeichert oder rückgängig gemacht werden. Kopieren, Verschieben und Umbenennen überschreiben kein vorhandenes Ziel. Löschen fragt nach und verwendet ausschließlich den System-Papierkorb.
+
+Unter **Extras → Ansicht einstellen** sind die Hintergrundfarbe und das Vergrößern kleiner Bilder beim Einpassen konfigurierbar. Einstellungen werden lokal gespeichert. Das Hauptfenster startet weiterhin mit 720 × 640 Pixeln.
+
+**Drucken** öffnet zuerst die Bildanordnung: Hoch-/Querformat, bestmögliches Einpassen, eigene Größe in cm mit gekoppeltem Verhältnis oder getrennte Skalierung in Prozent. Zentrieren und Abstände vom linken/oberen druckbaren Seitenrand sind wählbar. Danach folgt der native Druckdialog für Drucker, Papier und Geräteeigenschaften. Übergröße wird am druckbaren Seitenrand abgeschnitten. Die PDF-Ausgabe wird automatisch geprüft; ein realer Drucker ist noch nicht abgenommen.
+
+**Scannen** verwendet SANE zur Geräteauswahl, Auflösung und Farbauswahl. **Scannen und drucken** führt nach dem Scan zur Druckanordnung. Scanner können andere Modi oder DPI-Werte verlangen; Fehler des Gerätetreibers werden angezeigt. Der Hardwareablauf ist noch nicht mit einem realen Scanner geprüft. **Audio / Video öffnen** spielt lokale Medien in einem separaten Fenster mit GTK-Steuerung ab, sofern das System den Codec unterstützt; diese Medien werden nicht als Bilder bearbeitet.
+
+Eine vollständige Übersicht aller sichtbaren Menüaktionen und ihrer Grenzen steht in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## Speichern und Exportprofile
 
@@ -200,6 +246,8 @@ Unter **Speicherort** werden Dateiname und Zielordner geändert. **Metadaten ent
 | TIFF, BMP, ICO, PDF, JPEG 2000, PPM | Ausgabe mit den jeweiligen Standardoptionen |
 
 Das JPEG-Größenlimit wird in **KiB** angegeben: 1 KiB entspricht 1.024 Bytes. Bildblick reduziert bei Bedarf die Qualität unterhalb des gewählten Ausgangswerts. Ist das Limit selbst bei Qualität 1 nicht erreichbar, schlägt der Export mit einer verständlichen Meldung fehl; eine vorhandene Zieldatei bleibt erhalten. Das Limit verändert nicht automatisch die Pixelmaße.
+
+PNG-Kompression ist immer verlustfrei: höhere Stufen sparen meist mehr Platz und brauchen mehr Rechenzeit; sie verschlechtern keine Bildqualität. GIF hat keinen JPEG-artigen Qualitätsregler.
 
 GIF unterstützt höchstens 256 Farben und nur binäre Transparenz. Bei aktivierter Transparenz werden Pixel mit Alpha unter 50 % transparent. Die übrigen Pixel werden bei Teiltransparenz mit Weiß verrechnet. Interlacing wird vom verwendeten Encoder erst ab 16 × 16 Pixeln eingesetzt.
 
@@ -299,8 +347,9 @@ Aktuelle Grenzen:
 - AVIF-Hilfsbilder und bestimmte Alpha-Varianten werden nicht vollständig unterstützt.
 - Kein validierter, monitorprofilierter Farbmanagement-Workflow.
 - JPEG wird neu kodiert; keine verlustfreie JPEG-Rotation oder automatische Ermittlung der Originalqualität.
-- Keine freien Malwerkzeuge, Rote-Augen-Korrektur, Scanner- oder Bildschirmaufnahme.
-- Druckausgabe, sichtbare Desktop-Integration und sämtliche Maus-/Tastaturabläufe benötigen noch eine vollständige manuelle Prüfung.
+- Keine Ebenen, komplexe Pinselbibliothek, Bildschirmaufnahme oder nahtlose Panoramaverschmelzung.
+- Scanner und Medien benötigen optionale Systemmodule; Windows-Plugins und ausführbare Diashows werden nicht unterstützt.
+- Physischer Druck, Scanner-Hardware, Medien-Codecs und vollständige Desktop-/Accessibility-Abnahme sind noch nicht manuell bestätigt.
 
 ## Entwicklung und Tests
 
@@ -311,6 +360,7 @@ Aktuelle Grenzen:
 | `bildblick.py` | Fenster, Zeichenfläche, Öffnen/Speichern und Eingabe |
 | `editor_ui.py`, `ui_theme.py`, `adjustments.py` | Gestaltung, Bearbeitungsleiste und Bildanpassungen |
 | `advanced_ui.py`, `menus.py` | Menüaktionen, Navigation, Dialoge und Hintergrundaufträge |
+| `image_tools.py`, `tool_dialogs.py`, `file_tools_ui.py`, `paint_dialog.py` | Auswahl, Pixelwerkzeuge, DPI/Druck, Dateiaktionen, Zeichnen und optionale Systemanbindung |
 | `image_model.py` | Bildzustand, Bearbeitung, Undo/Redo und Seitenexport |
 | `image_export.py`, `save_options.py`, `save_dialog.py` | Encoderoptionen, Profile und Speicherdialog |
 | `resize_settings.py`, `resize_dialog.py` | Größenberechnung und Größenänderungsdialog |
@@ -326,7 +376,7 @@ Aktuelle Grenzen:
 /usr/bin/python3 -m unittest discover -s tests -v
 ```
 
-Auf dem Referenzsystem bestehen **62 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
+Auf dem Referenzsystem bestehen **82 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
 
 ### Grafischer Integrationstest
 
@@ -335,7 +385,7 @@ PYTHONPATH=. GDK_BACKEND=x11 GSK_RENDERER=cairo xvfb-run -a \
   -s '-screen 0 1280x900x24' /usr/bin/python3 tests/ui_smoke.py
 ```
 
-Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er mit Status `77`, nicht mit einem erfolgreichen Test. Die lokale Entwicklungsumgebung erlaubt keinen Display-Zugriff. GitHub Actions führt den Test deshalb mit Xvfb und Openbox aus und stellt Screenshots als Workflow-Artefakt bereit. Getestet werden auch Vorschau, Zurücksetzen, verkleinerter Export und ein kompaktes Fenster. Eine vollständige Prüfung mit Screenreader und realem Drucker steht weiterhin aus.
+Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er mit Status `77`, nicht mit einem erfolgreichen Test. Die lokale Entwicklungsumgebung erlaubt keinen Display-Zugriff. GitHub Actions führt den Test deshalb mit Xvfb und Openbox aus und stellt Screenshots als Workflow-Artefakt bereit. Getestet werden auch Vorschau, Zurücksetzen, verkleinerter Export und ein kompaktes Fenster. Zusätzliche Prüfungen umfassen cm/DPI, Auswahlkanten und Verschieben, Zwischenablage, Rahmen, freie Drehung, Text, Gamma/RGB, Einstellungen, PDF-Druck, Umbenennen und Zeichnen. Eine vollständige Prüfung mit Screenreader, Scanner und realem Drucker steht weiterhin aus.
 
 ### Paket bauen
 
@@ -343,7 +393,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.4.1-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.5.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag

@@ -84,7 +84,8 @@ class ImageToolsTests(unittest.TestCase):
         self.assertEqual(result.size,(84,66))
         self.assertEqual(result.crop((1,2,81,62)).tobytes(),self.image.tobytes())
         self.assertEqual(result.getpixel((0,0)),(171,205,239,255))
-        with self.assertRaises(ValueError): add_canvas(self.image,left=-1)
+        self.assertEqual(add_canvas(self.image,left=-1).tobytes(),self.image.crop((1,0,80,60)).tobytes())
+        with self.assertRaises(ValueError): add_canvas(self.image,left=-80)
 
     def test_selection_moving_and_resizing_clamp_to_image(self):
         box=(10,10,40,30)
@@ -189,3 +190,9 @@ class MenuToolTests(unittest.TestCase):
             self.assertIsNone(model.source_path)
             model.export_document(Path(directory)/'document.pdf')
             self.assertTrue((Path(directory)/'document.pdf').read_bytes().startswith(b'%PDF-'))
+
+    def test_clipboard_provider_offers_native_texture(self):
+        from tool_dialogs import image_clipboard_provider
+        from gi.repository import Gdk
+        provider=image_clipboard_provider(Image.new('RGBA',(4,3),'red'))
+        self.assertTrue(provider.ref_formats().contain_gtype(Gdk.Texture))

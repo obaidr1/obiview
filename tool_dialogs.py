@@ -4,11 +4,18 @@ import json
 import os
 from pathlib import Path
 from PIL import Image, ImageColor
-from gi.repository import Gtk, Gdk, Gio, Pango
+from gi.repository import Gtk, Gdk, Gio, Pango, GObject
 from image_model import ImageModel
 from image_tools import (EFFECTS, fine_rotate, red_eye, frame, effect, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
 from ui_theme import label, card, accessible
+
+
+def image_clipboard_provider(image):
+    from advanced_ui import pixbuf
+    texture=Gdk.Texture.new_for_pixbuf(pixbuf(image))
+    value=GObject.Value(); value.init(Gdk.Texture); value.set_object(texture)
+    return Gdk.ContentProvider.new_for_value(value)
 
 
 class ToolDialog(Gtk.Dialog):
@@ -144,11 +151,11 @@ class ImageToolsUI:
 
     def canvas_dialog(self):
         return ToolDialog(self,'Leinwand erweitern',[
-            ('left','Links (Pixel)',20,(0,10000,1)),('right','Rechts (Pixel)',20,(0,10000,1)),
-            ('top','Oben (Pixel)',20,(0,10000,1)),('bottom','Unten (Pixel)',20,(0,10000,1)),
+            ('left','Links (Pixel)',20,(-10000,10000,1)),('right','Rechts (Pixel)',20,(-10000,10000,1)),
+            ('top','Oben (Pixel)',20,(-10000,10000,1)),('bottom','Unten (Pixel)',20,(-10000,10000,1)),
             ('color','Farbe','#ffffff','color')],
             lambda v:self.edit(lambda m:m.replace(add_canvas(m.image,**v))),
-            'Erweitert jede Bildseite unabhängig, ohne die vorhandenen Bildpixel zu skalieren.')
+            'Jede Bildseite unabhängig ändern: positive Werte ergänzen Rand, negative schneiden ihn ab. Vorhandene Pixel werden nicht skaliert.')
 
     def red_eye_dialog(self):
         box = self.selection
@@ -267,9 +274,8 @@ class ImageToolsUI:
             def copied():
                 self.selection=box; self.copy_image()
             self.edit(lambda _m:None,after=copied); return
-        from advanced_ui import pixbuf
         image = self.model.image.crop(self.selection) if self.selection else self.model.image
-        self.get_clipboard().set_texture(Gdk.Texture.new_for_pixbuf(pixbuf(image)))
+        self.get_clipboard().set_content(image_clipboard_provider(image))
 
     def panorama_dialog(self):
         def chosen(paths):

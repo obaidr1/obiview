@@ -9,7 +9,7 @@ from ui_theme import card, label, accessible
 
 class ResizeDialog(Gtk.Dialog):
     def __init__(self,parent,on_apply):
-        super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=620)
+        super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=760)
         self.set_titlebar(Gtk.Box())
         parent.set_scrim(True)
         self.settings = ResizeSettings(*parent.model.image.size)
@@ -79,6 +79,7 @@ class ResizeDialog(Gtk.Dialog):
         self.resolution.append('none','Auflösung wählen …')
         for w,h in ((640,480),(800,600),(1024,768),(1280,720),(1920,1080),(3840,2160)):
             self.resolution.append(f'{w}x{h}',f'{w} × {h}')
+        self.resolution.append('screen','Bildschirmgröße')
         self.resolution.set_active_id('none')
         self.resolution.connect('changed',self.resolution_changed)
         grid.attach(Gtk.Label(label='Größenvorgabe',xalign=0),0,9,1,1)
@@ -146,7 +147,13 @@ class ResizeDialog(Gtk.Dialog):
     def resolution_changed(self,widget):
         ident = widget.get_active_id()
         if ident == 'none': return
-        width,height = map(int,ident.split('x'))
+        if ident=='screen':
+            parent=self.get_transient_for()
+            monitor=parent.get_display().get_monitor_at_surface(parent.get_surface())
+            geometry=monitor.get_geometry()
+            width,height=geometry.width,geometry.height
+        else:
+            width,height = map(int,ident.split('x'))
         if self.settings.locked:
             factor = min(width/self.settings.original[0],height/self.settings.original[1])
             self.settings.preset(factor*100)

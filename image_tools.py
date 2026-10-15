@@ -204,10 +204,10 @@ def panorama(images, vertical=False, gap=0, color='#ffffff'):
 
 def add_canvas(image, left=0, top=0, right=0, bottom=0, color='#ffffff'):
     borders = tuple(int(v) for v in (left,top,right,bottom))
-    if min(borders)<0:
-        raise ValueError('Leinwandränder müssen mindestens 0 Pixel groß sein.')
-    checked_size(image.width+borders[0]+borders[2],image.height+borders[1]+borders[3])
-    return ImageOps.expand(image,borders,ImageColor.getcolor(color,'RGBA'))
+    target = checked_size(image.width+borders[0]+borders[2],image.height+borders[1]+borders[3])
+    result = Image.new('RGBA',target,ImageColor.getcolor(color,'RGBA'))
+    result.paste(image,(borders[0],borders[1]))
+    return result
 
 
 def erase_selection(image, box, outside=False, color='#ffffff'):
