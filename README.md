@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.3.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.4.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -43,7 +43,7 @@ Das [Produktdokument](PRODUCT.md) beschreibt Zielgruppe, Bedienkonzept, Produktu
 | Desktop | Anwendungsmenü, eigenes Symbol, „Öffnen mit“, GTK-Druckdialog |
 | Automatisierung | CLI mit JSON-Ergebnis, Vorschau und Fehlerstatus |
 
-Die Druckanbindung ist implementiert; eine physische Druckausgabe wurde bislang nicht bestätigt. Auch die vollständige grafische Bedienprüfung steht noch aus. Details zum Teststand findest du unter [Entwicklung und Tests](#entwicklung-und-tests).
+Die Druckanbindung ist implementiert; eine physische Druckausgabe wurde bislang nicht bestätigt. Die zentralen grafischen Abläufe werden zusätzlich in einer GTK-Sitzung in GitHub Actions geprüft. Details zum Teststand findest du unter [Entwicklung und Tests](#entwicklung-und-tests).
 
 ## Installation
 
@@ -77,14 +77,14 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.3.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.4.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.3.0-linux.tar.gz
-cd Bildblick-0.3.0
+tar -xzf Bildblick-0.4.0-linux.tar.gz
+cd Bildblick-0.4.0
 ./install.sh
 ```
 
@@ -124,6 +124,19 @@ Nach einer Aktualisierung eine laufende Instanz schließen und Bildblick erneut 
 
 Zur Deinstallation die oben genannten Anwendungsdateien, den Starter, Menüeintrag und das Symbol entfernen. Exportprofile können separat aufbewahrt werden. Eigene Bilddateien liegen außerhalb der Installation.
 
+## Oberfläche und Bildanpassungen
+
+Bildblick verwendet eine helle, monochrome Oberfläche mit abgerundeten Karten und schwarzen Hauptaktionen. Die Bildfläche bleibt im Mittelpunkt. Unten befinden sich die Zoomsteuerung und die Dateinavigation; die rechte Bearbeitungsleiste lässt sich über **Bearbeiten** ausblenden.
+
+- **Looks:** Original, Film, Fade und Warm.
+- **Licht:** RGB-Histogramm, Helligkeit, Kontrast, Lichter und Schatten.
+- **Farbe:** Temperatur, Sättigung und Dynamik.
+- **Effekte:** Körnung, Vignette und Schärfe.
+
+Regler zeigen zunächst eine Vorschau. **Anwenden** übernimmt sie als rückgängig machbaren Bearbeitungsschritt; **Zurücksetzen** verwirft die Vorschau. Speichern und weitere Bildoperationen übernehmen offene Anpassungen vor ihrer Ausführung. Die Vorschau ist für schnelle Rückmeldung verkleinert; beim Anwenden wird das Bild in voller Auflösung verarbeitet. Das Histogramm basiert auf dem Vorschaubild und dient zur Orientierung.
+
+Das Menü oben rechts enthält weiterhin **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Tastenkürzel bleiben erhalten. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
+
 ## Erste Schritte
 
 1. **Bild öffnen:** `Strg+O` verwenden oder eine einzelne Datei ins Fenster ziehen.
@@ -160,7 +173,7 @@ Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, w
 - Breite und Höhe lassen sich in **Pixeln** oder **Prozent** eingeben.
 - Bei aktiviertem Seitenverhältnis passt die Änderung eines Feldes das andere an.
 - Prozentwerte beziehen sich auf die Bildgröße beim Öffnen des Dialogs.
-- Vorlagen bieten 25, 50, 75, 100, 150 und 200 Prozent.
+- Vorlagen bieten 25, 50, 100 und 200 Prozent; weitere Werte können direkt eingegeben werden.
 - Als Interpolation stehen Lanczos, bikubisch, bilinear und nächster Nachbar bereit.
 - Die Zielgröße und Megapixelzahl werden vor dem Anwenden angezeigt.
 
@@ -169,6 +182,12 @@ Die Größenänderung verändert den Bearbeitungsstand und kann rückgängig gem
 ## Speichern und Exportprofile
 
 Der Speicherdialog enthält Dateiname, Zielordner, Formatauswahl und passende Optionen. Der vorgeschlagene Name lautet `<name>-bearbeitet` im unterstützten Quellformat; andernfalls wird PNG verwendet. Die Dateiendung wird an das ausgewählte Format angepasst.
+
+JPG, PNG und WebP sind als direkte Auswahlkarten sichtbar. **Weitere Formate** enthält die übrigen Ausgabeformate. Die Größenanzeige wird im Hintergrund durch tatsächliches Kodieren mit den gewählten Einstellungen berechnet; sie ist keine pauschale Schätzung. Bei großen Dateien kann das etwas dauern.
+
+**Auflösung** bietet 50 %, 100 % und eigene Pixelmaße bei festem Seitenverhältnis. Ein verkleinerter Export verändert weder die Pixelmaße noch den Speicherstatus der Arbeitsdatei im Editor. Diese Größenwahl gilt für den aktuellen Export; ausdrücklich gespeicherte Profile können eigene Ausgabemaße enthalten.
+
+Unter **Speicherort** werden Dateiname und Zielordner geändert. **Metadaten entfernen** schaltet EXIF, ICC, Kommentar und XMP gemeinsam aus. Einzelne Metadaten, formatabhängige Einstellungen und benannte Profile stehen unter **Erweiterte Optionen & Profile**.
 
 ### Formatoptionen
 
@@ -306,7 +325,7 @@ Aktuelle Grenzen:
 /usr/bin/python3 -m unittest discover -s tests -v
 ```
 
-Auf dem Referenzsystem bestehen **57 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
+Auf dem Referenzsystem bestehen **62 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
 
 ### Grafischer Integrationstest
 
@@ -315,7 +334,7 @@ PYTHONPATH=. GDK_BACKEND=x11 GSK_RENDERER=cairo xvfb-run -a \
   -s '-screen 0 1280x900x24' /usr/bin/python3 tests/ui_smoke.py
 ```
 
-Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er mit Status `77`, nicht mit einem erfolgreichen Test. In der bisherigen eingeschränkten Entwicklungsumgebung war die Display-Verbindung blockiert. Ein bestandener Modelltest ersetzt deshalb keine bestätigte Sichtprüfung der Oberfläche.
+Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er mit Status `77`, nicht mit einem erfolgreichen Test. Die lokale Entwicklungsumgebung erlaubt keinen Display-Zugriff. GitHub Actions führt den Test deshalb mit Xvfb und Openbox aus und stellt Screenshots als Workflow-Artefakt bereit. Getestet werden auch Vorschau, Zurücksetzen, verkleinerter Export und ein kompaktes Fenster. Eine vollständige Prüfung mit Screenreader und realem Drucker steht weiterhin aus.
 
 ### Paket bauen
 
@@ -323,7 +342,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.3.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.4.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag

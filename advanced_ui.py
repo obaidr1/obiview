@@ -194,6 +194,7 @@ class AdvancedFeatures:
                 after()
         def failed(error):
             self.set_busy(False)
+            self.refresh(True)
             self.message('Bearbeitung fehlgeschlagen',str(error))
         pending = self.recipe() if self.has_preview() else None
         def work():
@@ -375,6 +376,7 @@ class AdvancedFeatures:
     def form(self, title, fields, callback):
         self.stop_slideshow()
         dialog = Gtk.Dialog(title=title,transient_for=self,modal=True)
+        dialog.set_titlebar(Gtk.Box())
         dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
         dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT).add_css_class('primary')
         grid = Gtk.Grid(column_spacing=12,row_spacing=10,margin_top=18,margin_bottom=18,margin_start=18,margin_end=18)

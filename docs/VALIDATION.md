@@ -1,10 +1,12 @@
-# Prüfstand von Bildblick 0.3.0
+# Prüfstand von Bildblick 0.4.0
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 57 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 62 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
+- Alle neuen Regler und Looks: veränderte Pixel, erhaltenes Alpha, deterministische Körnung.
+- Exportauflösung für PNG, JPEG, WebP und GIF ohne Änderung der Arbeitsdatei.
 - Menüaktionen und Weiterleitung von `Strg+R` ohne Display.
 - Exportdateien mit überprüften Pixelmaßen und Decoder-Roundtrips.
 - JPEG-Qualität, progressive Speicherung, Farbunterabtastung und Graustufen.
@@ -23,8 +25,20 @@ Die Paketprüfung umfasst Archiv-Prüfsummen, eine Installation in ein temporär
 
 Das Symbol besitzt einen transparenten Hintergrund. Eine kleine gerenderte Vorschau wurde geprüft. Der Installer installiert das Symbol und aktualisiert den Icon-Cache, wenn das entsprechende Systemprogramm verfügbar ist.
 
+## Grafische Integration
+
+Die GTK-Prüfung läuft erfolgreich unter Fedora 44 mit Xvfb, Openbox und dem Cairo-Renderer
+in GitHub Actions. Sie prüft Laden, Zoom, Drehen, Zuschnitt, Rückgängig/Wiederholen,
+Datei- und Seitennavigation, Diashow, Vollbild, Menüaktionen, Strg+R, Speicherdialog,
+Vorschau, Zurücksetzen, Übernahme von Looks und verkleinerten Export.
+
+Die Screenshots von Editor, Export, kompaktem Fenster und Größenänderung wurden geprüft.
+Die rechte Leiste wurde anhand dieser Prüfung auf eine feste schmale Breite begrenzt.
+Prüfungen sichern die Fensterbreite bei 1024 × 768 und die Leistenbreite unter 400 Pixeln.
+
+Lokal bleibt der Desktop-Zugriff eingeschränkt. Ohne Display endet `tests/ui_smoke.py`
+weiterhin mit Exit-Code 77 statt einen Erfolg vorzutäuschen.
+
 ## Noch nicht bestätigt
 
-Die grafische Integration konnte in der bisherigen Entwicklungsumgebung wegen gesperrter Display-Verbindungen nicht ausgeführt werden. `tests/ui_smoke.py` beendet sich dann mit Exit-Code 77. Dieser Zustand ist ausdrücklich kein bestandener GUI-Test.
-
-Noch ausstehend sind die Sichtprüfung auf einem normalen Desktop, vollständige Maus-/Tastaturabläufe, Screenreader- und Skalierungstests sowie eine reale Druckausgabe. Die Veröffentlichung ist deshalb als frühe Vorabversion vorgesehen.
+Noch ausstehend sind eine Prüfung in der konkreten Wayland-Sitzung des Nutzers, vollständige Maus-/Tastaturabläufe, Screenreader- und HiDPI-Tests sowie eine reale Druckausgabe. Die Veröffentlichung ist deshalb als frühe Vorabversion vorgesehen.

@@ -66,7 +66,7 @@ class EditorUI:
                 self.adjust_sliders[key] = slider
             self.inspector.append(section)
         self.preview_note = label('Anpassungen als Vorschau', 'small muted', wrap=True)
-        self.inspector.append(self.preview_note)
+
         row = Gtk.Box(spacing=8, homogeneous=True)
         self.reset_adjustments = Gtk.Button(label='Zurücksetzen')
         self.reset_adjustments.connect('clicked',lambda *_:self.reset_preview())
@@ -74,7 +74,7 @@ class EditorUI:
         self.apply_adjustments.connect('clicked',lambda *_:self.edit(lambda _m:None))
         row.append(self.reset_adjustments)
         row.append(self.apply_adjustments)
-        self.inspector.append(row)
+        footer_row = row
         self.inspector_scroll = Gtk.ScrolledWindow(vexpand=True)
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         self.inspector_scroll.set_hexpand(False)
@@ -86,7 +86,15 @@ class EditorUI:
         previous = self.pane.get_prev_sibling()
         parent.remove(self.pane)
         workspace.append(self.pane)
-        workspace.append(self.inspector_scroll)
+        self.inspector_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
+        self.inspector_panel.set_hexpand(False)
+        self.inspector_panel.append(self.inspector_scroll)
+        footer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8,
+                         margin_start=12,margin_end=20,margin_bottom=12)
+        footer.append(self.preview_note)
+        footer.append(footer_row)
+        self.inspector_panel.append(footer)
+        workspace.append(self.inspector_panel)
         parent.insert_child_after(workspace,previous)
         self.workspace = workspace
 
@@ -171,7 +179,7 @@ class EditorUI:
         if not hasattr(self,'inspector'):
             return
         loaded = self.model.image is not None
-        self.inspector.set_sensitive(loaded and not self.busy)
+        self.inspector_panel.set_sensitive(loaded and not self.busy)
         pending = self.has_preview()
         self.apply_adjustments.set_sensitive(pending)
         if pending and not self.busy:

@@ -17,6 +17,7 @@ class SaveAsDialog(Gtk.Dialog):
     def __init__(self, parent, settings, on_save):
         super().__init__(title='Bild exportieren', transient_for=parent, modal=True,
                          default_width=540, default_height=800)
+        self.set_titlebar(Gtk.Box())
         parent.set_scrim(True)
         self.on_save = on_save
         self.profiles = SaveProfiles()
@@ -34,6 +35,11 @@ class SaveAsDialog(Gtk.Dialog):
         self.save_button = self.add_button('Bild speichern', Gtk.ResponseType.ACCEPT)
         self.save_button.add_css_class('primary')
         self.set_default_response(Gtk.ResponseType.ACCEPT)
+        actions = self.save_button.get_parent()
+        actions.set_margin_start(24)
+        actions.set_margin_end(24)
+        actions.set_margin_top(12)
+        actions.set_margin_bottom(20)
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16,
                        margin_top=8, margin_bottom=8, margin_start=24, margin_end=24)
         scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=True)
@@ -91,6 +97,8 @@ class SaveAsDialog(Gtk.Dialog):
         formats.append(more)
         body.append(formats)
         self.name = Gtk.Entry(text=path.stem+'-bearbeitet'+FORMAT_CHOICES[fmt][0],hexpand=True,activates_default=True)
+        name_label.set_text(self.name.get_text())
+        self.name.connect('changed',lambda entry:name_label.set_text(entry.get_text()))
         self.folder = Gtk.Entry(text=str(path.parent),hexpand=True,activates_default=True)
         self.quality_row = card('Qualität')
         self.quality = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL,1,100,1)

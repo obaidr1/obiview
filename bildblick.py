@@ -14,6 +14,7 @@ from save_dialog import SaveAsDialog
 from editor_ui import EditorUI
 from ui_theme import install_theme, label, icon_button
 from copy import copy
+from dataclasses import replace
 
 
 class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
@@ -84,7 +85,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         toolbar.append(self.redo_button)
         toolbar.append(Gtk.Box(hexpand=True))
         self.tools_toggle = Gtk.ToggleButton(label='Bearbeiten',active=True)
-        self.tools_toggle.connect('toggled',lambda b:self.inspector_scroll.set_visible(b.get_active()) if hasattr(self,'inspector_scroll') else None)
+        self.tools_toggle.connect('toggled',lambda b:self.inspector_panel.set_visible(b.get_active()) if hasattr(self,'inspector_panel') else None)
         toolbar.append(self.tools_toggle)
         self.scroll = Gtk.ScrolledWindow(hexpand=True, vexpand=True)
         self.canvas_overlay = Gtk.Overlay(hexpand=True,vexpand=True)
@@ -200,7 +201,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
                     dialog.present()
                     return
             def save(path, settings):
-                self.save_settings = settings
+                self.save_settings = replace(settings,output_width=0,output_height=0)
                 self.export_quality = settings.quality
                 self.request_save(path, settings=settings)
             dialog = SaveAsDialog(self, self.save_settings, save)

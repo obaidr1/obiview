@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.3.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.4.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -38,7 +38,7 @@ Die wesentlichen Bildoperationen finden auf dem eigenen Rechner statt. Es gibt k
 
 ### Aktionen sichtbar und per Tastatur erreichbar machen
 
-Die Menüleiste gliedert sich in **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Häufige Aktionen besitzen sichtbare Schaltflächen oder Tastenkürzel. Größe ändern ist sowohl über das Bild-Menü und einen direkten Button als auch über `Strg+R` erreichbar.
+Das Anwendungsmenü oben rechts gliedert sich in **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Häufige Aktionen besitzen sichtbare Schaltflächen oder Tastenkürzel. Größe ändern ist sowohl über das Bild-Menü und einen direkten Button als auch über `Strg+R` erreichbar.
 
 ### Anzeige, Bearbeitung und Export unterscheiden
 
@@ -94,7 +94,15 @@ Der Kopiermodus erstellt bitgenaue Kopien mit neuen Namen. Die CLI verwendet den
 
 **Erwartetes Ergebnis:** Wiederkehrende Konvertierungen können mit einer einheitlichen Konfiguration ausgeführt werden, ohne die Quelldateien umzubenennen oder zu überschreiben.
 
-## Umfang von Version 0.3.0
+## Bildanpassungen und Export in Version 0.4.0
+
+Die Bearbeitungsleiste enthält vier Looks und zehn Regler für Licht, Farbe und Effekte. Änderungen werden zunächst als Vorschau gezeigt. Eine ausdrückliche Übernahme erzeugt einen Bearbeitungsschritt in der Historie. Zurücksetzen verwirft nur offene Anpassungen. Vor dem Speichern oder weiteren Bildoperationen werden ausstehende Anpassungen in voller Auflösung übernommen. Der Bildwechsel berücksichtigt auch ungespeicherte Vorschauen.
+
+Der Exportdialog stellt JPG, PNG und WebP direkt dar und ordnet weitere Formate, Spezialoptionen und Profile in aufklappbare Bereiche. Qualität, Zielauflösung und die gemeinsame Metadatenentfernung sind unmittelbar zugänglich. Die Dateigrößenanzeige entsteht durch echtes Kodieren im Hintergrund. Ein Export mit anderen Pixelmaßen erhält die Arbeitsdatei unverändert.
+
+Die Gestaltung ist in [docs/DESIGN.md](docs/DESIGN.md) dokumentiert. Ein separates dunkles Erscheinungsbild gehört derzeit nicht zum Umfang.
+
+## Umfang von Version 0.4.0
 
 ### Anzeige und Navigation
 
@@ -155,7 +163,7 @@ Benutzerdaten beschränken sich auf ausdrücklich gespeicherte Bilder und Export
 
 ## Gestaltung und Sprache
 
-Die Oberfläche folgt den GTK-Konventionen des Linux-Desktops. Funktionsbezeichnungen beschreiben die Aktion: „Größe ändern“, „Speichern unter“ oder „Alle Seiten exportieren“. Technische Begriffe werden dort verwendet, wo sie eine Exportentscheidung unterstützen, etwa bei Interpolation oder Farbunterabtastung.
+Die Oberfläche nutzt native GTK-Bedienelemente in einem hellen, monochromen Erscheinungsbild: weiche Grautöne, abgerundete Karten, dünne Regler und schwarze Hauptaktionen. Eine breite Bildfläche steht einer schmalen, ausblendbaren Bearbeitungsleiste gegenüber. Die unteren Zoom- und Navigationssteuerungen lassen die Bildfläche frei. Funktionsbezeichnungen beschreiben die Aktion: „Größe ändern“, „Speichern unter“ oder „Alle Seiten exportieren“. Technische Begriffe werden dort verwendet, wo sie eine Exportentscheidung unterstützen, etwa bei Interpolation oder Farbunterabtastung.
 
 Der Eisvogel in Nachtblau und Orange ist das zentrale Erkennungszeichen. Das Motiv soll Aufmerksamkeit und genaues Hinsehen vermitteln. Das Symbol wird als transparentes Rasterasset geliefert und für das Desktop-Thema in eine eigenständig skalierbare SVG-Datei eingebettet.
 

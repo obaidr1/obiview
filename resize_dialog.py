@@ -9,6 +9,7 @@ from ui_theme import card, label, accessible
 class ResizeDialog(Gtk.Dialog):
     def __init__(self,parent,on_apply):
         super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=620)
+        self.set_titlebar(Gtk.Box())
         parent.set_scrim(True)
         self.settings = ResizeSettings(*parent.model.image.size)
         self.on_apply = on_apply
@@ -18,6 +19,11 @@ class ResizeDialog(Gtk.Dialog):
         self.apply_button = self.add_button('Größe ändern',Gtk.ResponseType.ACCEPT)
         self.apply_button.add_css_class('suggested-action')
         self.set_default_response(Gtk.ResponseType.ACCEPT)
+        actions = self.apply_button.get_parent()
+        actions.set_margin_start(24)
+        actions.set_margin_end(24)
+        actions.set_margin_top(12)
+        actions.set_margin_bottom(20)
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
                        margin_top=8,margin_bottom=16,margin_start=24,margin_end=24)
         body.append(label('Größe ändern','dialog-title'))
