@@ -217,7 +217,7 @@ def tick(window):
             assert dialog.settings.dimensions()==(300,188)
             dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 23:
-            assert window.model.image.size==(300,188) and window.model.dpi==300
+            assert window.model.image.size==(300,188) and window.model.dpi==300, (window.model.image.size,window.model.dpi)
             window.undo()
             dialog=window.selection_dialog()
             dialog.widgets['width'].set_value(320)

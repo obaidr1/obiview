@@ -131,3 +131,61 @@ class ImageToolsTests(unittest.TestCase):
         self.assertEqual(len(model.history),1)
         model.undo(); self.assertEqual(model.image.tobytes(),self.image.tobytes())
         self.assertFalse(model.dirty)
+
+class MenuToolTests(unittest.TestCase):
+    def test_cut_inside_and_outside(self):
+        from image_tools import erase_selection
+        image=Image.new('RGBA',(10,10),'red')
+        result=erase_selection(image,(2,2,8,8))
+        self.assertEqual(result.getpixel((3,3)),(255,255,255,255))
+        self.assertEqual(result.getpixel((0,0)),(255,0,0,255))
+        result=erase_selection(image,(2,2,8,8),True)
+        self.assertEqual(result.getpixel((3,3)),(255,0,0,255))
+        self.assertEqual(result.getpixel((0,0)),(255,255,255,255))
+
+    def test_auto_crop_transparent_and_solid(self):
+        from image_tools import auto_crop
+        for background in ('white',(0,0,0,0)):
+            image=Image.new('RGBA',(20,20),background)
+            image.paste('red',(4,3,14,13))
+            self.assertEqual(auto_crop(image).size,(10,10))
+        with self.assertRaises(ValueError): auto_crop(Image.new('RGBA',(10,10),'white'))
+
+    def test_palette_and_channel_swap(self):
+        from image_tools import reduce_colors,swap_channels
+        image=Image.new('RGBA',(16,16))
+        image.putdata([(x*16,y*16,30,100) for y in range(16) for x in range(16)])
+        result=reduce_colors(image,16,False)
+        self.assertLessEqual(len(result.convert('RGB').getcolors(256)),16)
+        self.assertEqual(result.getchannel('A').tobytes(),image.getchannel('A').tobytes())
+        self.assertEqual(swap_channels(image,'BGR').getpixel((1,2)),(30,32,16,100))
+
+    def test_paint_strokes_preserve_source_and_draw_shapes(self):
+        from paint_dialog import paint_strokes
+        image=Image.new('RGBA',(100,80),'white')
+        for kind in ('pen','line','arrow','rectangle','ellipse'):
+            result=paint_strokes(image,[(kind,[(10,10),(60,50)],'#ff0000',4)])
+            self.assertNotEqual(result.tobytes(),image.tobytes())
+            self.assertEqual(result.getpixel((0,0)),(255,255,255,255))
+        self.assertEqual(image.getpixel((10,10)),(255,255,255,255))
+
+    def test_shortcuts_crop_and_redo_are_distinct(self):
+        from unittest.mock import Mock
+        from advanced_ui import AdvancedFeatures
+        from bildblick import Gdk
+        window=Mock()
+        AdvancedFeatures.extra_key(window,Gdk.KEY_y,Gdk.ModifierType.CONTROL_MASK)
+        window.apply_crop.assert_called_once_with(); window.redo.assert_not_called()
+        AdvancedFeatures.extra_key(window,Gdk.KEY_z,Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK)
+        window.redo.assert_called_once_with()
+
+    def test_reopened_new_document_keeps_save_state(self):
+        model=ImageModel(); model.image=Image.new('RGBA',(8,6),'red')
+        model.revision=1; model.next_revision=2
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'Bild mit Leerzeichen.png'
+            model.save(path)
+            self.assertFalse(model.dirty)
+            self.assertIsNone(model.source_path)
+            model.export_document(Path(directory)/'document.pdf')
+            self.assertTrue((Path(directory)/'document.pdf').read_bytes().startswith(b'%PDF-'))

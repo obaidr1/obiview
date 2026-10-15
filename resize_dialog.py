@@ -103,6 +103,9 @@ class ResizeDialog(Gtk.Dialog):
         value = widget.get_value()
         if unit in ('cm','inch'):
             value = to_pixels(value,unit,self.dpi.get_value())
+        pixels = max(1,round(value*self.settings.original[0 if axis=='width' else 1]/100)) if self.percent else max(1,round(value))
+        if pixels == getattr(self.settings,axis):
+            return
         self.settings.set_dimension(axis,value,self.percent)
         self.sync_fields()
 
