@@ -1,4 +1,4 @@
-# Prüfstand von Bildblick 0.5.0
+# Prüfstand von Bildblick 0.5.1
 
 ## Automatisch geprüft
 
@@ -40,8 +40,13 @@ Zusätzlich werden cm-/DPI-Resize, unveränderte Pixel beim Kopieren einer Auswa
 Einfügen/Speichern ohne Quelldatei, Rote Augen, Rahmen, freie Drehung, Text,
 Gamma/RGB, dauerhafte Ansichtsoptionen, PDF-Druck, Dateiumbenennung, Palette,
 Zeichnen und die getrennten Kürzel für Zuschnitt und Redo geprüft.
+Der Effekte-Dialog wird mit allen zehn direkten Schaltflächen, passenden Reglern,
+Intensität, Originalvergleich, Einstellungswechsel, Zurücksetzen, Abbrechen und
+Anwenden mit genau einem Undo-Schritt geprüft. Verspätete Vorschau-Ergebnisse
+werden vor und nach dem Schließen simuliert. Alle Effektregler müssen in der
+Standardgröße ohne Scrollen sichtbar sein.
 
-Die Screenshots von Editor, Export, kompaktem Fenster und Größenänderung wurden geprüft.
+Die Screenshots von Editor, Effekten, Export, kompaktem Fenster und Größenänderung wurden geprüft.
 Die GUI-Prüfung verlangt eine Startgröße von exakt 720 × 640 Pixeln, eine sichtbare
 Menüleiste und eine Bildfläche über nahezu die volle Fensterbreite. Sie öffnet und schließt
 Bildanpassungen und Vorschaubilder als separate Fenster.

@@ -1,4 +1,4 @@
-Bildblick 0.5.0 – Linux-App
+Bildblick 0.5.1 – Linux-App
 =========================
 
 Installation für dein Benutzerkonto:
