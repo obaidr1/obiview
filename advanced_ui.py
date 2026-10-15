@@ -12,7 +12,7 @@ from resize_dialog import ResizeDialog
 from save_options import SaveSettings
 from dataclasses import replace
 from adjustments import adjusted
-from ui_theme import icon_button
+from ui_theme import icon_button, label as ui_label
 
 
 def pixbuf(image):
@@ -378,7 +378,14 @@ class AdvancedFeatures:
         dialog = Gtk.Dialog(title=title,transient_for=self,modal=True)
         dialog.set_titlebar(Gtk.Box())
         dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
-        dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT).add_css_class('primary')
+        accept = dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT)
+        accept.add_css_class('primary')
+        actions = accept.get_parent()
+        actions.set_margin_start(18)
+        actions.set_margin_end(18)
+        actions.set_margin_bottom(18)
+        dialog.get_content_area().append(ui_label(title,'dialog-title',margin_start=18,
+                                                   margin_end=18,margin_top=16))
         grid = Gtk.Grid(column_spacing=12,row_spacing=10,margin_top=18,margin_bottom=18,margin_start=18,margin_end=18)
         widgets = {}
         for row,(key,label,initial,kind) in enumerate(fields):

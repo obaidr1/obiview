@@ -40,7 +40,7 @@ class SaveAsDialog(Gtk.Dialog):
         actions.set_margin_end(24)
         actions.set_margin_top(12)
         actions.set_margin_bottom(20)
-        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16,
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12,
                        margin_top=8, margin_bottom=8, margin_start=24, margin_end=24)
         scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=True)
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)

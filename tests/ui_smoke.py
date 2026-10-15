@@ -190,6 +190,11 @@ def tick(window):
         elif step == 20:
             screenshot('resize')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.adjust_dialog()
+        elif step == 21:
+            screenshot('adjust')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            assert not window.dialogs
             print('PASS: GTK image operations/navigation/slideshow/fullscreen/menu/resize/Ctrl+R/save dialog + screenshot')
             window.cleanup()
             app.quit()
