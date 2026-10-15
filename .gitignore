@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+dist/
+analysis/
+versions/
+tests/window.png
+*.log
+*.tmp
+.DS_Store
