@@ -1,0 +1,55 @@
+name: Verify and publish Bildblick
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bildblick-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Install test and packaging dependencies
+        run: >-
+          dnf -y install git gh tar gzip python3 python3-gobject python3-cairo
+          python3-pillow gtk4 ImageMagick poppler-utils ffmpeg-free util-linux
+          desktop-file-utils
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify core and decoder behavior
+        run: /usr/bin/python3 -m unittest discover -s tests -v
+      - name: Check syntax and desktop entry
+        run: |
+          /usr/bin/python3 -m compileall -q -x '/\.git/' .
+          desktop-file-validate bildblick.desktop
+      - name: Build installable package
+        run: /usr/bin/python3 packaging/build.py
+      - name: Publish versioned prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          tag=v0.3.0
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; its tag and assets stay unchanged."
+          else
+            gh release create "$tag" \
+              dist/Bildblick-0.3.0-linux.tar.gz \
+              dist/Bildblick-0.3.0-linux.tar.gz.sha256 \
+              --target "$RELEASE_COMMIT" --prerelease \
+              --title 'Bildblick 0.3.0' \
+              --notes-file docs/release-0.3.0.md
+          fi

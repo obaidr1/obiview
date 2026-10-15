@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Bildblick
+Comment=Bilder anzeigen, drehen, zuschneiden und speichern
+Exec=bildblick %f
+Icon=local.bildblick.Viewer
+Terminal=false
+Categories=Graphics;Viewer;
+MimeType=image/png;image/jpeg;image/webp;image/bmp;image/tiff;image/gif;
+StartupNotify=true

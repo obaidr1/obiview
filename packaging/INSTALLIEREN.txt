@@ -1,0 +1,37 @@
+Bildblick 0.3.0 – Linux-App
+=========================
+
+Installation für dein Benutzerkonto:
+1. Das Archiv entpacken.
+2. Im entpackten Ordner install.sh ausführen (im Terminal: ./install.sh).
+3. Im Anwendungsmenü nach „Bildblick“ suchen und die App öffnen.
+
+Auf dem ursprünglichen Fedora-Rechner ist die App bereits installiert.
+Sie lässt sich dort direkt über das Anwendungsmenü starten. Bilder können über
+„Öffnen mit → Bildblick“ geöffnet werden. Der Standard-Bildbetrachter wird
+durch diese Installation nicht geändert.
+
+Installation ohne sudo und ohne Downloads:
+  Programm: ~/.local/share/bildblick/app/
+  Starter: ~/.local/bin/bildblick
+  Menüeintrag: ~/.local/share/applications/local.bildblick.Viewer.desktop
+  Symbol: ~/.local/share/icons/hicolor/scalable/apps/local.bildblick.Viewer.svg
+Bei gesetztem XDG_DATA_HOME wird dieser Datenordner verwendet.
+
+Nach erfolgreicher Installation kann der entpackte Paketordner entfernt werden.
+Eine ältere laufende Version schließen und die installierte App neu öffnen.
+Ein erneutes Ausführen von install.sh aktualisiert die App; Speicherprofile
+unter ~/.config/bildblick/ bleiben erhalten.
+
+Systemvoraussetzungen:
+Linux mit grafischer GTK-4-Sitzung, /usr/bin/python3, PyGObject, Pycairo und
+Pillow ab Version 12. Geprüft auf Fedora 44. Dort sind die relevanten Pakete:
+python3, python3-gobject, python3-cairo, python3-pillow, gtk4.
+Optionale Zusatzdecoder: ImageMagick, poppler-utils, ffmpeg-free, util-linux.
+Das Paket enthält den Anwendungscode und das Symbol, keine gebündelte
+Python-/GTK-Laufzeit. Es ist kein eigenständiges AppImage.
+
+Bedienung und Funktionsgrenzen stehen in app/README.md.
+Produktbeschreibung und Planung: app/PRODUCT.md.
+Lizenz: MIT, siehe LICENSE. Systembibliotheken und optionale Decoder werden
+nicht gebündelt und unterliegen ihren eigenen Lizenzen.
