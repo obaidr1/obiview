@@ -85,6 +85,7 @@ class EffectsDialog(Gtk.Dialog):
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.set_size_request(340, -1)
         scroll.set_child(controls)
+        self.controls_scroll = scroll
         content.append(scroll)
         body.append(content)
         self.get_content_area().append(body)

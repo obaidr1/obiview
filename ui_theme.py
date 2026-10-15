@@ -31,7 +31,7 @@ button:focus-visible, entry:focus-within, spinbutton:focus-within, scale:focus-v
 .card { background: @card; border: 1px solid white; border-radius: 20px; padding: 16px; }
 .inspector button { padding: 2px 8px; min-height: 28px; }
 .inspector { padding: 8px 16px 16px 8px; }
-.effect-choice { border: 1px solid @line; border-radius: 12px; padding: 5px 10px; min-height: 36px; }
+.effect-choice { border: 1px solid @line; border-radius: 12px; padding: 4px 10px; min-height: 30px; }
 .effect-choice:checked { border-color: @ink; }
 .tool-strip { padding: 4px 16px; }
 .workspace { background: @surface; }
