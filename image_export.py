@@ -12,6 +12,9 @@ def flattened(image):
 
 def write_image(model, filename, fmt, settings):
     image = model.image
+    if settings.output_width:
+        image = image.resize((settings.output_width,settings.output_height),Image.Resampling.LANCZOS)
+    rgba = image
     opts = {}
     if fmt in ('JPEG', 'BMP', 'PDF', 'PPM'):
         image = flattened(image)
@@ -43,8 +46,8 @@ def write_image(model, filename, fmt, settings):
         opts['interlace'] = settings.gif_interlace
         # Reserve palette index 255 for binary transparency; flatten partial alpha
         # over white because GIF cannot represent partially transparent pixels.
-        alpha = model.image.getchannel('A')
-        image = flattened(model.image).quantize(colors=255 if settings.gif_transparency else 256)
+        alpha = rgba.getchannel('A')
+        image = flattened(rgba).quantize(colors=255 if settings.gif_transparency else 256)
         if settings.gif_transparency and alpha.getextrema()[0] < 128:
             image.paste(255, mask=alpha.point(lambda a: 255 if a < 128 else 0))
             opts.update(transparency=255, optimize=False)

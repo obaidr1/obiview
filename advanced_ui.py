@@ -11,6 +11,8 @@ from menus import build_menus, RESIZE_ACCELERATOR
 from resize_dialog import ResizeDialog
 from save_options import SaveSettings
 from dataclasses import replace
+from adjustments import adjusted
+from ui_theme import icon_button
 
 
 def pixbuf(image):
@@ -43,26 +45,34 @@ class AdvancedFeatures:
         self.get_application().set_accels_for_action('win.resize',[RESIZE_ACCELERATOR])
         self.get_application().set_accels_for_action('win.save-as',['<Primary>s','<Primary><Shift>s'])
         nav = Gtk.Box(spacing=6, margin_start=12, margin_end=12, margin_top=6)
-        self.previous = self.button(nav,'◀',lambda:self.navigate(-1),'Vorheriges Bild (Pfeil links)')
-        self.next_button = self.button(nav,'▶',lambda:self.navigate(1),'Nächstes Bild (Pfeil rechts)')
-        self.position_label = Gtk.Label(label='Kein Ordner', hexpand=True, xalign=0)
+        self.previous = icon_button('go-previous-symbolic','Vorheriges Bild (Pfeil links)',lambda:self.navigate(-1))
+        self.next_button = icon_button('go-next-symbolic','Nächstes Bild (Pfeil rechts)',lambda:self.navigate(1))
+        nav.append(self.previous)
+        nav.append(self.next_button)
+        self.position_label = Gtk.Label(label='Kein Ordner', xalign=0, max_width_chars=14)
         self.position_label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
         nav.append(self.position_label)
-        self.resize_button = Gtk.Button(label='Größe ändern …',tooltip_text='Bildgröße ändern (Strg+R)')
+        self.resize_button = Gtk.Button(label='Größe',tooltip_text='Bildgröße ändern (Strg+R)')
         self.resize_button.set_action_name('win.resize')
-        nav.append(self.resize_button)
+        toolbar.insert_child_after(self.resize_button,self.crop_button)
         self.page_previous = self.button(nav,'Seite −',lambda:self.change_frame(-1),'Vorherige Seite (Bild auf)')
         self.page_next = self.button(nav,'Seite +',lambda:self.change_frame(1),'Nächste Seite (Bild ab)')
         self.slide_button = self.button(nav,'Diashow',self.toggle_slideshow,'Start / Stopp (F5)')
         self.spinner = Gtk.Spinner()
         nav.append(self.spinner)
-        root.prepend(nav)
+        self.menu_bar.set_visible(False)
+        menu_button = Gtk.MenuButton(icon_name='open-menu-symbolic',tooltip_text='Alle Funktionen')
+        menu_button.set_menu_model(self.menu_model)
+        header.pack_end(menu_button)
+        # Keep the complete menu model and actions available in the application menu.
         root.prepend(self.menu_bar)
-        root.remove(self.scroll)
+        toolbar.prepend(nav)
+        root.remove(self.canvas_overlay)
         self.pane = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL, wide_handle=True)
         self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=200)
         self.search = Gtk.SearchEntry(placeholder_text='Dateinamen filtern …')
         self.search.connect('search-changed',lambda *_:self.rebuild_thumbnails())
+        self.sidebar.add_css_class('sidebar')
         self.sidebar.append(self.search)
         thumb_scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=False)
         self.thumbnails = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, homogeneous=True,
@@ -71,7 +81,7 @@ class AdvancedFeatures:
         self.sidebar.append(thumb_scroll)
         self.more_thumbs = self.button(self.sidebar,'Weitere Vorschaubilder',self.more_thumbnails,'Weitere 100 Dateien anzeigen')
         self.pane.set_start_child(self.sidebar)
-        self.pane.set_end_child(self.scroll)
+        self.pane.set_end_child(self.canvas_overlay)
         self.pane.set_resize_start_child(False)
         self.pane.set_shrink_start_child(False)
         self.pane.set_position(210)
@@ -80,6 +90,10 @@ class AdvancedFeatures:
 
     def cleanup(self, *_):
         self.closed = True
+        self.preview_generation = getattr(self,'preview_generation',0)+1
+        if getattr(self,'preview_timer',0):
+            GLib.source_remove(self.preview_timer)
+            self.preview_timer = 0
         self.stop_slideshow()
         self.thumb_generation += 1
         if self.batch_cancel:
@@ -120,6 +134,9 @@ class AdvancedFeatures:
                 button.set_sensitive(False)
         for button in (self.previous,self.next_button):
             button.set_sensitive(bool(self.folder_files) and not self.busy)
+        self.page_previous.set_visible(loaded and self.model.multiframe)
+        self.page_next.set_visible(loaded and self.model.multiframe)
+        self.redo_button.set_sensitive(not self.busy and bool(self.model.future))
         self.page_previous.set_sensitive(loaded and self.model.frame_index>0 and not self.busy)
         self.page_next.set_sensitive(loaded and self.model.frame_index+1<self.model.frame_count and not self.busy)
         self.slide_button.set_sensitive(loaded and not self.busy)
@@ -150,6 +167,7 @@ class AdvancedFeatures:
         self.submit(work,done,failed)
 
     def adopt_model(self, model):
+        self.reset_preview()
         self.model = model
         self.fit = True
         self.selection = None
@@ -173,7 +191,13 @@ class AdvancedFeatures:
         def failed(error):
             self.set_busy(False)
             self.message('Bearbeitung fehlgeschlagen',str(error))
-        self.submit(lambda:operation(self.model),done,failed)
+        pending = self.recipe() if self.has_preview() else None
+        def work():
+            if pending:
+                self.model.replace(adjusted(self.model.image,*pending))
+            operation(self.model)
+        self.reset_preview()
+        self.submit(work,done,failed)
 
     def choose(self, title, callback, folder=False, multiple=False):
         self.stop_slideshow()
@@ -348,7 +372,7 @@ class AdvancedFeatures:
         self.stop_slideshow()
         dialog = Gtk.Dialog(title=title,transient_for=self,modal=True)
         dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
-        dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT)
+        dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT).add_css_class('primary')
         grid = Gtk.Grid(column_spacing=12,row_spacing=10,margin_top=18,margin_bottom=18,margin_start=18,margin_end=18)
         widgets = {}
         for row,(key,label,initial,kind) in enumerate(fields):
@@ -430,6 +454,7 @@ class AdvancedFeatures:
 
     def redo(self):
         if not self.busy:
+            self.reset_preview()
             self.stop_slideshow()
             self.model.redo()
             self.selection = None

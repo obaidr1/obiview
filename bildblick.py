@@ -11,11 +11,15 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
 from image_model import ImageModel, crop_box
 from advanced_ui import AdvancedFeatures
 from save_dialog import SaveAsDialog
+from editor_ui import EditorUI
+from ui_theme import install_theme, label, icon_button
+from copy import copy
 
 
-class Window(AdvancedFeatures, Gtk.ApplicationWindow):
+class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(application=app, title='Bildblick', default_width=1120, default_height=760)
+        super().__init__(application=app, title='Bildblick', default_width=1280, default_height=900)
+        self.theme = install_theme()
         self.model = ImageModel()
         self.pixbuf = None
         self.scale = 1.0
@@ -27,9 +31,9 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         self.allow_close = False
         tile = cairo.ImageSurface(cairo.FORMAT_RGB24, 32, 32)
         ctx = cairo.Context(tile)
-        ctx.set_source_rgb(.25, .25, .25)
+        ctx.set_source_rgb(.94, .94, .92)
         ctx.paint()
-        ctx.set_source_rgb(.32, .32, .32)
+        ctx.set_source_rgb(.88, .88, .86)
         ctx.rectangle(0, 0, 16, 16)
         ctx.rectangle(16, 16, 16, 16)
         ctx.fill()
@@ -39,36 +43,68 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         header = Gtk.HeaderBar()
         self.set_titlebar(header)
         self.title_label = Gtk.Label(label='Bildblick')
+        self.title_label.set_ellipsize(3)
+        self.title_label.set_max_width_chars(36)
+        brand = label('bildblick', 'brand')
+        header.pack_start(brand)
         header.set_title_widget(self.title_label)
         self.button(header, 'Öffnen', self.open_dialog, 'Strg+O', start=True)
-        self.save_button = self.button(header, 'Speichern unter …', self.save_dialog, 'Strg+Umschalt+S')
+        self.save_button = self.button(header, 'Bild speichern', self.save_dialog, 'Strg+Umschalt+S')
+        self.save_button.add_css_class('primary')
+        self.header = header
         root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.set_child(root)
-        toolbar = Gtk.Box(spacing=6, margin_start=12, margin_end=12, margin_top=8, margin_bottom=8)
+        toolbar = Gtk.Box(spacing=8, margin_start=16, margin_end=16, margin_top=4, margin_bottom=8)
+        toolbar.add_css_class('tool-strip')
         root.append(toolbar)
         self.edit_buttons = []
-        for label, callback, hint in [
-            ('−', lambda: self.zoom(1/1.25), 'Verkleinern (−)'),
-            ('+', lambda: self.zoom(1.25), 'Vergrößern (+)'),
-            ('Einpassen', self.fit_image, 'Bild einpassen (F)'),
-            ('100 %', self.actual_size, 'Originalgröße (1)'),
-            ('↶ Links', lambda: self.rotate(False), '90° nach links'),
-            ('Rechts ↷', lambda: self.rotate(True), '90° nach rechts (R)'),
+        for icon, callback, hint in [
+            ('object-rotate-left-symbolic', lambda:self.rotate(False), '90° nach links drehen'),
+            ('object-rotate-right-symbolic', lambda:self.rotate(True), '90° nach rechts drehen (R)'),
         ]:
-            self.edit_buttons.append(self.button(toolbar, label, callback, hint))
-        self.crop_toggle = Gtk.ToggleButton(label='Auswählen')
-        self.crop_toggle.set_tooltip_text('Mit der Maus einen Bildausschnitt aufziehen')
+            button = icon_button(icon,hint,callback)
+            toolbar.append(button)
+            self.edit_buttons.append(button)
+        self.crop_toggle = Gtk.ToggleButton(label='Ausschnitt')
+        self.crop_toggle.set_tooltip_text('Ausschnitt auf dem Bild auswählen')
         self.crop_toggle.connect('toggled', self.toggle_crop)
         toolbar.append(self.crop_toggle)
         self.crop_button = self.button(toolbar, 'Zuschneiden', self.apply_crop, 'Auswahl übernehmen (Eingabe)')
-        self.undo_button = self.button(toolbar, 'Rückgängig', self.undo, 'Strg+Z; bis zu 20 Schritte (speicherabhängig)')
+        self.undo_button = icon_button('edit-undo-symbolic','Rückgängig (Strg+Z)',self.undo)
+        toolbar.append(self.undo_button)
+        self.redo_button = icon_button('edit-redo-symbolic','Wiederholen (Strg+Umschalt+Z)',self.redo)
+        toolbar.append(self.redo_button)
+        toolbar.append(Gtk.Box(hexpand=True))
+        self.tools_toggle = Gtk.ToggleButton(label='Bearbeiten',active=True)
+        self.tools_toggle.connect('toggled',lambda b:self.inspector_scroll.set_visible(b.get_active()) if hasattr(self,'inspector_scroll') else None)
+        toolbar.append(self.tools_toggle)
         self.scroll = Gtk.ScrolledWindow(hexpand=True, vexpand=True)
-        root.append(self.scroll)
+        self.canvas_overlay = Gtk.Overlay(hexpand=True,vexpand=True)
+        self.canvas_overlay.set_child(self.scroll)
+        root.append(self.canvas_overlay)
+        self.empty_state = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
+                                   halign=Gtk.Align.CENTER,valign=Gtk.Align.CENTER)
+        self.empty_state.append(label('Raum für deine Bilder.', 'dialog-title'))
+        self.empty_state.append(label('Ein Bild hierher ziehen oder eine Datei öffnen.', 'muted'))
+        self.button(self.empty_state,'Bild öffnen',self.open_dialog,'Datei auswählen (Strg+O)').add_css_class('primary')
+        self.canvas_overlay.add_overlay(self.empty_state)
+        dock = Gtk.Box(spacing=4,halign=Gtk.Align.CENTER,valign=Gtk.Align.END,margin_bottom=24)
+        dock.add_css_class('zoom-dock')
+        for icon, title, callback in [('zoom-out-symbolic','Verkleinern (−)',lambda:self.zoom(.8))]:
+            dock.append(icon_button(icon,title,callback))
+        self.zoom_label = Gtk.Button(label='100 %',tooltip_text='Originalgröße (1)')
+        self.zoom_label.connect('clicked',lambda *_:self.actual_size())
+        dock.append(self.zoom_label)
+        dock.append(icon_button('zoom-in-symbolic','Vergrößern (+)',lambda:self.zoom(1.25)))
+        dock.append(icon_button('zoom-fit-best-symbolic','Bild einpassen (F)',self.fit_image))
+        self.canvas_overlay.add_overlay(dock)
         self.canvas = Gtk.DrawingArea(hexpand=True, vexpand=True)
         self.canvas.set_draw_func(self.draw)
         self.scroll.set_child(self.canvas)
         self.status = Gtk.Label(label='Bild öffnen · PNG, JPEG, WebP, TIFF und weitere Formate', xalign=0,
                                 margin_start=14, margin_end=14, margin_top=9, margin_bottom=9)
+        self.status.add_css_class('status-bar')
+        self.status.set_ellipsize(3)
         root.append(self.status)
         drag = Gtk.GestureDrag()
         drag.set_button(1)
@@ -83,6 +119,7 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         drop.connect('drop', self.drop_file)
         self.canvas.add_controller(drop)
         self.setup_advanced(root,header,toolbar)
+        self.setup_editor()
         self.refresh()
 
     def button(self, parent, label, callback, hint, start=False):
@@ -114,7 +151,7 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         if self.busy:
             return
         self.stop_slideshow()
-        if self.model.dirty:
+        if self.model.dirty or self.has_preview():
             self.message('Ungespeicherte Änderungen verwerfen?',
                          'Abbrechen, um zurückzukehren und das Bild zuerst zu speichern.', action)
         else:
@@ -124,7 +161,7 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         if self.busy:
             self.message('Vorgang läuft','Bitte den laufenden Lade- oder Speichervorgang abwarten.')
             return True
-        if self.allow_close or not self.model.dirty:
+        if self.allow_close or not (self.model.dirty or self.has_preview()):
             self.cleanup()
             return False
         def discard():
@@ -139,6 +176,9 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
             self.file_dialog(False)
 
     def save_dialog(self):
+        if self.has_preview() and not self.busy:
+            self.edit(lambda _m:None,after=self.save_dialog)
+            return
         if self.model.image and not self.busy:
             self.stop_slideshow()
             for dialog in self.dialogs:
@@ -184,8 +224,9 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
             path = path.with_suffix('.png')
         settings = settings if settings is not None else self.save_settings
         def save(overwrite=False):
-            self.edit(lambda m:m.save(path,overwrite=overwrite,settings=settings),
-                      after=lambda:self.status.set_text(f'Gespeichert: {path}'))
+            resized = settings.output_width and (settings.output_width,settings.output_height) != self.model.image.size
+            self.edit(lambda m:(copy(m) if resized else m).save(path,overwrite=overwrite,settings=settings),
+                      after=lambda:self.status.set_text(f'Exportiert: {path}' if resized else f'Gespeichert: {path}'))
         if self.model.multiframe and path.resolve() == self.model.source_path.resolve():
             self.message('Mehrseiten-Original bleibt erhalten',
                          'Speichern exportiert die aktuelle Seite. Bitte einen anderen Dateinamen wählen.')
@@ -227,6 +268,7 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         self.resize_canvas()
         self.update_status()
         self.update_advanced()
+        self.update_editor()
         self.canvas.queue_draw()
 
     def resize_canvas(self):
@@ -248,20 +290,18 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
             elif self.crop_toggle.get_active():
                 text += '  ·  Mit der Maus einen Ausschnitt aufziehen'
             self.status.set_text(text)
+        if hasattr(self,'zoom_label'):
+            self.zoom_label.set_label(f'{self.scale*100:.0f} %')
         return False
 
     def draw(self, _area, cr, width, height):
-        cr.set_source_rgb(.095, .105, .12)
+        cr.set_source_rgb(245/255, 245/255, 243/255)
         cr.paint()
         if not self.pixbuf:
-            cr.set_source_rgb(.65, .68, .73)
-            cr.set_font_size(22)
-            cr.move_to(max(30, width/2-190), height/2)
-            cr.show_text('Ein Bild öffnen oder hierher ziehen')
             return
         iw, ih = self.model.image.size
         if self.fit:
-            scale = min(max(1,width-32)/iw, max(1,height-32)/ih, 1.0)
+            scale = min(max(1,width-32)/iw, max(1,height-110)/ih, 1.0)
             if abs(scale-self.scale) > .0001:
                 self.scale = scale
                 GLib.idle_add(self.update_status)
@@ -275,15 +315,17 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
         cr.paint()
         cr.translate(ox, oy)
         cr.scale(self.scale, self.scale)
-        Gdk.cairo_set_source_pixbuf(cr, self.pixbuf, 0, 0)
+        shown = self.preview_pixbuf or self.pixbuf
+        cr.scale(iw/shown.get_width(),ih/shown.get_height())
+        Gdk.cairo_set_source_pixbuf(cr, shown, 0, 0)
         cr.paint()
         cr.restore()
         if self.selection:
             x1,y1,x2,y2 = self.selection
             cr.rectangle(ox+x1*self.scale, oy+y1*self.scale, (x2-x1)*self.scale, (y2-y1)*self.scale)
-            cr.set_source_rgba(.2, .65, 1, .2)
+            cr.set_source_rgba(1, 1, 1, .25)
             cr.fill_preserve()
-            cr.set_source_rgb(.3, .75, 1)
+            cr.set_source_rgb(.15, .15, .15)
             cr.set_line_width(2)
             cr.stroke()
 
@@ -333,6 +375,9 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
             self.edit(lambda model:model.rotate(clockwise))
 
     def undo(self):
+        if self.has_preview() and not self.busy:
+            self.reset_preview()
+            return
         if self.busy:
             return
         self.stop_slideshow()
@@ -360,6 +405,9 @@ class Window(AdvancedFeatures, Gtk.ApplicationWindow):
             return False
         if self.extra_key(key,modifiers):
             return True
+        focus = self.get_focus()
+        if isinstance(focus, (Gtk.Editable, Gtk.Scale, Gtk.SpinButton)):
+            return False
         ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
         if ctrl:
             actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:self.save_dialog, Gdk.KEY_z:self.undo}

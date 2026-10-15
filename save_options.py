@@ -37,9 +37,12 @@ class SaveSettings:
     png_compression: int = 6
     webp_lossless: bool = False
     target_kib: int = 0
+    output_width: int = 0
+    output_height: int = 0
 
     def __post_init__(self):
-        limits = {'quality': (1, 100), 'png_compression': (0, 9), 'target_kib': (0, 1_000_000)}
+        limits = {'quality': (1, 100), 'png_compression': (0, 9), 'target_kib': (0, 1_000_000),
+                  'output_width': (0,80_000_000), 'output_height': (0,80_000_000)}
         for field in fields(self):
             value = getattr(self, field.name)
             if field.name in limits:
@@ -48,6 +51,8 @@ class SaveSettings:
                     raise ValueError(f'Ungültiger Wert für {field.name}: {value}')
             elif type(value) is not bool:
                 raise ValueError(f'Ungültiger Schalter: {field.name}')
+        if bool(self.output_width) != bool(self.output_height) or self.output_width*self.output_height > 80_000_000:
+            raise ValueError('Exportgröße muss zwei positive Maße und höchstens 80 Megapixel haben.')
 
     @classmethod
     def legacy(cls, quality=95, metadata=True):

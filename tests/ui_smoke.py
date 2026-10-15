@@ -4,6 +4,8 @@ from pathlib import Path
 import tempfile
 import time
 import traceback
+import os
+import base64
 from PIL import Image, ImageDraw, ImageGrab
 from bildblick import Window, Gtk, Gdk, Gio, GLib
 
@@ -31,6 +33,16 @@ app = Gtk.Application(application_id='local.bildblick.Smoke',flags=Gio.Applicati
 failed = []
 step = 0
 started = time.monotonic()
+
+def screenshot(name):
+    output = root/'tests'/'screenshots'
+    output.mkdir(exist_ok=True)
+    target = output/(name+'.png')
+    ImageGrab.grab().save(target)
+    if os.environ.get('BILDBLICK_SCREENSHOT_LOG'):
+        # Synthetic test image only; enables review when artifact downloads are unavailable.
+        print('SCREENSHOT '+name+' '+base64.b64encode(target.read_bytes()).decode())
+
 
 def tick(window):
     global step
@@ -84,7 +96,7 @@ def tick(window):
             window.toggle_fullscreen()
             window.toggle_fullscreen()
         elif step == 8:
-            assert window.menu_bar.get_visible()
+            assert window.menu_model.get_n_items()==5
             window.extra_key(Gdk.KEY_r,Gdk.ModifierType.CONTROL_MASK)
             dialog = window.dialogs[-1]
             dialog.height.set_value(300)
@@ -123,7 +135,54 @@ def tick(window):
             assert window.model.image.mode=='RGBA'
             assert not window.dialogs
             assert window.save_settings.quality==81
-            ImageGrab.grab().save(root/'tests'/'window.png')
+            window.request_load(sample)
+        elif step == 13:
+            window.adjust_sliders['brightness'].set_value(20)
+        elif step == 14:
+            if window.preview_running or window.preview_timer or window.preview_pixbuf is None:
+                return True
+            assert window.has_preview() and not window.model.dirty
+            original = window.model.image.tobytes()
+            window.undo()
+            assert not window.has_preview() and window.model.image.tobytes()==original
+            window.look_buttons['Warm'].set_active(True)
+            window.edit(lambda _m:None)
+        elif step == 15:
+            assert window.model.dirty and not window.has_preview()
+            window.undo()
+            assert not window.model.dirty
+            window.save_dialog()
+            dialog = window.dialogs[-1]
+            dialog.format.set_active_id('PNG')
+            dialog.resolution_tiles['half'].set_active(True)
+            dialog.remove_metadata.set_active(True)
+            dialog.name.set_text('half.png')
+            dialog.folder.set_text(temporary.name)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 16:
+            with Image.open(Path(temporary.name)/'half.png') as result:
+                assert result.size==(480,300)
+            assert window.model.image.size==(960,600)
+            window.toggle_sidebar()
+            window.set_default_size(1280,900)
+        elif step == 17:
+            screenshot('editor')
+            window.save_dialog()
+            window.dialogs[-1].format.set_active_id('JPEG')
+        elif step == 18:
+            if window.dialogs[-1].preview_busy or window.dialogs[-1].preview_timer:
+                return True
+            assert 'KB' in window.dialogs[-1].size_label.get_text()
+            screenshot('export')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.set_default_size(1024,768)
+        elif step == 19:
+            screenshot('compact')
+            assert window.get_width()<=1024, f'Window minimum too wide: {window.get_width()}'
+            window.extra_key(Gdk.KEY_r,Gdk.ModifierType.CONTROL_MASK)
+        elif step == 20:
+            screenshot('resize')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
             print('PASS: GTK image operations/navigation/slideshow/fullscreen/menu/resize/Ctrl+R/save dialog + screenshot')
             window.cleanup()
             app.quit()

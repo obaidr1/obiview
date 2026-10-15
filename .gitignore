@@ -10,3 +10,4 @@ tests/window.png
 *.log
 *.tmp
 .DS_Store
+tests/screenshots/
