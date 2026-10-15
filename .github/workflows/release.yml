@@ -54,14 +54,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_COMMIT: ${{ github.sha }}
         run: |
-          tag=v0.4.0
+          tag=v0.4.1
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag already exists; its tag and assets stay unchanged."
           else
             gh release create "$tag" \
-              dist/Bildblick-0.4.0-linux.tar.gz \
-              dist/Bildblick-0.4.0-linux.tar.gz.sha256 \
+              dist/Bildblick-0.4.1-linux.tar.gz \
+              dist/Bildblick-0.4.1-linux.tar.gz.sha256 \
               --target "$RELEASE_COMMIT" --prerelease \
-              --title 'Bildblick 0.4.0' \
-              --notes-file docs/release-0.4.0.md
+              --title 'Bildblick 0.4.1' \
+              --notes-file docs/release-0.4.1.md
           fi
