@@ -58,7 +58,7 @@ def tick(window):
             return True
         if step == 0:
             assert window.pixbuf and window.canvas.get_width()>100
-            assert window.get_width()==720 and window.get_height()==640, (window.get_width(),window.get_height())
+            assert window.get_surface().get_width()==720 and window.get_surface().get_height()==640, (window.get_surface().get_width(),window.get_surface().get_height())
             assert window.menu_bar.get_visible()
             assert window.canvas.get_width()>=window.get_width()-16
             screenshot('startup')
@@ -183,7 +183,7 @@ def tick(window):
         elif step == 17:
             assert window.inspector_panel.get_parent() is None
             assert window.canvas.get_width()>=window.get_width()-16
-            assert window.get_width()==720 and window.get_height()==640
+            assert window.get_surface().get_width()==720 and window.get_surface().get_height()==640
             screenshot('editor')
             window.save_dialog()
             window.dialogs[-1].format.set_active_id('JPEG')
