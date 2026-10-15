@@ -227,8 +227,6 @@ class AdvancedFeatures:
             self.rebuild_thumbnails()
             self.update_advanced()
             if open_first:
-                if not self.thumbnail_window:
-                    self.toggle_sidebar()
                 if files:
                     self.guard(lambda:self.request_load(files[0]))
                 else:

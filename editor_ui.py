@@ -67,11 +67,8 @@ class EditorUI:
             self.inspector.append(section)
         self.preview_note = label('Anpassungen als Vorschau', 'small muted', wrap=True)
 
-        row = Gtk.Box(spacing=8, homogeneous=True)
         self.reset_adjustments = Gtk.Button(label='Zurücksetzen')
         self.reset_adjustments.connect('clicked',lambda *_:self.reset_preview())
-        self.apply_adjustments = Gtk.Button(label='Anwenden')
-        self.apply_adjustments.connect('clicked',lambda *_:self.edit(lambda _m:None))
         self.inspector_scroll = Gtk.ScrolledWindow(vexpand=True)
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         self.inspector_scroll.set_hexpand(False)
@@ -222,7 +219,6 @@ class EditorUI:
         loaded = self.model.image is not None
         self.inspector_panel.set_sensitive(loaded and not self.busy)
         pending = self.has_preview()
-        self.apply_adjustments.set_sensitive(pending)
         if pending and not self.busy:
             self.undo_button.set_sensitive(True)
             self.lookup_action('undo').set_enabled(True)
