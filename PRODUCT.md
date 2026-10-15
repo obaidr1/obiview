@@ -229,3 +229,7 @@ Bildblick wird unter der [MIT-Lizenz](LICENSE) bereitgestellt. Installation und 
 Alle Ergänzungen bleiben in separaten Dialogen. Das Hauptfenster behält 720 × 640 Pixel als Startgröße. **Strg+Y** schneidet jetzt zu; **Strg+Umschalt+Z** wiederholt. **Strg+S** speichert die aktuelle Datei mit Ersetzungsabfrage; **S** öffnet Speichern unter.
 
 Die aktuelle, funktionsweise Menüübersicht steht in [docs/FEATURES.md](docs/FEATURES.md). Hardwareabhängige Integrationen sind implementiert, aber noch keine Zusage für jeden Scanner, Drucker oder Mediencodec. Eine vollständige Umsetzung sämtlicher denkbarer Spezialformate und Zusatzmodule wird nicht behauptet.
+
+## Effekte mit direkter Vorschau
+
+Der separate Effekte-Dialog bietet zehn direkt anklickbare Effekte, eine große Bildvorschau und einen Originalvergleich. Jeder Effekt besitzt einen Intensitätsregler von 0 bis 100 Prozent. Zusätzliche Regler werden passend zum ausgewählten Effekt angezeigt; Einstellungen bleiben beim Wechsel erhalten. Zurücksetzen betrifft den ausgewählten Effekt. Abbrechen ändert weder Bild noch Historie; Anwenden verarbeitet die Originalauflösung und erzeugt einen rückgängig machbaren Bearbeitungsschritt. Die Vorschau nutzt höchstens 1200 × 1200 Pixel und kennzeichnet ihre verkleinerte Darstellung.

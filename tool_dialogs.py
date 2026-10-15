@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image, ImageColor
 from gi.repository import Gtk, Gdk, Gio, Pango, GObject
 from image_model import ImageModel
-from image_tools import (EFFECTS, fine_rotate, red_eye, frame, effect, text_image,
+from image_tools import (fine_rotate, red_eye, frame, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
 from ui_theme import label, card, accessible
 
@@ -136,10 +136,18 @@ class ImageToolsUI:
             'Positive Winkel drehen nach rechts, negative nach links. Den Rand danach bei Bedarf zuschneiden.')
 
     def effects_dialog(self):
-        return ToolDialog(self,'Effekte',[
-            ('name','Effekt','sepia',list(EFFECTS.items())),('amount','Stärke / Radius',5,(1,100,1))],
-            lambda v:self.edit(lambda m:m.replace(effect(m.image,**v))),
-            'Jeder Effekt lässt sich mit Strg+Z rückgängig machen. Relief, Kanten und Sepia verwenden eine feste Charakteristik.')
+        from effects_dialog import EffectsDialog
+        if self.busy or self.model.image is None:
+            return
+        if self.has_preview():
+            self.edit(lambda _m: None, after=self.effects_dialog)
+            return
+        for dialog in self.dialogs:
+            if isinstance(dialog, EffectsDialog):
+                dialog.present()
+                return dialog
+        self.stop_slideshow()
+        return EffectsDialog(self)
 
     def border_dialog(self):
         return ToolDialog(self,'Rahmen hinzufügen',[

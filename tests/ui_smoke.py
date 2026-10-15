@@ -8,6 +8,7 @@ import os
 import base64
 from PIL import Image, ImageDraw, ImageGrab
 from bildblick import Window, Gtk, Gdk, Gio, GLib
+from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
 
 Gtk.init()
 if Gdk.Display.get_default() is None:
@@ -265,11 +266,72 @@ def tick(window):
         elif step == 28:
             assert window.model.image.size==(320,340)
             window.undo()
-            dialog=window.effects_dialog(); dialog.widgets['name'].set_active_id('sepia')
-            dialog.response(Gtk.ResponseType.ACCEPT)
+            window.effect_before=window.model.image.copy()
+            window.effect_revision=window.model.revision
+            window.effect_history=len(window.model.history)
+            window.effects_phase=0
+            dialog=window.effects_dialog()
+            assert window.effects_dialog() is dialog
         elif step == 29:
-            assert window.model.dirty
+            phase=window.effects_phase
+            if phase < 3:
+                dialog=window.dialogs[-1]
+                if not dialog.ready: return True
+                assert window.model.revision==window.effect_revision
+                assert window.model.image.tobytes()==window.effect_before.tobytes()
+            if phase == 0:
+                assert len(dialog.buttons)==10 and set(dialog.buttons)==set(EFFECTS)
+                assert not dialog.amount_row.get_visible()
+                for name, button in dialog.buttons.items():
+                    button.set_active(True)
+                    assert dialog.name==name
+                    assert dialog.amount_row.get_visible()==(name in EFFECT_PARAMETERS)
+                dialog.buttons['pixelize'].set_active(True)
+                dialog.amount.set_value(22); dialog.strength.set_value(40)
+                window.effects_phase=1
+                return True
+            if phase == 1:
+                expected=mixed_effect(window.effect_before,'pixelize',22,40)
+                assert bytes(dialog.preview.get_pixels())==expected.tobytes()
+                dialog.compare.set_active(True)
+                assert dialog.picture.get_paintable().get_width()==window.effect_before.width
+                dialog.compare.set_active(False)
+                screenshot('effects')
+                # Hold one completed worker to exercise stale and post-close delivery.
+                submit=window.submit
+                captured=[]
+                window.submit=lambda work, done, failure: captured.append((work,done,failure))
+                try:
+                    dialog.strength.set_value(41)
+                    GLib.source_remove(dialog.timer); dialog.timer=0
+                    dialog.render()
+                finally:
+                    window.submit=submit
+                work,done,failure=captured[0]
+                dialog.buttons['sepia'].set_active(True)
+                done(work())
+                assert not dialog.ready and not dialog.accept.get_sensitive()
+                dialog.buttons['pixelize'].set_active(True)
+                assert dialog.amount.get_value()==22 and dialog.strength.get_value()==41
+                dialog.reset()
+                assert dialog.amount.get_value()==5 and dialog.strength.get_value()==100
+                # Cancel while another preview is pending; it must not touch history.
+                dialog.response(Gtk.ResponseType.CANCEL)
+                done(expected)
+                failure(RuntimeError('delayed preview error'))
+                assert dialog.closed and not dialog.timer
+                assert not window.dialogs and window.scrim_depth==0
+                window.effects_dialog()
+                window.effects_phase=2
+                return True
+            if phase == 2:
+                dialog.response(Gtk.ResponseType.ACCEPT)
+                window.effects_phase=3
+                return True
+            assert window.model.image.tobytes()==mixed_effect(window.effect_before,'sepia').tobytes()
+            assert len(window.model.history)==window.effect_history+1
             window.undo()
+            assert window.model.image.tobytes()==window.effect_before.tobytes()
             window.selection=(0,0,100,100)
             dialog=window.red_eye_dialog(); dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 30:

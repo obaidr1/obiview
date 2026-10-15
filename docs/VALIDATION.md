@@ -2,11 +2,12 @@
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 82 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 86 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
 - Physische Größen, DPI-Export mit erneutem Einlesen in JPEG/PNG/TIFF/BMP und DPI-Undo.
 - Auswahlkanten, Verschieben, Rote Augen, zehn Effekte, Rahmen und getrennte Leinwandränder.
+- Effektintensität: 0/50/100 Prozent, erhaltenes Alpha, unveränderte Quelle, gültige Parametergrenzen und abgewiesene ungültige Werte.
 - Fontconfig-Schriftwahl, Textbegrenzung, Zeichenformen, Palettenreduktion und RGB-Tausch.
 - Druckgeometrie für Einpassen, cm, Prozent und Position sowie nativer Zwischenablage-Datentyp.
 - Alle neuen Regler und Looks: veränderte Pixel, erhaltenes Alpha, deterministische Körnung.

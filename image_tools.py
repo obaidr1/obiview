@@ -8,6 +8,29 @@ EFFECTS = {'button':'3D-Schaltfläche', 'blur':'Weichzeichnen', 'emboss':'Relief
            'oil':'Ölgemälde', 'edges':'Kantenerkennung', 'median':'Medianfilter',
            'explosion':'Explosion', 'pixelize':'Pixelieren', 'sepia':'Sepia', 'raindrops':'Regentropfen'}
 
+# Only expose ranges that actually affect the corresponding pixel operation.
+EFFECT_PARAMETERS = {
+    'button': ('Randbreite', 1, 15, 'px'),
+    'blur': ('Weichzeichnungsradius', 1, 100, 'px'),
+    'oil': ('Pinselradius', 1, 5, 'px'),
+    'median': ('Filterradius', 1, 5, 'px'),
+    'explosion': ('Streuung', 4, 100, 'px'),
+    'pixelize': ('Pixelgröße', 2, 100, 'px'),
+    'raindrops': ('Tropfenpaare', 1, 100, ''),
+}
+
+
+def mixed_effect(image, name, amount=5, strength=100):
+    """Blend an effect with its unchanged source, preserving alpha and dimensions."""
+    if not math.isfinite(strength) or not 0 <= strength <= 100:
+        raise ValueError('Die Intensität muss zwischen 0 und 100 Prozent liegen.')
+    if name not in EFFECTS or not 1 <= amount <= 100:
+        raise ValueError('Effekt oder Stärke ungültig (1–100).')
+    if strength == 0:
+        return image.copy()
+    result = effect(image, name, amount)
+    return result if strength == 100 else Image.blend(image, result, strength/100)
+
 
 def checked_size(width, height):
     width, height = round(width), round(height)

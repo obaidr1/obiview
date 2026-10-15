@@ -207,7 +207,7 @@ Ein Rechteck lässt sich direkt mit der linken Maustaste aufziehen. Ziehen an Ka
 
 **Bild → Frei drehen** verwendet Gradangaben, positive Werte im Uhrzeigersinn. Erweiterte Bildfläche und Randfarbe sind wählbar. **Rote Augen korrigieren** benötigt eine enge Auswahl um das Auge und verändert nur rot dominierte Pixel darin.
 
-**Effekte** enthält 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kantenerkennung, Median, Explosion, Pixelieren, Sepia und Regentropfen. Die Effekte verarbeiten Bildpixel und sind rückgängig machbar. Relief, Kanten und Sepia haben eine feste Charakteristik; die Stärke beeinflusst die anderen Effekte. **Farben reduzieren** bietet 2–256 Farben und Dithering. **Farbkanäle tauschen** vertauscht RGB-Kanäle; ein eigener Histogrammdialog zeigt die volle Bildverteilung.
+**Effekte** enthält 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kantenerkennung, Median, Explosion, Pixelieren, Sepia und Regentropfen. Alle zehn Effekte sind direkt über eigene Schaltflächen auswählbar, ohne Dropdown. Eine große Live-Vorschau zeigt die Änderungen. Der Intensitätsregler mischt jeden Effekt mit dem Original; je nach Effekt kommen Regler für Radius, Randbreite, Pixelgröße, Streuung oder Tropfenpaare hinzu. „Original vergleichen“ zeigt das unveränderte Bild. Einstellungen bleiben beim Wechsel zwischen Effekten erhalten. „Effekt zurücksetzen“ setzt den ausgewählten Effekt zurück. Erst „Anwenden“ übernimmt ihn in voller Auflösung als einen rückgängig machbaren Schritt; „Abbrechen“ verwirft die Vorschau. Bei großen Bildern ist die Vorschau verkleinert und kann bei pixelabhängigen Effekten vom Ergebnis in Originalauflösung abweichen. **Farben reduzieren** bietet 2–256 Farben und Dithering. **Farbkanäle tauschen** vertauscht RGB-Kanäle; ein eigener Histogrammdialog zeigt die volle Bildverteilung.
 
 **Rahmen hinzufügen** bietet einfache, doppelte und plastische Rahmen mit Breiten und Farbauswahl. **Leinwand erweitern** stellt jede Seite getrennt ein: positive Werte fügen Fläche hinzu, negative schneiden Rand ab. **Bilder zusammenfügen** setzt mehrere Bilder horizontal oder vertikal mit Abstand zusammen; es ist keine perspektivische Panoramaverschmelzung.
 
@@ -376,7 +376,7 @@ Aktuelle Grenzen:
 /usr/bin/python3 -m unittest discover -s tests -v
 ```
 
-Auf dem Referenzsystem bestehen **82 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
+Auf dem Referenzsystem bestehen **86 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
 
 ### Grafischer Integrationstest
 

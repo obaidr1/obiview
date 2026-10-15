@@ -59,7 +59,7 @@ Kanten und Ecken sind mit links veränderbar, der Rahmen mit rechts verschiebbar
 | 90° links / rechts | Vierteldrehung |
 | Frei drehen | −360° bis 360°, erweiterte Fläche oder feste Größe, Randfarbe |
 | Rote Augen korrigieren | Rot dominierte Pixel in der markierten Augenregion neutralisieren |
-| Effekte | 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kanten, Median, Explosion, Pixelieren, Sepia, Regentropfen |
+| Effekte | 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kanten, Median, Explosion, Pixelieren, Sepia, Regentropfen; direkte Schaltflächen, Live-Vorschau, Intensität und passende Regler, Originalvergleich |
 | Leinwand erweitern | Links, rechts, oben, unten getrennt; negative Werte kürzen |
 | Rahmen hinzufügen | Einfacher, doppelter oder plastischer Rahmen; Breiten und Farben |
 | Horizontal spiegeln / Vertikal spiegeln | Ganze Bildfläche spiegeln |
