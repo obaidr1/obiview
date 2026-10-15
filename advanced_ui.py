@@ -44,31 +44,27 @@ class AdvancedFeatures:
         self.menu_bar = Gtk.PopoverMenuBar.new_from_model(self.menu_model)
         self.get_application().set_accels_for_action('win.resize',[RESIZE_ACCELERATOR])
         self.get_application().set_accels_for_action('win.save-as',['<Primary>s','<Primary><Shift>s'])
-        nav = Gtk.Box(spacing=6, margin_start=12, margin_end=12, margin_top=6)
         self.previous = icon_button('go-previous-symbolic','Vorheriges Bild (Pfeil links)',lambda:self.navigate(-1))
         self.next_button = icon_button('go-next-symbolic','Nächstes Bild (Pfeil rechts)',lambda:self.navigate(1))
-        nav.append(self.previous)
-        nav.append(self.next_button)
-        self.position_label = Gtk.Label(label='Kein Ordner', xalign=0, max_width_chars=14)
-        self.position_label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
-        nav.append(self.position_label)
-        self.resize_button = Gtk.Button(label='Größe',tooltip_text='Bildgröße ändern (Strg+R)')
+        self.page_previous = icon_button('go-up-symbolic','Vorherige Seite (Bild auf)',lambda:self.change_frame(-1))
+        self.page_next = icon_button('go-down-symbolic','Nächste Seite (Bild ab)',lambda:self.change_frame(1))
+        for button in (self.previous,self.next_button,self.page_previous,self.page_next):
+            toolbar.append(button)
+        self.position_label = Gtk.Label(label='0 / 0',width_chars=7)
+        self.position_label.add_css_class('file-counter')
+        toolbar.append(self.position_label)
+        toolbar.append(Gtk.Box(hexpand=True))
+        self.resize_button = icon_button('transform-scale-symbolic','Größe ändern (Strg+R)',self.resize_dialog)
         self.resize_button.set_action_name('win.resize')
-        toolbar.insert_child_after(self.resize_button,self.crop_button)
-        self.page_previous = self.button(nav,'Seite −',lambda:self.change_frame(-1),'Vorherige Seite (Bild auf)')
-        self.page_next = self.button(nav,'Seite +',lambda:self.change_frame(1),'Nächste Seite (Bild ab)')
-        self.slide_button = self.button(nav,'Diashow',self.toggle_slideshow,'Start / Stopp (F5)')
-        self.spinner = Gtk.Spinner()
-        nav.append(self.spinner)
-        self.menu_bar.set_visible(False)
-        menu_button = Gtk.MenuButton(icon_name='open-menu-symbolic',tooltip_text='Alle Funktionen')
-        menu_button.set_menu_model(self.menu_model)
-        header.pack_end(menu_button)
-        # Keep the complete menu model and actions available in the application menu.
+        toolbar.append(self.resize_button)
+        self.adjust_button = icon_button('preferences-system-symbolic','Bildanpassungen …',self.adjust_dialog)
+        toolbar.append(self.adjust_button)
+        self.edit_buttons.append(self.adjust_button)
+        self.slide_button = Gtk.Button(label='Diashow')
+        self.spinner = Gtk.Spinner(width_request=14)
+        toolbar.append(self.spinner)
         root.prepend(self.menu_bar)
-
-        root.remove(self.canvas_overlay)
-        self.pane = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL, wide_handle=True)
+        self.thumbnail_window = None
         self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=200)
         self.search = Gtk.SearchEntry(placeholder_text='Dateinamen filtern …')
         self.search.connect('search-changed',lambda *_:self.rebuild_thumbnails())
@@ -80,17 +76,7 @@ class AdvancedFeatures:
         thumb_scroll.set_child(self.thumbnails)
         self.sidebar.append(thumb_scroll)
         self.more_thumbs = self.button(self.sidebar,'Weitere Vorschaubilder',self.more_thumbnails,'Weitere 100 Dateien anzeigen')
-        self.pane.set_start_child(self.sidebar)
-        self.pane.set_end_child(self.canvas_overlay)
-        self.pane.set_resize_start_child(False)
-        self.pane.set_shrink_start_child(False)
-        self.pane.set_position(210)
-        root.insert_child_after(self.pane,toolbar)
         self.sidebar.set_visible(False)
-        root.remove(self.status)
-        self.status.set_hexpand(True)
-        nav.append(self.status)
-        root.append(nav)
 
     def cleanup(self, *_):
         self.closed = True
@@ -138,15 +124,14 @@ class AdvancedFeatures:
                 button.set_sensitive(False)
         for button in (self.previous,self.next_button):
             button.set_sensitive(bool(self.folder_files) and not self.busy)
-        self.page_previous.set_visible(loaded and self.model.multiframe)
-        self.page_next.set_visible(loaded and self.model.multiframe)
         self.redo_button.set_sensitive(not self.busy and bool(self.model.future))
         self.page_previous.set_sensitive(loaded and self.model.frame_index>0 and not self.busy)
         self.page_next.set_sensitive(loaded and self.model.frame_index+1<self.model.frame_count and not self.busy)
         self.slide_button.set_sensitive(loaded and not self.busy)
         current = self.model.source_path
         position = self.folder_files.index(current)+1 if current in self.folder_files else 0
-        self.position_label.set_text(f'{position} / {len(self.folder_files)}  ·  {self.folder.name}' if self.folder else 'Kein Ordner')
+        self.position_label.set_text(f'{position} / {len(self.folder_files)}' if self.folder else '0 / 0')
+        self.position_label.set_tooltip_text(str(self.folder) if self.folder else 'Kein Bildordner')
 
     def request_load(self, path, frame=0, playing=False):
         if self.busy:
@@ -242,8 +227,8 @@ class AdvancedFeatures:
             self.rebuild_thumbnails()
             self.update_advanced()
             if open_first:
-                self.sidebar.set_visible(True)
-                self.rebuild_thumbnails()
+                if not self.thumbnail_window:
+                    self.toggle_sidebar()
                 if files:
                     self.guard(lambda:self.request_load(files[0]))
                 else:
@@ -321,7 +306,20 @@ class AdvancedFeatures:
         self.submit(work,lambda _:None)
 
     def toggle_sidebar(self):
-        self.sidebar.set_visible(not self.sidebar.get_visible())
+        if self.thumbnail_window:
+            self.thumbnail_window.close()
+            return
+        self.thumbnail_window = Gtk.Window(title='Vorschaubilder',transient_for=self,
+                                          destroy_with_parent=True,default_width=380,default_height=540)
+        self.sidebar.set_visible(True)
+        self.thumbnail_window.set_child(self.sidebar)
+        def close(window):
+            window.set_child(None)
+            self.sidebar.set_visible(False)
+            self.thumbnail_window = None
+            return False
+        self.thumbnail_window.connect('close-request',close)
+        self.thumbnail_window.present()
         self.rebuild_thumbnails()
 
     def toggle_fullscreen(self):
@@ -428,7 +426,7 @@ class AdvancedFeatures:
         self.dialogs.append(dialog)
         dialog.present()
 
-    def adjust_dialog(self):
+    def adjust_values_dialog(self):
         def apply(v):
             def operation(model):
                 # One user action, one undo step.

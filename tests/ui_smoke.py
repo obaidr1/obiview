@@ -58,6 +58,10 @@ def tick(window):
             return True
         if step == 0:
             assert window.pixbuf and window.canvas.get_width()>100
+            assert window.get_width()==720 and window.get_height()==640, (window.get_width(),window.get_height())
+            assert window.menu_bar.get_visible()
+            assert window.canvas.get_width()>=window.get_width()-16
+            screenshot('startup')
             window.actual_size()
             window.zoom(1.25)
             assert window.scale==1.25
@@ -88,6 +92,9 @@ def tick(window):
             window.request_load(sample)
         elif step == 5:
             window.toggle_sidebar()
+            assert window.thumbnail_window is not None
+            window.toggle_sidebar()
+            assert window.thumbnail_window is None
             window.navigate(1)
         elif step == 6:
             assert window.model.source_path.name=='second.png'
@@ -142,6 +149,8 @@ def tick(window):
             assert window.save_settings.quality==81
             window.request_load(sample)
         elif step == 13:
+            window.adjust_dialog()
+            assert window.editor_dialog is not None
             window.adjust_sliders['brightness'].set_value(20)
         elif step == 14:
             if window.preview_running or window.preview_timer or window.preview_pixbuf is None:
@@ -150,8 +159,10 @@ def tick(window):
             original = window.model.image.tobytes()
             window.undo()
             assert not window.has_preview() and window.model.image.tobytes()==original
+            window.editor_dialog.response(Gtk.ResponseType.CANCEL)
+            window.adjust_dialog()
             window.look_buttons['Warm'].set_active(True)
-            window.edit(lambda _m:None)
+            window.editor_dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 15:
             assert window.model.dirty and not window.has_preview()
             window.undo()
@@ -168,10 +179,11 @@ def tick(window):
             with Image.open(Path(temporary.name)/'half.png') as result:
                 assert result.size==(480,300)
             assert window.model.image.size==(960,600)
-            window.toggle_sidebar()
-            window.set_default_size(1280,900)
+            window.set_default_size(720,640)
         elif step == 17:
-            assert window.inspector_scroll.get_width()<400, window.inspector_scroll.get_width()
+            assert window.inspector_panel.get_parent() is None
+            assert window.canvas.get_width()>=window.get_width()-16
+            assert window.get_width()==720 and window.get_height()==640
             screenshot('editor')
             window.save_dialog()
             window.dialogs[-1].format.set_active_id('JPEG')
@@ -182,10 +194,10 @@ def tick(window):
             assert 'KB' in window.dialogs[-1].size_label.get_text()
             screenshot('export')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
-            window.set_default_size(1024,768)
+            window.set_default_size(960,720)
         elif step == 19:
             screenshot('compact')
-            assert window.get_width()<=1024, f'Window minimum too wide: {window.get_width()}'
+            assert window.get_width()<=960, f'Window minimum too wide: {window.get_width()}'
             window.extra_key(Gdk.KEY_r,Gdk.ModifierType.CONTROL_MASK)
         elif step == 20:
             screenshot('resize')

@@ -1,4 +1,4 @@
-# Prüfstand von Bildblick 0.4.0
+# Prüfstand von Bildblick 0.4.1
 
 ## Automatisch geprüft
 
@@ -33,8 +33,9 @@ Datei- und Seitennavigation, Diashow, Vollbild, Menüaktionen, Strg+R, Speicherd
 Vorschau, Zurücksetzen, Übernahme von Looks und verkleinerten Export.
 
 Die Screenshots von Editor, Export, kompaktem Fenster und Größenänderung wurden geprüft.
-Die rechte Leiste wurde anhand dieser Prüfung auf eine feste schmale Breite begrenzt.
-Prüfungen sichern die Fensterbreite bei 1024 × 768 und die Leistenbreite unter 400 Pixeln.
+Die GUI-Prüfung verlangt eine Startgröße von exakt 720 × 640 Pixeln, eine sichtbare
+Menüleiste und eine Bildfläche über nahezu die volle Fensterbreite. Sie öffnet und schließt
+Bildanpassungen und Vorschaubilder als separate Fenster.
 
 Lokal bleibt der Desktop-Zugriff eingeschränkt. Ohne Display endet `tests/ui_smoke.py`
 weiterhin mit Exit-Code 77 statt einen Erfolg vorzutäuschen.

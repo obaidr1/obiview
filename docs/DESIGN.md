@@ -3,8 +3,8 @@
 ## Richtung
 
 Die vom Nutzer bereitgestellte Referenz bestimmt die Gestaltung: eine helle Bildfläche,
-schmale rechte Kartenleiste, schwarze pillenförmige Hauptaktionen und ein konzentrierter
-Exportdialog. Bildpixel werden weder abgerundet noch durch dekorative Effekte verändert.
+schwarze pillenförmige Hauptaktionen und ein konzentrierter Exportdialog. Die anschließend
+präzisierte Fenstervorlage bestimmt die kompakte Struktur des Hauptfensters. Bildpixel werden weder abgerundet noch durch dekorative Effekte verändert.
 
 Verwendet wurde [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill),
 insbesondere dessen SKILL.md, `references/pro-rules.md` und die ersten drei Prioritätsgruppen
@@ -31,11 +31,14 @@ Interaktionsregeln auf die vorhandenen nativen Widgets übertragen.
 
 ## Anordnung
 
-Die Kopfzeile enthält Marke, Öffnen, aktuellen Dateinamen, vollständiges Anwendungsmenü
-und Speichern. Die Werkzeugzeile konzentriert Drehen, Zuschneiden, Größenänderung und
-Historie. Navigation und Dateistatus stehen unten. Die rechte Leiste ist ausblendbar
-und vertikal scrollbar. Das Exportfenster ist modal; sein Hintergrund wird abgedunkelt.
-Speicherort, seltene Formatoptionen und Profile werden bei Bedarf aufgeklappt.
+Das Hauptfenster startet mit 720 × 640 Pixeln. Unter der schmalen Titelleiste folgen
+sichtbare Menüs und eine einzelne Symbolleiste. Das Bild nutzt den übrigen Bereich bis
+zur Statuszeile. Zoom und Navigation liegen in der Symbolleiste; es gibt keine schwebende
+Zoomleiste oder seitliche Bearbeitung im Hauptfenster.
+
+Bildanpassungen öffnen einen eigenen Dialog mit Bildvorschau und Karten für Looks, Licht,
+Farbe und Effekte. Vorschaubilder haben ein eigenes Fenster. Größenänderung, Export und
+weitere Werkzeuge bleiben separate Dialoge im gemeinsamen hellen Design.
 
 ## Verifikation
 

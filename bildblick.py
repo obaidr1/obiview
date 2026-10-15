@@ -19,7 +19,8 @@ from dataclasses import replace
 
 class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(application=app, title='Bildblick', default_width=1280, default_height=900)
+        super().__init__(application=app, title='Bildblick', default_width=720, default_height=640)
+        self.add_css_class('viewer')
         self.theme = install_theme()
         self.model = ImageModel()
         self.pixbuf = None
@@ -46,12 +47,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.title_label = Gtk.Label(label='Bildblick')
         self.title_label.set_ellipsize(3)
         self.title_label.set_max_width_chars(36)
-        brand = label('bildblick', 'brand')
-        header.pack_start(brand)
         header.set_title_widget(self.title_label)
-        self.button(header, 'Öffnen', self.open_dialog, 'Strg+O', start=True)
-        self.save_button = self.button(header, 'Bild speichern', self.save_dialog, 'Strg+Umschalt+S')
-        self.save_button.add_css_class('primary')
         self.header = header
         root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.shell = Gtk.Overlay()
@@ -63,30 +59,38 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.modal_scrim.set_can_target(False)
         self.modal_scrim.set_visible(False)
         self.shell.add_overlay(self.modal_scrim)
-        toolbar = Gtk.Box(spacing=8, margin_start=16, margin_end=16, margin_top=4, margin_bottom=8)
-        toolbar.add_css_class('tool-strip')
+        toolbar = Gtk.Box(spacing=2, margin_start=8, margin_end=8, margin_top=2, margin_bottom=4)
+        toolbar.add_css_class('viewer-toolbar')
+        self.toolbar = toolbar
         root.append(toolbar)
         self.edit_buttons = []
-        for icon, callback, hint in [
-            ('object-rotate-left-symbolic', lambda:self.rotate(False), '90° nach links drehen'),
-            ('object-rotate-right-symbolic', lambda:self.rotate(True), '90° nach rechts drehen (R)'),
-        ]:
-            button = icon_button(icon,hint,callback)
-            toolbar.append(button)
-            self.edit_buttons.append(button)
-        self.crop_toggle = Gtk.ToggleButton(label='Ausschnitt')
-        self.crop_toggle.set_tooltip_text('Ausschnitt auf dem Bild auswählen')
+        toolbar.append(icon_button('document-open-symbolic','Bild öffnen (Strg+O)',self.open_dialog))
+        toolbar.append(icon_button('view-grid-symbolic','Vorschaubilder öffnen',self.toggle_sidebar))
+        self.save_button = icon_button('document-save-symbolic','Speichern unter (Strg+Umschalt+S)',self.save_dialog)
+        toolbar.append(self.save_button)
+        toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
+        self.crop_toggle = Gtk.ToggleButton(icon_name='edit-select-all-symbolic')
+        self.crop_toggle.set_tooltip_text('Ausschnitt auswählen; Eingabe übernimmt die Auswahl')
+        self.crop_toggle.update_property([Gtk.AccessibleProperty.LABEL],['Ausschnitt auswählen'])
         self.crop_toggle.connect('toggled', self.toggle_crop)
         toolbar.append(self.crop_toggle)
-        self.crop_button = self.button(toolbar, 'Zuschneiden', self.apply_crop, 'Auswahl übernehmen (Eingabe)')
+        self.crop_button = icon_button('edit-cut-symbolic','Auswahl zuschneiden (Eingabe)',self.apply_crop)
+        toolbar.append(self.crop_button)
         self.undo_button = icon_button('edit-undo-symbolic','Rückgängig (Strg+Z)',self.undo)
         toolbar.append(self.undo_button)
-        self.redo_button = icon_button('edit-redo-symbolic','Wiederholen (Strg+Umschalt+Z)',self.redo)
+        self.redo_button = icon_button('edit-redo-symbolic','Wiederholen (Strg+Y)',self.redo)
         toolbar.append(self.redo_button)
-        toolbar.append(Gtk.Box(hexpand=True))
-        self.tools_toggle = Gtk.ToggleButton(label='Bearbeiten',active=True)
-        self.tools_toggle.connect('toggled',lambda b:self.inspector_panel.set_visible(b.get_active()) if hasattr(self,'inspector_panel') else None)
-        toolbar.append(self.tools_toggle)
+        toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
+        for icon,title,callback in [
+            ('dialog-information-symbolic','Bildinformationen',self.show_info),
+            ('zoom-in-symbolic','Vergrößern (+)',lambda:self.zoom(1.25)),
+            ('zoom-out-symbolic','Verkleinern (−)',lambda:self.zoom(.8)),
+            ('zoom-fit-best-symbolic','Einpassen (F)',self.fit_image),
+        ]:
+            button = icon_button(icon,title,callback)
+            toolbar.append(button)
+            self.edit_buttons.append(button)
+        toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
         self.scroll = Gtk.ScrolledWindow(hexpand=True, vexpand=True)
         self.canvas_overlay = Gtk.Overlay(hexpand=True,vexpand=True)
         self.canvas_overlay.set_child(self.scroll)
@@ -97,21 +101,12 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
         self.empty_state.append(label('Ein Bild hierher ziehen oder eine Datei öffnen.', 'muted'))
         self.button(self.empty_state,'Bild öffnen',self.open_dialog,'Datei auswählen (Strg+O)').add_css_class('primary')
         self.canvas_overlay.add_overlay(self.empty_state)
-        dock = Gtk.Box(spacing=4,halign=Gtk.Align.CENTER,valign=Gtk.Align.END,margin_bottom=24)
-        dock.add_css_class('zoom-dock')
-        for icon, title, callback in [('zoom-out-symbolic','Verkleinern (−)',lambda:self.zoom(.8))]:
-            dock.append(icon_button(icon,title,callback))
-        self.zoom_label = Gtk.Button(label='100 %',tooltip_text='Originalgröße (1)')
-        self.zoom_label.connect('clicked',lambda *_:self.actual_size())
-        dock.append(self.zoom_label)
-        dock.append(icon_button('zoom-in-symbolic','Vergrößern (+)',lambda:self.zoom(1.25)))
-        dock.append(icon_button('zoom-fit-best-symbolic','Bild einpassen (F)',self.fit_image))
-        self.canvas_overlay.add_overlay(dock)
+        self.zoom_label = Gtk.Label(label='100 %')
         self.canvas = Gtk.DrawingArea(hexpand=True, vexpand=True)
         self.canvas.set_draw_func(self.draw)
         self.scroll.set_child(self.canvas)
         self.status = Gtk.Label(label='Bild öffnen · PNG, JPEG, WebP, TIFF und weitere Formate', xalign=0,
-                                margin_start=14, margin_end=14, margin_top=9, margin_bottom=9)
+                                margin_start=8, margin_end=8, margin_top=4, margin_bottom=4)
         self.status.add_css_class('status-bar')
         self.status.set_ellipsize(3)
         root.append(self.status)
@@ -316,7 +311,7 @@ class Window(EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
             return
         iw, ih = self.model.image.size
         if self.fit:
-            scale = min(max(1,width-32)/iw, max(1,height-110)/ih, 1.0)
+            scale = min(max(1,width-8)/iw, max(1,height-8)/ih, 1.0)
             if abs(scale-self.scale) > .0001:
                 self.scale = scale
                 GLib.idle_add(self.update_status)

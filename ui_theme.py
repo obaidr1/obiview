@@ -65,6 +65,15 @@ popover modelbutton { border-radius: 8px; min-height: 30px; }
 popover modelbutton:hover { background: #e7e7e4; }
 separator { background: @line; min-height: 1px; }
 .error { color: #a02020; }
+window.viewer { border-radius: 14px; }
+window.viewer > headerbar, window.viewer headerbar { min-height: 30px; padding: 2px 8px; }
+window.viewer headerbar button { min-height: 22px; min-width: 22px; padding: 0 4px; }
+.viewer-toolbar button { min-width: 24px; min-height: 26px; padding: 2px; border-radius: 8px; }
+.viewer-toolbar separator { min-width: 1px; min-height: 20px; margin-top: 4px; margin-bottom: 4px; }
+.viewer-toolbar .file-counter { background: white; border: 1px solid @line; border-radius: 8px; padding: 2px 6px; font-size: 12px; }
+window.viewer menubar { background: @surface; padding: 0 8px; border-bottom: 1px solid @line; }
+window.viewer menubar > item { padding: 3px 8px; min-height: 18px; border-radius: 6px; }
+window.viewer menubar > item:hover { background: #e7e7e4; }
 .status-bar { color: @muted; font-size: 12px; }
 textview text { background: @card; color: @ink; }
 '''

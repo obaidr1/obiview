@@ -72,31 +72,70 @@ class EditorUI:
         self.reset_adjustments.connect('clicked',lambda *_:self.reset_preview())
         self.apply_adjustments = Gtk.Button(label='Anwenden')
         self.apply_adjustments.connect('clicked',lambda *_:self.edit(lambda _m:None))
-        row.append(self.reset_adjustments)
-        row.append(self.apply_adjustments)
-        footer_row = row
         self.inspector_scroll = Gtk.ScrolledWindow(vexpand=True)
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         self.inspector_scroll.set_hexpand(False)
         self.inspector_scroll.set_child(self.inspector)
         self.inspector_scroll.set_size_request(304,-1)
-        workspace = Gtk.Box(spacing=8, vexpand=True)
-        self.pane.set_hexpand(True)
-        parent = self.pane.get_parent()
-        previous = self.pane.get_prev_sibling()
-        parent.remove(self.pane)
-        workspace.append(self.pane)
         self.inspector_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
-        self.inspector_panel.set_hexpand(False)
         self.inspector_panel.append(self.inspector_scroll)
-        footer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8,
-                         margin_start=12,margin_end=20,margin_bottom=12)
-        footer.append(self.preview_note)
-        footer.append(footer_row)
-        self.inspector_panel.append(footer)
-        workspace.append(self.inspector_panel)
-        parent.insert_child_after(workspace,previous)
-        self.workspace = workspace
+        self.inspector_panel.append(self.preview_note)
+        self.editor_dialog = None
+        self.adjust_picture = None
+
+    def adjust_dialog(self):
+        if self.busy or self.model.image is None:
+            return
+        self.stop_slideshow()
+        if self.editor_dialog:
+            self.editor_dialog.present()
+            return
+        dialog = Gtk.Dialog(title='Bildanpassungen',transient_for=self,modal=True,
+                            default_width=740,default_height=700)
+        dialog.set_titlebar(Gtk.Box())
+        dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
+        self.editor_accept = dialog.add_button('Anwenden',Gtk.ResponseType.ACCEPT)
+        self.editor_accept.add_css_class('primary')
+        actions = self.editor_accept.get_parent()
+        actions.set_margin_start(20)
+        actions.set_margin_end(20)
+        actions.set_margin_top(12)
+        actions.set_margin_bottom(20)
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
+                       margin_start=20,margin_end=20,margin_top=16)
+        body.append(label('Bildanpassungen','dialog-title'))
+        content = Gtk.Box(spacing=16,vexpand=True)
+        preview = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,hexpand=True)
+        self.adjust_picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
+        self.adjust_picture.set_size_request(260,160)
+        accessible(self.adjust_picture,'Vorschau der Bildanpassungen')
+        preview.append(self.adjust_picture)
+        preview.append(self.reset_adjustments)
+        content.append(preview)
+        content.append(self.inspector_panel)
+        body.append(content)
+        dialog.get_content_area().append(body)
+        self.editor_dialog = dialog
+        self.dialogs.append(dialog)
+        self.set_scrim(True)
+        def response(_dialog,answer):
+            if self.busy:
+                return
+            content.remove(self.inspector_panel)
+            preview.remove(self.reset_adjustments)
+            self.editor_dialog = None
+            self.adjust_picture = None
+            self.dialogs.remove(dialog)
+            self.set_scrim(False)
+            dialog.destroy()
+            if answer == Gtk.ResponseType.ACCEPT and self.has_preview():
+                self.edit(lambda _m:None)
+            else:
+                self.reset_preview()
+        dialog.connect('response',response)
+        dialog.connect('close-request',lambda *_:(response(dialog,Gtk.ResponseType.CANCEL),True)[1])
+        self.update_editor()
+        dialog.present()
 
     def recipe(self):
         return {key:round(slider.get_value()) for key,slider in self.adjust_sliders.items()}, self.look
@@ -147,6 +186,8 @@ class EditorUI:
             self.preview_running = False
             if generation == self.preview_generation:
                 self.preview_pixbuf = preview_pixbuf(image)
+                if self.adjust_picture:
+                    self.adjust_picture.set_pixbuf(self.preview_pixbuf)
                 self.histogram_values = image.convert('RGB').histogram()
                 self.histogram.queue_draw()
                 self.canvas.queue_draw()
@@ -186,6 +227,9 @@ class EditorUI:
             self.undo_button.set_sensitive(True)
             self.lookup_action('undo').set_enabled(True)
         self.reset_adjustments.set_sensitive(pending)
+        if self.editor_dialog:
+            self.editor_accept.set_sensitive(pending and not self.busy)
+            self.adjust_picture.set_pixbuf(self.preview_pixbuf or self.pixbuf)
         self.preview_note.set_text('Vorschau · noch nicht angewendet' if pending else 'Alle Anpassungen sind übernommen.')
         identity = (id(self.model.image),self.model.revision)
         if identity != self.preview_identity and loaded:
