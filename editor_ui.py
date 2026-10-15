@@ -47,7 +47,7 @@ class EditorUI:
             section = card(title)
             section.set_spacing(3)
             if title == 'Licht':
-                self.histogram = Gtk.DrawingArea(content_height=46)
+                self.histogram = Gtk.DrawingArea(content_height=36)
                 accessible(self.histogram,'RGB-Histogramm des Bildes')
                 self.histogram.set_draw_func(self.draw_histogram)
                 section.append(self.histogram)

@@ -39,7 +39,9 @@ button:focus-visible, entry:focus-within, spinbutton:focus-within, scale:focus-v
 scale { padding: 10px 0; }
 scale trough { min-height: 3px; background: @line; border-radius: 8px; }
 scale highlight { min-height: 3px; background: #8c8c87; border: none; box-shadow: none; background-image: none; }
-.inspector scale { padding: 5px 0; min-height: 0; }
+.inspector .card { padding: 12px; }
+.inspector scale { padding: 2px 0; min-height: 0; }
+window .titlebar:not(headerbar) { min-height: 0; padding: 0; margin: 0; border: none; background: @surface; box-shadow: none; }
 .scrim { background: alpha(black,.35); }
 scale slider { min-width: 14px; min-height: 14px; background: white; border: 1px solid #b6b6b0; border-radius: 100%; box-shadow: 0 2px 5px alpha(black,.1); }
 scale:disabled { opacity: .4; }
@@ -55,9 +57,9 @@ checkbutton check:checked, checkbutton radio:checked { background: @ink; }
 .choice { border: 1px solid transparent; border-radius: 14px; padding: 10px; min-height: 48px; }
 .choice:checked { background: white; border-color: #c6c6c0; }
 .choice:hover { background: #eeeeeb; }
-dialog { background: #f2f2f0; border-radius: 22px; }
-dialog headerbar { background: transparent; padding: 4px 12px; }
-dialog .dialog-action-area { padding: 12px 24px 20px; }
+window.dialog { background: #f2f2f0; border-radius: 22px; }
+window.dialog headerbar { background: transparent; padding: 4px 12px; }
+window.dialog .dialog-action-area { padding: 12px 24px 20px; }
 popover contents { background: @card; color: @ink; border: 1px solid @line; border-radius: 16px; padding: 8px; }
 popover modelbutton { border-radius: 8px; min-height: 30px; }
 popover modelbutton:hover { background: #e7e7e4; }

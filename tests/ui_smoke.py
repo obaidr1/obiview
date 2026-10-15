@@ -31,6 +31,11 @@ image.save(sample)
 Image.new('RGB',(100,100),'blue').save(Path(temporary.name)/'second.png')
 app = Gtk.Application(application_id='local.bildblick.Smoke',flags=Gio.ApplicationFlags.NON_UNIQUE)
 failed = []
+def uncaught(kind, error, tb):
+    failed.append(''.join(traceback.format_exception(kind,error,tb)))
+    app.quit()
+
+sys.excepthook = uncaught
 step = 0
 started = time.monotonic()
 

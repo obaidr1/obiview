@@ -102,6 +102,7 @@ class SaveAsDialog(Gtk.Dialog):
         self.folder = Gtk.Entry(text=str(path.parent),hexpand=True,activates_default=True)
         self.quality_row = card('Qualität')
         self.quality = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL,1,100,1)
+        self.quality.set_draw_value(True)
         self.quality.set_digits(0)
         self.quality.set_value_pos(Gtk.PositionType.RIGHT)
         accessible(self.quality,'Exportqualität')

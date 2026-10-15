@@ -171,9 +171,9 @@ Tastaturbedienung ist Teil des Bedienkonzepts. Ein systematischer Accessibility-
 
 ## Qualität und Abnahme
 
-Der aktuelle automatische Prüfstand umfasst 57 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
+Der aktuelle automatische Prüfstand umfasst 62 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
 
-Der vorbereitete grafische Integrationstest deckt Navigation, grundlegende Bildoperationen, Menüs, Größenänderung und Speicherdialog ab. Er konnte in der eingeschränkten Entwicklungsumgebung mangels Display-Verbindung nicht ausgeführt werden. Status 77 bedeutet dabei „nicht ausgeführt“ und darf nicht als bestanden dargestellt werden.
+Der grafische Integrationstest läuft erfolgreich in einer Fedora-44-Sitzung mit Xvfb und Openbox in GitHub Actions. Er deckt Navigation, Bildoperationen, Menüs, Strg+R, Speicherdialog, Vorschau, Übernahme und verkleinerten Export ab. Screenshots prüfen die Anordnung und ein kompaktes Fenster. Lokal bleibt der Display-Zugriff eingeschränkt; Status 77 bedeutet dort „nicht ausgeführt“.
 
 Für eine belastbare Desktop-Freigabe sind folgende manuelle Prüfungen noch erforderlich:
 

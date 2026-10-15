@@ -309,6 +309,7 @@ Aktuelle Grenzen:
 | Datei/Ordner | Aufgabe |
 | --- | --- |
 | `bildblick.py` | Fenster, Zeichenfläche, Öffnen/Speichern und Eingabe |
+| `editor_ui.py`, `ui_theme.py`, `adjustments.py` | Gestaltung, Bearbeitungsleiste und Bildanpassungen |
 | `advanced_ui.py`, `menus.py` | Menüaktionen, Navigation, Dialoge und Hintergrundaufträge |
 | `image_model.py` | Bildzustand, Bearbeitung, Undo/Redo und Seitenexport |
 | `image_export.py`, `save_options.py`, `save_dialog.py` | Encoderoptionen, Profile und Speicherdialog |
