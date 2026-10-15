@@ -1,4 +1,4 @@
-Bildblick 0.4.1 – Linux-App
+Bildblick 0.5.0 – Linux-App
 =========================
 
 Installation für dein Benutzerkonto:
@@ -26,7 +26,8 @@ unter ~/.config/bildblick/ bleiben erhalten.
 Systemvoraussetzungen:
 Linux mit grafischer GTK-4-Sitzung, /usr/bin/python3, PyGObject, Pycairo und
 Pillow ab Version 12. Geprüft auf Fedora 44. Dort sind die relevanten Pakete:
-python3, python3-gobject, python3-cairo, python3-pillow, gtk4.
+python3, python3-gobject, python3-cairo, python3-pillow, gtk4, fontconfig.
+Optional: sane-backends für Scanner, GTK-Medienbackend/GStreamer für Medien.
 Optionale Zusatzdecoder: ImageMagick, poppler-utils, ffmpeg-free, util-linux.
 Das Paket enthält den Anwendungscode und das Symbol, keine gebündelte
 Python-/GTK-Laufzeit. Es ist kein eigenständiges AppImage.

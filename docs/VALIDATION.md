@@ -1,10 +1,14 @@
-# Prüfstand von Bildblick 0.4.1
+# Prüfstand von Bildblick 0.5.0
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 62 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 82 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
+- Physische Größen, DPI-Export mit erneutem Einlesen in JPEG/PNG/TIFF/BMP und DPI-Undo.
+- Auswahlkanten, Verschieben, Rote Augen, zehn Effekte, Rahmen und getrennte Leinwandränder.
+- Fontconfig-Schriftwahl, Textbegrenzung, Zeichenformen, Palettenreduktion und RGB-Tausch.
+- Druckgeometrie für Einpassen, cm, Prozent und Position sowie nativer Zwischenablage-Datentyp.
 - Alle neuen Regler und Looks: veränderte Pixel, erhaltenes Alpha, deterministische Körnung.
 - Exportauflösung für PNG, JPEG, WebP und GIF ohne Änderung der Arbeitsdatei.
 - Menüaktionen und Weiterleitung von `Strg+R` ohne Display.
@@ -31,6 +35,10 @@ Die GTK-Prüfung läuft erfolgreich unter Fedora 44 mit Xvfb, Openbox und dem Ca
 in GitHub Actions. Sie prüft Laden, Zoom, Drehen, Zuschnitt, Rückgängig/Wiederholen,
 Datei- und Seitennavigation, Diashow, Vollbild, Menüaktionen, Strg+R, Speicherdialog,
 Vorschau, Zurücksetzen, Übernahme von Looks und verkleinerten Export.
+Zusätzlich werden cm-/DPI-Resize, unveränderte Pixel beim Kopieren einer Auswahl,
+Einfügen/Speichern ohne Quelldatei, Rote Augen, Rahmen, freie Drehung, Text,
+Gamma/RGB, dauerhafte Ansichtsoptionen, PDF-Druck, Dateiumbenennung, Palette,
+Zeichnen und die getrennten Kürzel für Zuschnitt und Redo geprüft.
 
 Die Screenshots von Editor, Export, kompaktem Fenster und Größenänderung wurden geprüft.
 Die GUI-Prüfung verlangt eine Startgröße von exakt 720 × 640 Pixeln, eine sichtbare
@@ -42,4 +50,4 @@ weiterhin mit Exit-Code 77 statt einen Erfolg vorzutäuschen.
 
 ## Noch nicht bestätigt
 
-Noch ausstehend sind eine Prüfung in der konkreten Wayland-Sitzung des Nutzers, vollständige Maus-/Tastaturabläufe, Screenreader- und HiDPI-Tests sowie eine reale Druckausgabe. Die Veröffentlichung ist deshalb als frühe Vorabversion vorgesehen.
+Noch ausstehend sind eine Prüfung in der konkreten Wayland-Sitzung des Nutzers, vollständige Maus-/Tastaturabläufe, Screenreader- und HiDPI-Tests sowie reale Druck-/Scanausgaben und Mediencodec-Varianten. Die Veröffentlichung ist deshalb als frühe Vorabversion vorgesehen.

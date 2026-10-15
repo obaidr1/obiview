@@ -47,6 +47,8 @@ def install(source, data_dir, bin_dir):
         target = app_dir/original.name
         if original.resolve() != target.resolve():
             shutil.copy2(original, target)
+    if (source/'docs').is_dir():
+        shutil.copytree(source/'docs',app_dir/'docs',dirs_exist_ok=True)
     (app_dir/'start.sh').chmod(0o755)
     launcher = bin_dir/'bildblick'
     atomic_text(launcher, '#!/bin/sh\nexec /usr/bin/python3 ' + shlex.quote(str(app_dir/'bildblick.py')) + ' "$@"\n', 0o755)

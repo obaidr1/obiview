@@ -234,6 +234,7 @@ def tick(window):
             window.begin_drag(RightDrag(),ox+100*scale,oy+100*scale)
             window.end_drag(RightDrag(),10*scale,20*scale)
             assert window.selection==(10,20,350,340)
+            window.clipboard_expected=window.model.image.crop(window.selection).tobytes()
             window.copy_image()
             window.crop_toggle.set_active(False)
             window.clear_image()
@@ -241,6 +242,7 @@ def tick(window):
             window.paste_image()
         elif step == 24:
             assert window.model.image.size==(340,320)
+            assert window.model.image.tobytes()==window.clipboard_expected
             assert window.model.source_path is None and window.model.dirty
             # Saving a clipboard document must work without an original file.
             window.request_save(Path(temporary.name)/'clipboard.png')
@@ -254,7 +256,6 @@ def tick(window):
             assert window.model.image.size==(344,326)
             window.undo()
             dialog=window.border_dialog(); dialog.widgets['style'].set_active_id('double')
-            screenshot('frame')
             dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 27:
             assert window.model.image.size==(384,364)
@@ -304,7 +305,6 @@ def tick(window):
             assert window.model.path.name=='renamed.png' and window.model.path.is_file()
             assert not (Path(temporary.name)/'clipboard.png').exists()
             window.lookup_action('custom-selection').activate(None)
-            screenshot('selection')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
             dialog=window.palette_dialog(); dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 35:
@@ -329,6 +329,30 @@ def tick(window):
             window.undo()
             # A second native window starts empty, with the same compact surface size.
             second=window.new_window(); second.allow_close=True; second.close()
+            assert not window.dialogs and window.scrim_depth==0
+            window.selection_dialog()
+        elif step == 39:
+            screenshot('selection')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.border_dialog()
+        elif step == 40:
+            screenshot('frame')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.text_dialog()
+        elif step == 41:
+            screenshot('text')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.print_image()
+        elif step == 42:
+            screenshot('print')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.paint_dialog()
+        elif step == 43:
+            screenshot('paint')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.menu_bar.get_first_child().activate()
+        elif step == 44:
+            screenshot('file-menu')
             assert not window.dialogs and window.scrim_depth==0
             print('PASS: GTK core + physical resize/DPI, selection move/resize, clipboard, frame, canvas, rotation, effects, text, gamma/RGB, preferences, print PDF, rename, palette, painting, shortcuts')
             window.cleanup()

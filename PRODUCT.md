@@ -114,11 +114,11 @@ Die Gestaltung ist in [docs/DESIGN.md](docs/DESIGN.md) dokumentiert. Ein separat
 
 ### Bearbeitung
 
-- Rotation um 90°, horizontales und vertikales Spiegeln.
-- Rechteckiger Zuschnitt.
-- Größenänderung mit vier Interpolationsverfahren.
+- Rotation um 90° und freie Winkel, horizontales und vertikales Spiegeln.
+- Rechteckiger Zuschnitt, präzise Auswahlvorgaben, Zwischenablage und automatische Randentfernung.
+- Größenänderung in Pixeln, Prozent, cm und Zoll mit DPI und vier Interpolationsverfahren.
 - Graustufen, Negativ und automatischer Kontrast.
-- Helligkeit, Kontrast, Sättigung, Schärfe und Weichzeichnung.
+- Helligkeit, Kontrast, Gamma, RGB-Balance, Sättigung, Schärfe, Rote Augen, Filter, Rahmen und Leinwandränder.
 - Text im Auswahlrechteck mit Schriftfamilie, Stil, Punktgröße und Farbe; separate Zeichenwerkzeuge.
 - Bildwasserzeichen mit begrenzter Größe und derzeit fester Deckkraft von 50 %.
 
