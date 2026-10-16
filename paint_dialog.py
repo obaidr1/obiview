@@ -69,7 +69,7 @@ def tool_symbol(area,cr,width,height,kind,button):
 
 class PaintDialog(StandardDialog):
     def __init__(self,parent):
-        super().__init__(title='Zeichnen',transient_for=parent,modal=True,default_width=780,default_height=620)
+        super().__init__(title='Zeichnen',transient_for=parent,modal=True)
         self.set_titlebar(Gtk.Box()); self.parent=parent
         self.source=parent.model.image.copy(); self.strokes=[]; self.points=[]
         self.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
@@ -93,12 +93,14 @@ class PaintDialog(StandardDialog):
         self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); root.append(self.tool)
         controls.append(label('Strichbreite'))
         self.width=SliderField(1,500,1,4,'Strichbreite',exact=True); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
-        controls.append(label('Farbe'))
-        rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); controls.append(self.color)
+        color_row=Gtk.Box(spacing=8)
+        color_row.append(label('Farbe'))
+        rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); color_row.append(self.color)
         undo=Gtk.Button(tooltip_text='Letzter Strich zurück'); undo_content=Gtk.Box(spacing=6)
         undo_content.append(Gtk.Image(icon_name='edit-undo-symbolic')); undo_content.append(label('Zurück'))
         undo.set_child(undo_content); accessible(undo,'Letzter Strich zurück')
-        undo.connect('clicked',lambda *_:self.undo_stroke()); controls.append(undo)
+        undo.connect('clicked',lambda *_:self.undo_stroke()); undo.set_hexpand(True); undo.set_halign(Gtk.Align.END); color_row.append(undo)
+        controls.append(color_row)
         root.append(controls)
         self.area=Gtk.DrawingArea(hexpand=True,vexpand=True,content_height=220)
         accessible(self.area,'Zeichenfläche'); self.area.set_draw_func(self.draw); root.append(self.area)

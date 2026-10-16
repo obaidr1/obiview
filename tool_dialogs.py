@@ -23,8 +23,7 @@ def image_clipboard_provider(image):
 
 class ToolDialog(StandardDialog):
     def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=()):
-        super().__init__(title=title, transient_for=parent, modal=True,
-                         default_width=860 if preview else 520, default_height=700 if preview else 600)
+        super().__init__(title=title, transient_for=parent, modal=True)
         self.set_titlebar(Gtk.Box())
         self.widgets, self.kinds = {}, {}
         self.fields = fields

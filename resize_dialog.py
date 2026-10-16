@@ -11,7 +11,7 @@ from edit_controls import ChoiceButtons
 
 class ResizeDialog(StandardDialog):
     def __init__(self,parent,on_apply):
-        super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=760)
+        super().__init__(title='Größe ändern',transient_for=parent,modal=True)
         self.set_titlebar(Gtk.Box())
         parent.set_scrim(True)
         self.settings = ResizeSettings(*parent.model.image.size)

@@ -303,7 +303,7 @@ def tick(window):
                 dialog.compare.set_active(True)
                 assert dialog.picture.get_paintable().get_width()==window.effect_before.width
                 dialog.compare.set_active(False)
-                assert dialog.get_width()==520 and dialog.get_height()==760, (dialog.get_width(),dialog.get_height())
+                assert dialog.get_surface().get_width()==520 and dialog.get_surface().get_height()==760, (dialog.get_surface().get_width(),dialog.get_surface().get_height())
                 assert dialog.body_scroll.get_height()>100, 'Scrollable effects body remains usable'
                 screenshot('effects')
                 # Hold one completed worker to exercise stale and post-close delivery.

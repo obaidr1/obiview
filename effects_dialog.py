@@ -9,8 +9,7 @@ from ui_theme import accessible, card, label
 
 class EffectsDialog(StandardDialog):
     def __init__(self, parent):
-        super().__init__(title='Effekte', transient_for=parent, modal=True,
-                         default_width=860, default_height=700)
+        super().__init__(title='Effekte', transient_for=parent, modal=True)
         self.parent = parent
         self.source = parent.model.image.copy()
         self.source.thumbnail((1200, 1200), Image.Resampling.LANCZOS)

@@ -257,7 +257,7 @@ class ViewerShortcuts:
         except Exception as error: self.message('Drucken fehlgeschlagen',str(error))
 
     def shortcut_help(self):
-        dialog=StandardDialog(title='Tastenkürzel',transient_for=self,modal=True,default_width=720,default_height=640)
+        dialog=StandardDialog(title='Tastenkürzel',transient_for=self,modal=True)
         dialog.set_titlebar(Gtk.Box())
         close_button=dialog.add_button('Schließen',Gtk.ResponseType.CLOSE); close_button.add_css_class('primary')
         actions=close_button.get_parent()

@@ -32,9 +32,11 @@ def children(widget):
 def normalize(widget):
     """Wrap content at the fixed width; one outer scroll owns vertical overflow."""
     if isinstance(widget, Gtk.Label):
-        widget.set_wrap(True)
-        widget.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
-        widget.set_max_width_chars(36)
+        if widget.get_ellipsize() == Pango.EllipsizeMode.NONE:
+            # Short action labels keep their words intact; prose and paths may wrap.
+            widget.set_wrap(widget.get_wrap() or len(widget.get_text()) > 24)
+            widget.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
+            widget.set_max_width_chars(36)
     if isinstance(widget, Gtk.SpinButton):
         widget.set_width_chars(5)
         widget.set_max_width_chars(8)

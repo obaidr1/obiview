@@ -17,8 +17,7 @@ from save_options import ALIASES, FORMAT_CHOICES, SaveSettings, SaveProfiles, fi
 
 class SaveAsDialog(StandardDialog):
     def __init__(self, parent, settings, on_save):
-        super().__init__(title='Bild exportieren', transient_for=parent, modal=True,
-                         default_width=540, default_height=800)
+        super().__init__(title='Bild exportieren', transient_for=parent, modal=True)
         self.set_titlebar(Gtk.Box())
         parent.set_scrim(True)
         self.on_save = on_save

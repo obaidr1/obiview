@@ -88,8 +88,7 @@ class EditorUI:
         if self.editor_dialog:
             self.editor_dialog.present()
             return
-        dialog = StandardDialog(title='Bildanpassungen',transient_for=self,modal=True,
-                            default_width=740,default_height=700)
+        dialog = StandardDialog(title='Bildanpassungen',transient_for=self,modal=True)
         dialog.set_titlebar(Gtk.Box())
         dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
         self.editor_accept = dialog.add_button('Anwenden',Gtk.ResponseType.ACCEPT)

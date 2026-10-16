@@ -24,7 +24,7 @@ def expanded(widget):
 
 def check(window,name):
     expected=dialog_size(window.get_transient_for())
-    actual=(window.get_width(),window.get_height())
+    actual=(window.get_surface().get_width(),window.get_surface().get_height())
     assert actual==expected,(name,'geometry',actual,expected)
     if isinstance(window,StandardDialog):
         # Check expanded content too: no horizontal clipping inside the body.
@@ -76,6 +76,16 @@ def activate(application):
         info=w.show_info(); child=info.show_metadata('exif')
         child.connect('response',lambda *_:info.close_dialog()); return child
     cases.append(('metadata',metadata))
+    def red_eye(): w.selection=(10,10,100,100); return w.red_eye_dialog()
+    cases.append(('red_eye',red_eye))
+    cases.append(('rename',lambda:w.file_action('rename')))
+    def panorama():
+        choose=w.choose
+        try:
+            w.choose=lambda _title,callback,**kwargs:callback([sample,sample])
+            w.panorama_dialog()
+        finally: w.choose=choose
+    cases.append(('panorama',panorama))
     def message(): w.message('Eine sehr lange Meldung mit verständlichem Titel','/long/path/'*100)
     cases.append(('message',message))
     cases.append(('batch_options',lambda:w.batch_options([sample],Path(scratch.name))))

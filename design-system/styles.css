@@ -73,3 +73,6 @@ dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
 #modal-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .modal-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 #modal-content > .dialog-footer { position: static; flex: none; margin-top: 12px; padding: 0; }
+
+.grid > *, .dialog-example { min-width: 0; }
+.dialog-shell { width: min(var(--dialog-width),100%); min-width: 0; }

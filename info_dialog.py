@@ -8,8 +8,7 @@ from ui_theme import label, card, accessible
 
 class ImageInfoDialog(StandardDialog):
     def __init__(self,parent):
-        super().__init__(title='Bildinformationen',transient_for=parent,modal=True,
-                         default_width=780,default_height=740)
+        super().__init__(title='Bildinformationen',transient_for=parent,modal=True)
         self.parent=parent; self.alive=True; self.cancel_count=threading.Event()
         self.children=[]; self.values={}; self.count_generation=0
         self.set_titlebar(Gtk.Box())
@@ -34,13 +33,15 @@ class ImageInfoDialog(StandardDialog):
         for row,(key,title) in enumerate(fields):
             grid.attach(label(title,'muted'),0,row*2,1,1)
             if key=='dpi':
-                widget=Gtk.Box(spacing=8)
+                widget=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
+                dpi_row=Gtk.Box(spacing=8,homogeneous=True)
+                widget.append(dpi_row)
                 self.dpi_x=Gtk.SpinButton.new_with_range(1,9600,1)
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
                     spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7); accessible(spin,title)
-                widget.append(self.dpi_x); widget.append(label('×')); widget.append(self.dpi_y)
-                self.dpi_button=Gtk.Button(label='Ändern')
+                dpi_row.append(self.dpi_x); dpi_row.append(self.dpi_y)
+                self.dpi_button=Gtk.Button(label='DPI ändern',halign=Gtk.Align.END)
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)
             elif key=='count':
                 widget=Gtk.Box(spacing=12)
@@ -109,7 +110,7 @@ class ImageInfoDialog(StandardDialog):
             values=source.get(kind,{})
             text='\n\n'.join(f'{key}: {metadata_text(value)}' for key,value in values.items())
             if not text: text=f'Keine {titles[kind]} verfügbar.'
-        dialog=StandardDialog(title=titles[kind],transient_for=self,modal=True,default_width=700,default_height=480)
+        dialog=StandardDialog(title=titles[kind],transient_for=self,modal=True)
         dialog.add_button('Schließen',Gtk.ResponseType.CLOSE)
         scroll=Gtk.ScrolledWindow(vexpand=True)
         view=Gtk.TextView(editable=False,wrap_mode=Gtk.WrapMode.WORD_CHAR,
