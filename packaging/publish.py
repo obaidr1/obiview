@@ -8,7 +8,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = 'obaidr1/obiview'
-VERSION = '0.9.1'
+VERSION = '0.9.2'
 
 
 def run(*args, capture=False, check=True):

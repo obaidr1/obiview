@@ -41,3 +41,5 @@ Die GTK-Geometrie wird unter Fedora 44, X11, Xvfb und Openbox überprüft. Die S
 Linux-Datei-/Ordnerauswahl, Farb- und Schriftwahl, Drucker-/Papierauswahl sowie Portale werden vom System dargestellt. Ihre Fenstermaße und Gestaltung werden nicht von Bildblick erzwungen. Das entspricht der ausdrücklich dokumentierten Systemgrenze der Designvorlage. Die App-eigenen Auslöser und vorbereitenden Dialoge folgen dem gemeinsamen Design.
 
 Ab 0.9.1 prüft der GTK-Funktionstest zusätzlich die kompakte Abfrage mit Speichern/Verwerfen/Abbrechen, Escape, Exportabbruch, Fortsetzung nach erfolgreichem Speichern und den Erhalt der Änderungen nach einem Schreibfehler.
+
+0.9.2 prüft zusätzlich, dass der gesamte Text der kurzen Speicherabfrage ohne Scrollen sichtbar ist.

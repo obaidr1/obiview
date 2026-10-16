@@ -115,6 +115,12 @@ class StandardDialog(Gtk.Dialog):
                 for side, amount in [('start',24),('end',24),('top',12),('bottom',24)]:
                     getattr(actions,'set_margin_'+side)(amount)
             self.prepared = True
+        if self.compact:
+            # GtkScrolledWindow may shrink below its propagated natural height.
+            # Reserve the wrapped body's actual height, capped for long messages.
+            width, height = dialog_size(self.get_transient_for())
+            natural = self.body.measure(Gtk.Orientation.VERTICAL, width-10)[1]
+            self.body_scroll.set_min_content_height(min(natural, max(100, height-120)))
         super().present()
 
 

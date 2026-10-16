@@ -710,6 +710,8 @@ def tick(window):
             dialog=window.dialogs[-1]
             assert [b.get_label() for b in dialog.action_buttons]==['Abbrechen','Verwerfen','Speichern']
             assert dialog.get_surface().get_width()==520 and dialog.get_surface().get_height()<320
+            scroll=dialog.body_scroll.get_vadjustment()
+            assert scroll.get_upper()<=scroll.get_page_size()+1, 'Short confirmation text is clipped'
             screenshot('compact-unsaved')
             dialog._key(None,Gdk.KEY_Escape,0,Gdk.ModifierType(0))
             assert window.model.dirty and not window.guard_actions

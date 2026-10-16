@@ -1,4 +1,4 @@
-# Prüfstand von Bildblick 0.9.1
+# Prüfstand von Bildblick 0.9.2
 
 ## Automatisch geprüft
 
