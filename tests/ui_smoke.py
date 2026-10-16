@@ -421,6 +421,13 @@ def tick(window):
             window.menu_bar.get_first_child().activate()
         elif step == 44:
             screenshot('file-menu')
+            def close_popovers(widget):
+                if isinstance(widget,Gtk.Popover): widget.popdown()
+                child=widget.get_first_child()
+                while child:
+                    close_popovers(child)
+                    child=child.get_next_sibling()
+            close_popovers(window.menu_bar)
             assert not window.dialogs and window.scrim_depth==0
             def rgba_result(image, result):
                 result=result.convert('RGBA'); result.putalpha(image.getchannel('A')); return result
@@ -451,10 +458,11 @@ def tick(window):
                         assert sum(b.get_active() for b in widget.buttons.values())==1
                     elif isinstance(widget,Gtk.CheckButton): widget.set_active(value)
                     elif isinstance(widget,SliderField):
-                        widget.number.set_value(value+1)
-                        assert widget.scale.get_value()==widget.number.get_value()
+                        if widget.number is not None:
+                            widget.number.set_value(value+1)
+                            assert widget.scale.get_value()==widget.number.get_value()
                         widget.scale.set_value(value)
-                        assert widget.number.get_value()==value
+                        assert widget.get_value()==value
                     else: widget.set_value(value)
                 if factory=='border_dialog': assert not dialog.widgets['inner_width'].get_sensitive()
                 window.tool_phase=1
@@ -473,7 +481,21 @@ def tick(window):
                 for key,_title,value,kind in dialog.fields:
                     if isinstance(kind,tuple): assert dialog.widgets[key].get_value()==value
                     elif isinstance(kind,list): assert dialog.widgets[key].get_active_id()==value
+                delayed=None
+                if factory=='adjust_values_dialog':
+                    submit=window.submit; captured=[]
+                    window.submit=lambda work,done,failure:captured.append((work,done,failure))
+                    try:
+                        GLib.source_remove(dialog.preview_timer); dialog.preview_timer=0
+                        dialog.render_preview()
+                    finally: window.submit=submit
+                    work,done,failure=captured[0]; delayed=work()
+                    dialog.widgets['contrast'].scale.set_value(99)
+                    done(delayed)
+                    assert not dialog.preview_ready
                 dialog.response(Gtk.ResponseType.CANCEL)
+                if delayed is not None:
+                    done(delayed); failure(RuntimeError('late result'))
                 assert window.model.image.tobytes()==window.tool_before.tobytes()
                 assert not window.dialogs and window.scrim_depth==0
                 dialog=getattr(window,factory)()
@@ -508,6 +530,22 @@ def tick(window):
         elif step == 47:
             screenshot('resize-choices')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            window.tool_before=window.model.image.copy()
+            dialog=window.canvas_dialog()
+            dialog.widgets['left'].set_value(-window.model.image.width)
+            dialog.widgets['right'].set_value(0)
+        elif step == 48:
+            dialog=window.dialogs[-1]
+            if not dialog.error.get_text(): return True
+            assert not dialog.accept.get_sensitive() and not dialog.preview_ready
+            assert window.model.image.tobytes()==window.tool_before.tobytes()
+            dialog.widgets['left'].set_value(0)
+        elif step == 49:
+            dialog=window.dialogs[-1]
+            if not dialog.preview_ready: return True
+            assert dialog.accept.get_sensitive() and not dialog.error.get_text()
+            dialog.response(Gtk.ResponseType.CANCEL)
+            assert window.model.image.tobytes()==window.tool_before.tobytes()
             print('PASS: GTK core + direct editing choices, two-way sliders, full-image previews, original comparison, cancel/reset/apply/undo for nine editing tools, drawing and resize choices')
             window.cleanup()
             app.quit()

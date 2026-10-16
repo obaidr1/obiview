@@ -71,7 +71,7 @@ class ToolDialog(Gtk.Dialog):
                 widget.set_active_id(str(value))
             elif isinstance(kind,tuple):
                 if key in sliders:
-                    widget = SliderField(*kind,value=value,title=title)
+                    widget = SliderField(*kind,value=value,title=title,exact=key in ('width','inner_width'))
                 else:
                     widget = Gtk.SpinButton.new_with_range(*kind)
                     widget.set_digits(2 if kind[2] < 1 else 0)
@@ -158,7 +158,7 @@ class ToolDialog(Gtk.Dialog):
         self.preview_generation += 1
         self.preview_ready = False
         self.error.set_text('')
-        self.accept.set_sensitive(True)
+        self.accept.set_sensitive(not self.pending_accept)
         self.preview_note.set_text('Vorschau wird berechnet …')
         if self.preview_timer: GLib.source_remove(self.preview_timer)
         self.preview_timer = GLib.timeout_add(120,self.render_preview)
@@ -190,6 +190,7 @@ class ToolDialog(Gtk.Dialog):
             self.preview_running = False
             if not self.alive or generation!=self.preview_generation: return
             self.pending_accept = False
+            self.controls_scroll.set_sensitive(True)
             self.error.set_text(str(error)); self.preview_note.set_text(str(error))
             self.accept.set_sensitive(False)
         self.get_transient_for().submit(work,done,failed)
@@ -198,12 +199,16 @@ class ToolDialog(Gtk.Dialog):
     def respond(self,_dialog,response):
         if not self.alive: return
         if response == Gtk.ResponseType.ACCEPT:
+            values = self.values()
             if self.preview_operation and not self.preview_ready:
                 self.pending_accept=True
+                self.accept.set_sensitive(False)
+                self.controls_scroll.set_sensitive(False)
                 return
-            try: self.apply(self.values())
+            try: self.apply(values)
             except Exception as error:
-                self.error.set_text(str(error)); self.pending_accept=False; return
+                self.error.set_text(str(error)); self.pending_accept=False
+                self.controls_scroll.set_sensitive(True); self.accept.set_sensitive(True); return
         self.alive = False
         self.pending_accept = False
         self.preview_generation += 1

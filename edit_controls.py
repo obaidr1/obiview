@@ -44,42 +44,44 @@ class ChoiceButtons(Gtk.Grid):
 class SliderField(Gtk.Box):
     __gsignals__ = {'value-changed': (GObject.SignalFlags.RUN_FIRST, None, ())}
 
-    def __init__(self, lower, upper, step, value=0, title='Wert'):
+    def __init__(self, lower, upper, step, value=0, title='Wert', exact=False):
         super().__init__(spacing=10, hexpand=True)
         self.syncing = False
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, lower, upper, step)
         self.scale.set_hexpand(True)
         self.scale.set_size_request(140, -1)
-        self.scale.set_draw_value(False)
-        self.number = Gtk.SpinButton.new_with_range(lower, upper, step)
-        self.number.set_digits(2 if step < 1 else 0)
-        self.number.set_numeric(True)
-        self.number.set_width_chars(5)
+        self.scale.set_draw_value(not exact)
+        self.scale.set_digits(2 if step < 1 else 0)
+        self.scale.set_value_pos(Gtk.PositionType.RIGHT)
+        self.number = Gtk.SpinButton.new_with_range(lower, upper, step) if exact else None
         accessible(self.scale, title)
-        accessible(self.number, title + ' – genauer Wert')
         self.append(self.scale)
-        self.append(self.number)
+        if self.number is not None:
+            self.number.set_digits(2 if step < 1 else 0)
+            self.number.set_numeric(True)
+            self.number.set_width_chars(4)
+            accessible(self.number, title + ' – genauer Wert')
+            self.append(self.number)
+            self.number.connect('value-changed', self.changed, self.scale)
         self.scale.connect('value-changed', self.changed, self.number)
-        self.number.connect('value-changed', self.changed, self.scale)
         self.set_value(value)
 
     def changed(self, widget, other):
         if self.syncing:
             return
         self.syncing = True
-        other.set_value(widget.get_value())
+        if other is not None: other.set_value(widget.get_value())
         self.syncing = False
         self.emit('value-changed')
 
     def set_value(self, value):
-        self.number.set_value(value)
-        self.scale.set_value(self.number.get_value())
+        self.scale.set_value(value)
 
     def get_value(self):
-        return self.number.get_value()
+        return self.scale.get_value()
 
     def get_value_as_int(self):
-        return self.number.get_value_as_int()
+        return round(self.scale.get_value())
 
     def update(self):
-        self.number.update()
+        if self.number is not None: self.number.update()
