@@ -4,7 +4,7 @@ from gi.repository import Gtk, GLib
 from dialog_layout import StandardDialog
 from editor_ui import preview_pixbuf
 from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
-from ui_theme import accessible, card, label
+from ui_theme import accessible, card, label, selection_content, preview_surface
 
 
 class EffectsDialog(StandardDialog):
@@ -42,7 +42,7 @@ class EffectsDialog(StandardDialog):
         self.picture.set_size_request(-1, 160); self.picture.set_vexpand(False)
         self.picture.set_pixbuf(self.original)
         accessible(self.picture, 'Live-Vorschau des ausgewählten Effekts')
-        preview_area.append(self.picture)
+        preview_area.append(preview_surface(self.picture))
         self.compare = Gtk.ToggleButton(label='Original vergleichen')
         self.compare.connect('toggled', self.show_preview)
         preview_area.append(self.compare)
@@ -56,9 +56,8 @@ class EffectsDialog(StandardDialog):
         self.buttons = {}
         group = None
         for i, (name, title) in enumerate(EFFECTS.items()):
-            button = Gtk.ToggleButton(label=title)
-            button.add_css_class('effect-choice')
-            accessible(button, title)
+            button = Gtk.ToggleButton(hexpand=True)
+            selection_content(button, title)
             if group is not None:
                 button.set_group(group)
             else:
@@ -100,7 +99,7 @@ class EffectsDialog(StandardDialog):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
         line = Gtk.Box()
         line.append(label(title, hexpand=True))
-        value = label('', 'small muted')
+        value = label('', 'numeric-value')
         line.append(value)
         box.append(line)
         slider = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, lower, upper, 1)
@@ -148,6 +147,7 @@ class EffectsDialog(StandardDialog):
         self.generation += 1
         self.ready = False
         self.accept.set_sensitive(False)
+        self.note.remove_css_class('error')
         self.note.set_text('Vorschau wird berechnet …')
         if self.timer:
             GLib.source_remove(self.timer)
@@ -183,6 +183,7 @@ class EffectsDialog(StandardDialog):
         def failed(error):
             self.running = False
             if not self.closed and generation == self.generation:
+                self.note.add_css_class('error')
                 self.note.set_text(f'Vorschau fehlgeschlagen: {error}')
 
         self.parent.submit(lambda: mixed_effect(self.source, name, amount, strength), done, failed)

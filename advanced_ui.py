@@ -69,6 +69,18 @@ class AdvancedFeatures:
         self.search.connect('search-changed',lambda *_:self.rebuild_thumbnails())
         self.sidebar.add_css_class('sidebar')
         self.sidebar.append(self.search)
+        self.thumb_empty = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
+                                  margin_top=24,margin_bottom=24)
+        self.thumb_empty_title=ui_label('Noch kein Ordner geöffnet','section-title',wrap=True)
+        self.thumb_empty_note=ui_label('Öffne einen Ordner, um seine Bilder zu durchsuchen.','muted',wrap=True,max_width_chars=32)
+        self.thumb_empty.append(self.thumb_empty_title); self.thumb_empty.append(self.thumb_empty_note)
+        empty_actions=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
+        self.thumb_reset=Gtk.Button(label='Filter zurücksetzen')
+        self.thumb_reset.connect('clicked',lambda *_:self.clear_thumbnail_filters())
+        empty_actions.append(self.thumb_reset)
+        open_folder=Gtk.Button(label='Ordner öffnen'); open_folder.add_css_class('primary')
+        open_folder.connect('clicked',lambda *_:self.open_folder()); empty_actions.append(open_folder)
+        self.thumb_empty.append(empty_actions); self.sidebar.append(self.thumb_empty)
         thumb_scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=False)
         self.thumbnails = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, homogeneous=True,
                                       min_children_per_line=1, max_children_per_line=1)
@@ -259,6 +271,11 @@ class AdvancedFeatures:
             self.stop_slideshow()
             self.guard(lambda:self.request_load(self.model.source_path,frame))
 
+    def clear_thumbnail_filters(self):
+        self.search.set_text('')
+        self.tag_filter.set_active(False)
+        self.rebuild_thumbnails()
+
     def more_thumbnails(self):
         self.thumb_limit += 100
         self.rebuild_thumbnails()
@@ -272,6 +289,11 @@ class AdvancedFeatures:
             child = self.thumbnails.get_first_child()
         query = self.search.get_text().casefold()
         matches = [p for p in self.folder_files if query in p.name.casefold() and (not self.tag_filter.get_active() or str(p) in self.tags)]
+        filtered=bool(query or self.tag_filter.get_active())
+        self.thumb_empty.set_visible(not matches)
+        self.thumb_reset.set_visible(filtered)
+        self.thumb_empty_title.set_text('Keine passenden Bilder' if filtered else 'Keine Bilder in diesem Ordner' if self.folder else 'Noch kein Ordner geöffnet')
+        self.thumb_empty_note.set_text('Setze Suchtext und Markierungsfilter zurück oder öffne einen anderen Ordner.' if filtered else 'Öffne einen Ordner mit unterstützten Bilddateien.')
         self.more_thumbs.set_visible(len(matches)>self.thumb_limit)
         if not self.sidebar.get_visible():
             return
@@ -282,13 +304,15 @@ class AdvancedFeatures:
             label = Gtk.Label(label=('★ ' if str(path) in self.tags else '')+path.name,max_width_chars=24,ellipsize=Pango.EllipsizeMode.MIDDLE)
             box.append(picture)
             box.append(label)
+            failure=Gtk.Label(label='Vorschau nicht verfügbar',wrap=True,visible=False)
+            failure.add_css_class('small'); failure.add_css_class('muted'); box.append(failure)
             button = Gtk.Button(tooltip_text=str(path))
             button.set_child(box)
             button.connect('clicked',lambda _b,p=path:self.guard(lambda:self.request_load(p)) if not self.busy else None)
             self.thumbnails.append(button)
-            rows.append((path,picture))
+            rows.append((path,picture,failure))
         def work():
-            for path,picture in rows:
+            for path,picture,failure in rows:
                 if self.closed or token != self.thumb_generation:
                     break
                 try:
@@ -302,7 +326,11 @@ class AdvancedFeatures:
                         thumb.thumbnail((160,105))
                     GLib.idle_add(show,picture,thumb)
                 except Exception:
-                    pass
+                    GLib.idle_add(unavailable,picture,failure)
+        def unavailable(picture,failure):
+            if not self.closed and token == self.thumb_generation:
+                picture.set_visible(False); failure.set_visible(True)
+            return False
         def show(picture,thumb):
             if not self.closed and token == self.thumb_generation:
                 picture.set_pixbuf(pixbuf(thumb))

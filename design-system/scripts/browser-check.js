@@ -13,7 +13,7 @@
   check('Exclusive tool selection and keyboard arrows',()=>{choice('.tool-choices','brush').click();assert(document.querySelectorAll('.tool-choices [aria-checked=true]').length===1);assert(q('#tool-description').textContent.includes('Pinsel'));choice('.tool-choices','brush').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert(choice('.tool-choices','line').getAttribute('aria-checked')==='true');assert(document.activeElement===choice('.tool-choices','line'));});
   check('Switch and indeterminate checkbox',()=>{const s=q('#toggles [role=switch]');const before=s.getAttribute('aria-checked');s.click();assert(s.getAttribute('aria-checked')!==before);assert(q('#mixed-check').indeterminate);});
   check('Invalid filename becomes valid after correction',()=>{input('#invalid-name','good.jpg');assert(q('#invalid-name').getAttribute('aria-invalid')==='false');input('#invalid-name','bad/name.jpg');assert(q('#invalid-name').getAttribute('aria-invalid')==='true');});
-  check('Thumbnail filter handles matches and empty state',()=>{input('#search-demo','duenen');assert([...document.querySelectorAll('.thumb')].filter(b=>!b.hidden).length===1);input('#search-demo','missing');assert(q('#thumb-status').textContent.includes('Keine Bilder'));input('#search-demo','');});
+  check('Thumbnail filter handles matches and empty state',()=>{input('#search-demo','duenen');assert([...document.querySelectorAll('.thumb')].filter(b=>!b.hidden).length===1);input('#search-demo','missing');assert(q('#thumb-status').textContent.includes('Keine Bilder'));assert(!q('#thumb-reset').hidden);click('#thumb-reset');assert(q('#search-demo').value==='');});
   check('Effect preview, compare, apply and cancel',()=>{input('#intensity','80');assert(q('#effect-image').style.filter==='sepia(0.8)');click('#compare');assert(q('#effect-image').style.filter==='none');click('#compare');click('#apply-effect');input('#intensity','20');click('#cancel-effect');assert(q('#intensity').value==='80');click('#reset-effect');assert(q('#intensity').value==='65');});
   check('PNG disables lossy quality; custom size calculates height',()=>{choice('[data-export-format]','PNG').click();assert(q('#export-quality').disabled);assert(!q('[data-quality-note]').hidden);choice('[data-export-format]','JPG').click();choice('[data-export-size]','Eigene').click();assert(!q('[data-custom-size]').hidden);input('#custom-width','900');assert(q('[data-custom-height]').textContent.includes('600'));choice('[data-export-size]','100 %').click();});
   check('Export modal isolates IDs and range synchronization',()=>{const trigger=q('#export [data-open=export]');trigger.focus();trigger.click();assert(q('#demo-dialog').open);const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);assert(new Set(ids).size===ids.length);input('#modal-export-quality','40');assert(q('output[for=modal-export-quality]').value==='40');assert(q('#export-quality').value==='85');click('#demo-dialog [data-close-dialog]');assert(!q('#demo-dialog').open);assert(document.activeElement===trigger);});
@@ -33,6 +33,24 @@
     }
   });
   check('No horizontal document overflow at current viewport',()=>{assert(document.documentElement.scrollWidth<=innerWidth+1,`${document.documentElement.scrollWidth}px exceeds ${innerWidth}px`);});
+  check('Selected choices use a marker and remain quieter than the primary action',()=>{
+    const selected=q('#effect-choices [aria-checked=true]');
+    assert(getComputedStyle(selected).backgroundColor!==getComputedStyle(q('#apply-effect')).backgroundColor);
+    assert(getComputedStyle(selected,'::before').visibility==='visible');
+    assert(getComputedStyle(selected,'::before').content.includes('✓'));
+  });
+  check('Export destination is visible without expanding details',()=>{
+    click('#export [data-open=export]');
+    for(const id of ['modal-export-name','modal-export-folder']) {
+      const field=q('#'+id); assert(field.getBoundingClientRect().height>30); assert(!field.closest('details'));
+    }
+    click('#demo-dialog [data-close-dialog]');
+  });
+  check('Information dialog keeps four named data groups',()=>{
+    click('#export [data-open=info]'); assert(q('#demo-dialog [data-info-groups]').children.length===4);
+    assert(q('#demo-dialog').textContent.includes('Druckgröße'));
+    click('#demo-dialog [data-close-dialog]');
+  });
   const failures = results.filter(r=>!r.ok);
   window.BILDBLICK_CHECK = {passed:results.length-failures.length,total:results.length,failures};
   document.title = `${failures.length?'FAIL':'PASS'} — ${results.length} Bildblick browser checks`;

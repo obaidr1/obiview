@@ -20,8 +20,7 @@ class ImageInfoDialog(StandardDialog):
         body=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
                      margin_start=20,margin_end=20,margin_top=16,margin_bottom=16)
         body.append(label('Bildinformationen','dialog-title'))
-        section=card(); grid=Gtk.Grid(column_spacing=18,row_spacing=8)
-        section.append(grid); body.append(section)
+        self.info_sections = {}
         fields=[('filename','Dateiname'),('directory','Verzeichnis'),('path','Voller Pfad'),
                 ('format','Format / Komprimierung'),('dpi','Auflösung (DPI)'),
                 ('original_size','Originalgröße'),('current_size','Aktuelle Größe'),
@@ -30,8 +29,13 @@ class ImageInfoDialog(StandardDialog):
                 ('disk','Dateigröße auf Datenträger'),('memory','Bildspeicher'),
                 ('index','Index im Ordner'),('modified','Datei geändert am'),
                 ('load_time','Geladen in'),('page','Seite / Einzelbild')]
-        for row,(key,title) in enumerate(fields):
-            grid.attach(label(title,'muted'),0,row*2,1,1)
+        starts={'filename':'Datei','dpi':'Abmessungen & Druck','original_colors':'Farben','disk':'Speicher & Anzeige'}
+        for key,title in fields:
+            if key in starts:
+                section=card(starts[key]); section.set_spacing(16)
+                self.info_sections[starts[key]]=section; body.append(section)
+            field=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
+            field.append(label(title,'small muted'))
             if key=='dpi':
                 widget=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
                 dpi_row=Gtk.Box(spacing=8,homogeneous=True)
@@ -40,7 +44,9 @@ class ImageInfoDialog(StandardDialog):
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
                     spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7); accessible(spin,title)
-                dpi_row.append(self.dpi_x); dpi_row.append(self.dpi_y)
+                for spin,caption in ((self.dpi_x,'Horizontal'),(self.dpi_y,'Vertikal')):
+                    axis=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
+                    axis.append(label(caption,'small muted')); axis.append(spin); dpi_row.append(axis)
                 self.dpi_button=Gtk.Button(label='DPI ändern',halign=Gtk.Align.END)
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)
             elif key=='count':
@@ -50,9 +56,9 @@ class ImageInfoDialog(StandardDialog):
                 self.count_active=Gtk.CheckButton(label='Zählen aktiv',active=True)
                 self.count_active.connect('toggled',self.start_count); widget.append(self.count_active)
             else:
-                widget=label('',selectable=True,wrap=True,max_width_chars=36,hexpand=True)
+                widget=label('','info-value',selectable=True,wrap=True,max_width_chars=36,hexpand=True)
                 self.values[key]=widget
-            grid.attach(widget,0,row*2+1,1,1)
+            field.append(widget); section.append(field)
         self.note=label('DPI ändert die Druckgröße, nicht die Bildpixel. RGB-Farben werden ohne Alphakanal gezählt.','small muted',wrap=True)
         body.append(self.note)
         buttons=Gtk.Box(spacing=8,homogeneous=True)

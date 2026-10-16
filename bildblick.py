@@ -109,8 +109,8 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         root.append(self.canvas_overlay)
         self.empty_state = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
                                    halign=Gtk.Align.CENTER,valign=Gtk.Align.CENTER)
-        self.empty_state.append(label('Raum für deine Bilder.', 'dialog-title'))
-        self.empty_state.append(label('Ein Bild hierher ziehen oder eine Datei öffnen.', 'muted'))
+        self.empty_state.append(label('Noch kein Bild geöffnet', 'dialog-title'))
+        self.empty_state.append(label('Bild hierher ziehen, öffnen oder mit Strg+V einfügen.', 'muted',wrap=True,max_width_chars=38))
         self.button(self.empty_state,'Bild öffnen',self.open_dialog,'Datei auswählen (Strg+O)').add_css_class('primary')
         self.canvas_overlay.add_overlay(self.empty_state)
         self.zoom_label = Gtk.Label(label='100 %')

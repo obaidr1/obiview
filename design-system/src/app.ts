@@ -134,6 +134,7 @@
         let count = 0;
         all<HTMLButtonElement>('.thumb').forEach(thumb => { thumb.hidden = !thumb.dataset.name!.includes(input.value.toLowerCase()); if (!thumb.hidden) count++; });
         one('#search-result').textContent = `${count} Vorschaubilder gefunden.`;
+        one('#thumb-reset').hidden = count > 0;
         one('#thumb-status').textContent = count ? 'Treffer nach Dateinamen gefiltert.' : 'Keine Bilder gefunden. Suchbegriff ändern.';
       }
       if (input.id.endsWith('custom-width')) {
@@ -177,7 +178,7 @@
       width.addEventListener('input', () => { if (one<HTMLInputElement>('#modal-ratio').checked && width.validity.valid && width.value) height.value = String(Math.max(1,Math.round(Number(width.value)*2/3))); });
       height.addEventListener('input', () => { if (one<HTMLInputElement>('#modal-ratio').checked && height.validity.valid && height.value) width.value = String(Math.min(10000,Math.round(Number(height.value)*3/2))); });
     } else if (kind === 'info') {
-      const source = one('#data .data-list').cloneNode(true); content.append(source);
+      const source = one('#data [data-info-groups]').cloneNode(true); content.append(source);
       const note = document.createElement('p'); note.className = 'small muted spaced'; note.textContent = 'Beispielwerte. Die native App zeigt zusätzlich vollständige Pfade, Original-/aktuelle Farben, Datei-/Pixel-Speicher, Ordnerposition, Datum, Ladezeit sowie EXIF/IPTC/Kommentar.'; content.append(note);
     } else {
       content.innerHTML = '<p>Das Bild enthält ungespeicherte Änderungen. Vor dem Fortfahren speichern?</p><p class="small muted">Bestätigungsbeispiel. Es werden keine Dateien verändert.</p>';
@@ -198,6 +199,7 @@
     one<HTMLButtonElement>('[data-close-dialog]', dialog).focus();
   }
   all<HTMLInputElement>('input[type=range]').forEach(syncRange);
+  one('#thumb-reset').addEventListener('click', () => { const search = one<HTMLInputElement>('#search-demo'); search.value = ''; search.dispatchEvent(new Event('input', {bubbles:true})); search.focus(); });
   const defaultExport = all<HTMLButtonElement>('[data-export-size] [role=radio]').find(button => button.dataset.value === '100 %');
   if (defaultExport) selectChoice(defaultExport);
   renderEffect();

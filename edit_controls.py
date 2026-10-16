@@ -1,6 +1,6 @@
 """Shared direct choices and sliders with optional exact numeric entry."""
 from gi.repository import Gtk, GObject
-from ui_theme import accessible
+from ui_theme import accessible, selection_content
 
 
 class ChoiceButtons(Gtk.Grid):
@@ -15,10 +15,7 @@ class ChoiceButtons(Gtk.Grid):
     def append(self, ident, title):
         ident = str(ident)
         button = Gtk.ToggleButton(hexpand=True)
-        text = Gtk.Label(label=title, wrap=True, max_width_chars=24)
-        button.set_child(text)
-        button.add_css_class('effect-choice')
-        accessible(button, title)
+        selection_content(button, title)
         if self.buttons:
             button.set_group(next(iter(self.buttons.values())))
         index = len(self.buttons)

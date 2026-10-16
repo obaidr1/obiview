@@ -3,7 +3,7 @@ from PIL import Image
 from gi.repository import Gtk, GLib, GdkPixbuf
 from dialog_layout import StandardDialog
 from adjustments import adjusted, CONTROLS
-from ui_theme import card, label, accessible, icon_button
+from ui_theme import card, label, accessible, icon_button, selection_content, preview_surface
 
 
 def preview_pixbuf(image):
@@ -30,8 +30,8 @@ class EditorUI:
         self.look_buttons = {}
         group = None
         for name in ('Original','Film','Fade','Warm'):
-            button = Gtk.ToggleButton(label=name)
-            button.add_css_class('small')
+            button = Gtk.ToggleButton()
+            selection_content(button, name)
             if group:
                 button.set_group(group)
             else:
@@ -46,24 +46,26 @@ class EditorUI:
                             ('Farbe',('temperature','saturation','vibrance','red','green','blue')),
                             ('Effekte',('grain','vignette','sharpness'))]:
             section = card(title)
-            section.set_spacing(3)
+            section.set_spacing(16)
             if title == 'Licht':
                 self.histogram = Gtk.DrawingArea(content_height=36)
                 accessible(self.histogram,'RGB-Histogramm des Bildes')
                 self.histogram.set_draw_func(self.draw_histogram)
                 section.append(self.histogram)
             for key in keys:
+                field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
                 line = Gtk.Box()
                 line.append(label(CONTROLS[key], hexpand=True))
-                value = label('0', 'small muted')
+                value = label('0', 'numeric-value')
                 line.append(value)
-                section.append(line)
+                field.append(line)
                 slider = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0 if key in ('grain','vignette') else -100, 100, 1)
                 slider.set_draw_value(False)
                 slider.set_value(0)
                 accessible(slider, CONTROLS[key])
                 slider.connect('value-changed',self.adjustment_changed,value)
-                section.append(slider)
+                field.append(slider)
+                section.append(field)
                 self.adjust_sliders[key] = slider
             self.inspector.append(section)
         self.preview_note = label('Anpassungen als Vorschau', 'small muted', wrap=True)
@@ -106,7 +108,7 @@ class EditorUI:
         self.adjust_picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
         self.adjust_picture.set_size_request(-1,160); self.adjust_picture.set_vexpand(False)
         accessible(self.adjust_picture,'Vorschau der Bildanpassungen')
-        preview.append(self.adjust_picture)
+        preview.append(preview_surface(self.adjust_picture))
         preview.append(self.reset_adjustments)
         content.append(preview)
         content.append(self.inspector_panel)
@@ -191,6 +193,7 @@ class EditorUI:
         def failed(error):
             self.preview_running = False
             if generation == self.preview_generation:
+                self.preview_note.add_css_class('error')
                 self.preview_note.set_text(f'Vorschau fehlgeschlagen: {error}')
         self.submit(work,done,failed)
         return False
@@ -226,6 +229,7 @@ class EditorUI:
         if self.editor_dialog:
             self.editor_accept.set_sensitive(pending and not self.busy)
             self.adjust_picture.set_pixbuf(self.preview_pixbuf or self.pixbuf)
+        self.preview_note.remove_css_class('error')
         self.preview_note.set_text('Vorschau · noch nicht angewendet' if pending else 'Alle Anpassungen sind übernommen.')
         identity = (id(self.model.image),self.model.revision)
         if identity != self.preview_identity and loaded:

@@ -82,3 +82,25 @@ dialog.compact-dialog { height: fit-content; }
 .compact-dialog #modal-content, .compact-dialog .modal-body { flex: 0 1 auto; }
 
 .compact-dialog .dialog-footer { flex-wrap: wrap; }
+
+/* 1.1: hierarchy, explicit selection and task-oriented groups. */
+.card { border-color: transparent; }
+.choice[aria-checked=true] { background: var(--color-selected); color: var(--color-ink); border-color: var(--color-selected-border); }
+.choice:not(:has(.radio-dot))::before { content: "✓"; display: inline-block; width: 1em; margin-right: 6px; visibility: hidden; }
+.choice:not(:has(.radio-dot))[aria-checked=true]::before { visibility: visible; }
+.tool-choices .choice::before { position: absolute; top: 6px; right: 6px; margin: 0; font-size: 12px; }
+.tool-choices .choice { position: relative; }
+input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, select, .spin { border-color: var(--color-control-border); }
+.spin input { border: none !important; }
+input[type=number], output { text-align: right; font-variant-numeric: tabular-nums; }
+.field { gap: var(--field-gap); }
+.task-fields { display: grid; gap: var(--field-group-gap); }
+.preview-well { background: var(--color-preview); }
+.preview-area .art { object-fit: contain; }
+.info-groups { display: grid; gap: var(--section-gap); }
+.info-groups h4 { margin: 0 0 8px; }
+.info-groups .data-list > div { border: 0; padding-block: 8px; }
+.format-choices .choice[aria-checked=true] { background: var(--color-selected); border-color: var(--color-selected-border); }
+input[aria-invalid=true] { border-color: var(--color-error) !important; }
+
+.choice { border-color: transparent; }

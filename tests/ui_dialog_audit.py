@@ -38,7 +38,21 @@ def check(window,name):
         # Check expanded content too: no horizontal clipping inside the body.
         width=window.body.get_width()
         assert width<=expected[0]-48,(name,'body width',width)
+        if name=='save_dialog':
+            assert window.destination_section.get_visible()
+            for entry in (window.name,window.folder):
+                ancestor=entry.get_parent()
+                while ancestor is not window:
+                    assert not isinstance(ancestor,Gtk.Expander),'Destination hidden in expander'
+                    ancestor=ancestor.get_parent()
+        if name=='show_info':
+            assert len(window.info_sections)==4 and len(window.values)==15
         def visit(widget):
+            if isinstance(widget,Gtk.ToggleButton) and hasattr(widget,'selection_marker'):
+                assert widget.selection_marker.get_opacity()==(1 if widget.get_active() else 0)
+            if isinstance(widget,Gtk.SpinButton): assert widget.get_alignment()==1
+            if isinstance(widget,Gtk.Picture) and widget.has_css_class('preview-surface'):
+                assert widget.get_content_fit()==Gtk.ContentFit.CONTAIN
             if widget.get_visible():
                 assert widget.get_width()<=width+2,(name,type(widget).__name__,'overflows',widget.get_width(),width)
             for child in children(widget): visit(child)

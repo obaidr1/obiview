@@ -9,7 +9,7 @@ from dialog_layout import StandardDialog
 from image_model import ImageModel
 from image_tools import (fine_rotate, red_eye, frame, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
-from ui_theme import label, card, accessible
+from ui_theme import label, card, accessible, preview_surface
 from edit_controls import ChoiceButtons, SliderField
 from editor_ui import preview_pixbuf
 
@@ -54,7 +54,7 @@ class ToolDialog(StandardDialog):
             self.picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
             self.picture.set_size_request(-1,160); self.picture.set_vexpand(False)
             accessible(self.picture,'Live-Vorschau: '+title)
-            left.append(self.picture)
+            left.append(preview_surface(self.picture))
             self.compare = Gtk.ToggleButton(label='Original vergleichen')
             self.compare.connect('toggled',self.show_preview)
             left.append(self.compare)
@@ -63,6 +63,7 @@ class ToolDialog(StandardDialog):
             content.append(left)
         controls = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12)
         section = card('Einstellungen')
+        section.set_spacing(16)
         controls.append(section)
         for key,title,value,kind in fields:
             if isinstance(kind,list):
@@ -191,7 +192,7 @@ class ToolDialog(StandardDialog):
             if not self.alive or generation!=self.preview_generation: return
             self.pending_accept = False
             self.controls_scroll.set_sensitive(True)
-            self.error.set_text(str(error)); self.preview_note.set_text(str(error))
+            self.error.set_text(f'Vorschau fehlgeschlagen: {error}'); self.preview_note.set_text('Einstellungen prüfen und erneut versuchen.')
             self.accept.set_sensitive(False)
         self.get_transient_for().submit(work,done,failed)
         return False

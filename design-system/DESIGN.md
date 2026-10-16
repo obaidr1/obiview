@@ -1,6 +1,6 @@
 # Bildblick · verbindlicher Designvertrag
 
-Version 1.0 · 16. Oktober 2026
+Version 1.1 · 16. Oktober 2026
 
 Diese Referenz gilt ab jetzt für neue und überarbeitete Benutzeroberflächen in Bildblick. Sie beschreibt die native GTK-App. Die HTML-Website ist ein lokal ausführbarer Komponenten- und Musterkatalog, keine zusätzliche Bildbearbeitung.
 
@@ -50,8 +50,8 @@ Schrift: Inter, Cantarell, System Sans. Dialogtitel 22 px / 600, Abschnittstitel
 | Primärer Button | Abschließende Hauptaktion | Ein schwarzer Hauptbutton pro Dialog; rechts unten; präzises Verb wie „Anwenden“ oder „Bild speichern“ |
 | Sekundärer / Textbutton | Abbrechen, Zurücksetzen, ergänzende Aktion | Leicht, ohne konkurrierende schwarze Fläche; Abbrechen links neben der Hauptaktion |
 | Symbolbutton | Kompakte Toolbar | Vektor, zugänglicher Name, Tooltip einschließlich Kürzel; normal 40–44 px Ziel, in der App-Toolbar kompakt 30 px |
-| Werkzeugauswahl | Stift, Pinsel, Linie, Pfeil, Rechteck, Ellipse | Eigene Symbole plus sichtbarer Text, aktive Auswahl schwarz |
-| Direkte Auswahl | Effekte, Varianten, Einheiten, Interpolation, Formate | Alle Optionen als Buttons oder Karten sichtbar; kein Effekt-Dropdown |
+| Werkzeugauswahl | Stift, Pinsel, Linie, Pfeil, Rechteck, Ellipse | Eigene Symbole plus sichtbarer Text, aktive Auswahl hell mit sichtbarem Auswahlzeichen |
+| Direkte Auswahl | Effekte, Varianten, Einheiten, Interpolation, Formate | Alle Optionen als Buttons oder Karten sichtbar; helle aktive Fläche mit Auswahlzeichen; kein Effekt-Dropdown |
 | Formatkarte | Exportformat und Auflösung | Beschriftung plus Erklärung, dezente helle ausgewählte Karte und eindeutiger Auswahlpunkt |
 | Slider | Stärke, Qualität, Kontrast, Winkel, Radius | Beschriftung, Einheit/Grenzen wo nötig, sichtbarer aktueller Wert; genaue Eingabe bei Bedarf gekoppelt |
 | Zahlenfeld | Pixelmaße, Position, DPI | Plus/Minus, Eingabegrenzen, Einheit; keine unnötigen Slider für exakte Maße |
@@ -113,3 +113,16 @@ Der optionale Bildtext im Vollbild liegt auf einer schwarzen Fläche mit 65 % De
 ## Ungespeicherte Änderungen
 
 Die kompakte Abfrage bietet „Abbrechen“, „Verwerfen“ und „Speichern“. Abbrechen und Escape lassen das Bild offen; Verwerfen führt die angeforderte Aktion aus. Speichern öffnet den Exportdialog und führt die Aktion erst nach erfolgreichem Speichern in voller Auflösung aus. Abbruch, Fehler oder eine lediglich verkleinerte Exportkopie schließen das Arbeitsbild nicht. Speichern ist die schwarze Hauptaktion; Abbrechen erhält den Anfangsfokus.
+
+
+## Hierarchie und aufgabenbezogene Gruppen (1.1)
+
+Die Erkenntnisse in `../knowlede.md` und die Bestandsaufnahme in `../redesign.md` ergänzen diesen Vertrag. Das Bild und die Aufgabe haben Vorrang vor Dekoration.
+
+- Auswahl ist keine Abschlussaktion: helle ausgewählte Fläche (`color-selected`), dunkle Kontur (`color-selected-border`) und ein sichtbares Häkchen bzw. Radiozeichen. Nur die Hauptaktion ist durchgehend dunkel. Zeichensymbole bleiben dunkel und 24 px groß.
+- Karten trennen über Fläche und Abstand. Eingaben erhalten eine eigene erkennbare Begrenzung (`color-control-border`); dekorative Linien bleiben leiser. GTK liest dieselben Rollenfarben, Schriftgrößen und Radien wie die HTML-Referenz.
+- Feldlabel und Eingabe: 4 px Abstand; voneinander unabhängige Felder: 16 px; größere Sektionen: 24 px. Reglername und Zahlenwert gehören zur jeweiligen Bahn. Zahlenfelder sind rechtsbündig.
+- Export: Zusammenfassung, offen sichtbares Speicherziel (Dateiname und Ordner), Format, Qualität, Auflösung, Metadaten, weitere Optionen. Das Speicherziel darf nicht unter einem geschlossenen Expander versteckt werden.
+- Bildinformationen: Datei, Abmessungen & Druck, Farben, Speicher & Anzeige. Vollständige bisherige Daten bleiben zugänglich. Horizontale und vertikale DPI haben sichtbare Beschriftungen.
+- Bildvorschauen liegen auf einer neutralen Fläche (`color-preview`). Vollständiges Bild einpassen; niemals für das Layout zuschneiden oder verändern. Fehlermeldungen nennen ausdrücklich das Scheitern.
+- Leere Vorschaulisten erklären, ob ein Ordner fehlt oder Filter keine Treffer liefern, und bieten Ordnerauswahl bzw. Filter zurücksetzen an. Zeichen-Rückgängig bleibt bis zum ersten Strich deaktiviert.

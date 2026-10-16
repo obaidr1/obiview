@@ -43,7 +43,7 @@ def install(source, data_dir, bin_dir):
     app_dir = data_dir/'bildblick'/'app'
     app_dir.mkdir(parents=True, exist_ok=True)
     for original in [*source.glob('*.py'), source/'start.sh', source/'README.txt',
-                     source/'README.md', source/'PRODUCT.md', source/'LICENSE']:
+                     source/'README.md', source/'PRODUCT.md', source/'knowlede.md', source/'redesign.md', source/'LICENSE']:
         target = app_dir/original.name
         if original.resolve() != target.resolve():
             shutil.copy2(original, target)

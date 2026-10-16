@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory(prefix='bildblick-package-') as staging:
     payload = bundle/'app'
     payload.mkdir(parents=True)
     for source in [*root.glob('*.py'), root/'start.sh', root/'README.txt',
-                   root/'README.md', root/'PRODUCT.md', root/'LICENSE']:
+                   root/'README.md', root/'PRODUCT.md', root/'knowlede.md', root/'redesign.md', root/'LICENSE']:
         shutil.copy2(source, payload/source.name)
     shutil.copytree(root/'assets', payload/'assets')
     shutil.copytree(root/'docs', payload/'docs')

@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from gi.repository import Gtk, Gdk
 from dialog_layout import StandardDialog
 from advanced_ui import pixbuf
-from ui_theme import label, accessible
+from ui_theme import selection_content, label, accessible
 from edit_controls import ChoiceButtons, SliderField
 
 
@@ -47,7 +47,7 @@ def paint_strokes(image,strokes):
 def tool_symbol(area,cr,width,height,kind,button):
     """Resolution-independent, theme-aware line icons for the actual tools."""
     cr.scale(width/24,height/24)
-    cr.set_source_rgb(*((1,1,1) if button.get_active() else (.14,.14,.14)))
+    cr.set_source_rgb(.14,.14,.14)
     cr.set_line_width(1.7); cr.set_line_cap(1); cr.set_line_join(1)
     if kind=='pen':
         cr.move_to(5,15); cr.line_to(16,4); cr.line_to(20,8); cr.line_to(9,19)
@@ -88,7 +88,7 @@ class PaintDialog(StandardDialog):
             symbol.set_draw_func(lambda area,cr,w,h,k=ident,b=button:tool_symbol(area,cr,w,h,k,b))
             button.connect('toggled',lambda _b,icon=symbol:icon.queue_draw())
             accessible(symbol,title+'-Symbol'); self.tool_icons[ident]=symbol
-            content.append(symbol); content.append(label(title)); button.set_child(content)
+            content.append(symbol); content.append(label(title)); selection_content(button,title,content)
             button.set_tooltip_text('Pinsel mit weicher Kante' if ident=='brush' else title)
         self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); root.append(self.tool)
         controls.append(label('Strichbreite'))
@@ -96,7 +96,7 @@ class PaintDialog(StandardDialog):
         color_row=Gtk.Box(spacing=8)
         color_row.append(label('Farbe'))
         rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); color_row.append(self.color)
-        undo=Gtk.Button(tooltip_text='Letzter Strich zurück'); undo_content=Gtk.Box(spacing=6)
+        undo=Gtk.Button(tooltip_text='Letzter Strich zurück',sensitive=False); self.undo_button=undo; undo_content=Gtk.Box(spacing=6)
         undo_content.append(Gtk.Image(icon_name='edit-undo-symbolic')); undo_content.append(label('Zurück'))
         undo.set_child(undo_content); accessible(undo,'Letzter Strich zurück')
         undo.connect('clicked',lambda *_:self.undo_stroke()); undo.set_hexpand(True); undo.set_halign(Gtk.Align.END); color_row.append(undo)
@@ -115,6 +115,7 @@ class PaintDialog(StandardDialog):
         preview=self.source.copy(); preview.thumbnail((1200,1000)); factor=preview.width/self.source.width
         strokes=[(kind,[(x*factor,y*factor) for x,y in pts],color,width*factor) for kind,pts,color,width in self.strokes]
         self.buffer=pixbuf(paint_strokes(preview,strokes)); self.area.queue_draw()
+        self.undo_button.set_sensitive(bool(self.strokes))
 
     def draw(self,_area,cr,w,h):
         cr.set_source_rgb(.94,.94,.93); cr.paint()

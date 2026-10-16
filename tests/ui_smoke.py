@@ -519,6 +519,7 @@ def tick(window):
                 if window.tool_index<len(window.tool_cases): return True
         elif step == 46:
             dialog=window.paint_dialog()
+            assert not dialog.undo_button.get_sensitive()
             assert isinstance(dialog.tool,ChoiceButtons) and isinstance(dialog.width,SliderField)
             dialog.tool.buttons['arrow'].set_active(True)
             dialog.width.scale.set_value(12)
@@ -678,6 +679,11 @@ def tick(window):
             assert window.thumbnail_window and window.tag_filter.get_active()
         elif step == 66:
             assert window.thumbnails.get_first_child()
+            window.search.set_text('no-such-image-redesign-test'); window.rebuild_thumbnails()
+            assert window.thumb_empty.get_visible() and window.thumb_reset.get_visible()
+            window.thumb_reset.emit('clicked')
+            assert window.search.get_text()=='' and not window.tag_filter.get_active()
+            assert not window.thumb_empty.get_visible() and window.thumbnails.get_first_child()
             window.thumbnail_key(None,Gdk.KEY_Tab,0,Gdk.ModifierType(0))
             window.set_focus(None)
             window.key_pressed(None,Gdk.KEY_x,0,Gdk.ModifierType.SHIFT_MASK)
