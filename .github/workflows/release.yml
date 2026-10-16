@@ -34,6 +34,13 @@ jobs:
         run: |
           /usr/bin/python3 -m compileall -q -x '/\.git/' .
           desktop-file-validate bildblick.desktop
+      - name: Audit dialog geometry and expanded content
+        env:
+          PYTHONPATH: .
+          GDK_BACKEND: x11
+          GSK_RENDERER: cairo
+          BILDBLICK_SCREENSHOT_LOG: '1'
+        run: xvfb-run -a -s '-screen 0 1440x1050x24' dbus-run-session -- sh -c 'openbox >/tmp/openbox.log 2>&1 & /usr/bin/python3 tests/ui_dialog_audit.py'
       - name: Verify native GTK workflows and capture UI
         env:
           PYTHONPATH: .

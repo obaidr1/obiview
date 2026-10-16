@@ -1,5 +1,6 @@
 """Real menu actions, shared by the menu bar, toolbar and accelerators."""
 from gi.repository import Gio, GLib
+import re
 
 RESIZE_ACCELERATOR = '<Primary>r'
 
@@ -103,15 +104,24 @@ def build_menus(window):
     ]
     for title, entries in groups:
         submenu = Gio.Menu()
+        section = Gio.Menu()
+        boundaries = {'rename-file','save-current','print','scan','clear','paint','select-all',
+                      'resize','rotate-left','canvas','mirror','adjust','info','fullscreen',
+                      'refresh-view','tag','span','toggle-menu'}
         for name,label,callback,requires_image in entries:
+            if name in boundaries and section.get_n_items():
+                submenu.append_section(None,section)
+                section=Gio.Menu()
             action = Gio.SimpleAction.new(name,None)
             action.connect('activate',lambda _a,_p,cb=callback:cb())
             window.add_action(action)
             actions.append((action,requires_image))
+            label = re.sub(r' \((?:Strg[^)]*|I|D|Enter|F9)\)$', '', label)
             item = Gio.MenuItem.new(label,'win.'+name)
             from shortcuts import MENU_SHORTCUTS
             if name in MENU_SHORTCUTS:
                 item.set_attribute_value('accel',GLib.Variant('s',MENU_SHORTCUTS[name]))
-            submenu.append_item(item)
+            section.append_item(item)
+        if section.get_n_items(): submenu.append_section(None,section)
         menu.append_submenu(title,submenu)
     return menu, actions

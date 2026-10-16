@@ -3,6 +3,7 @@ from pathlib import Path
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, Pango, GLib
+from dialog_layout import StandardDialog
 from copy import copy
 from dataclasses import replace
 from tempfile import TemporaryDirectory
@@ -14,7 +15,7 @@ from resize_settings import ResizeSettings
 from save_options import ALIASES, FORMAT_CHOICES, SaveSettings, SaveProfiles, filename_for_format
 
 
-class SaveAsDialog(Gtk.Dialog):
+class SaveAsDialog(StandardDialog):
     def __init__(self, parent, settings, on_save):
         super().__init__(title='Bild exportieren', transient_for=parent, modal=True,
                          default_width=540, default_height=800)
@@ -80,7 +81,7 @@ class SaveAsDialog(Gtk.Dialog):
                 group = tile
             content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=6)
             content.append(label(title))
-            content.append(label(subtitle,'small muted'))
+            content.append(label(subtitle,'small muted',wrap=True))
             tile.set_child(content)
             accessible(tile,title+' – '+subtitle)
             tile.connect('toggled',self.choose_format,fmt)
@@ -127,14 +128,14 @@ class SaveAsDialog(Gtk.Dialog):
                 group = tile
             content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=6)
             content.append(label(title))
-            content.append(label(subtitle,'small muted'))
+            content.append(label(subtitle,'small muted',wrap=True))
             tile.set_child(content)
             accessible(tile,title+' · '+subtitle)
             tile.connect('toggled',self.resolution_changed,key)
             self.resolution_tiles[key] = tile
             row.append(tile)
         resolution.append(row)
-        self.custom_size = Gtk.Box(spacing=8)
+        self.custom_size = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
         for axis,title in [('width','Breite'),('height','Höhe')]:
             field = Gtk.SpinButton.new_with_range(1,80_000_000,1)
             field.set_hexpand(True)

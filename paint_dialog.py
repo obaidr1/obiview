@@ -2,6 +2,7 @@
 import math
 from PIL import Image, ImageDraw, ImageFilter
 from gi.repository import Gtk, Gdk
+from dialog_layout import StandardDialog
 from advanced_ui import pixbuf
 from ui_theme import label, accessible
 from edit_controls import ChoiceButtons, SliderField
@@ -66,7 +67,7 @@ def tool_symbol(area,cr,width,height,kind,button):
         cr.translate(12,12); cr.scale(1,.75); cr.arc(0,0,9,0,2*math.pi); cr.stroke()
 
 
-class PaintDialog(Gtk.Dialog):
+class PaintDialog(StandardDialog):
     def __init__(self,parent):
         super().__init__(title='Zeichnen',transient_for=parent,modal=True,default_width=780,default_height=620)
         self.set_titlebar(Gtk.Box()); self.parent=parent
@@ -75,8 +76,8 @@ class PaintDialog(Gtk.Dialog):
         self.add_button('Anwenden',Gtk.ResponseType.ACCEPT).add_css_class('primary')
         root=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,margin_top=16,margin_bottom=20,margin_start=20,margin_end=20)
         root.append(label('Zeichnen','dialog-title'))
-        controls=Gtk.Box(spacing=10)
-        self.tool=ChoiceButtons(columns=6)
+        controls=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
+        self.tool=ChoiceButtons(columns=3)
         self.tool_icons={}
         for ident,title in [('pen','Stift'),('brush','Pinsel'),('line','Linie'),('arrow','Pfeil'),('rectangle','Rechteck'),('ellipse','Ellipse')]:
             self.tool.append(ident,title)
@@ -99,7 +100,7 @@ class PaintDialog(Gtk.Dialog):
         undo.set_child(undo_content); accessible(undo,'Letzter Strich zurück')
         undo.connect('clicked',lambda *_:self.undo_stroke()); controls.append(undo)
         root.append(controls)
-        self.area=Gtk.DrawingArea(hexpand=True,vexpand=True,content_height=360)
+        self.area=Gtk.DrawingArea(hexpand=True,vexpand=True,content_height=220)
         accessible(self.area,'Zeichenfläche'); self.area.set_draw_func(self.draw); root.append(self.area)
         root.append(label('Mit der Maus zeichnen. Anwenden übernimmt die Zeichnung; Abbrechen verwirft sie.','muted',wrap=True))
         self.get_content_area().append(root)

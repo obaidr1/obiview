@@ -5,6 +5,7 @@ import json
 import threading
 from PIL import Image, ImageOps, UnidentifiedImageError
 from gi.repository import Gtk, Gdk, Gio, GLib, GdkPixbuf, Pango
+from dialog_layout import StandardDialog, module_window
 from image_model import ImageModel, image_files
 from batch import plan_batch, run_batch
 from menus import build_menus, RESIZE_ACCELERATOR
@@ -312,8 +313,7 @@ class AdvancedFeatures:
         if self.thumbnail_window:
             self.thumbnail_window.close()
             return
-        self.thumbnail_window = Gtk.Window(title='Vorschaubilder',transient_for=self,
-                                          destroy_with_parent=True,default_width=380,default_height=540)
+        self.thumbnail_window = module_window(self, 'Vorschaubilder')
         self.sidebar.set_visible(True)
         self.thumbnail_window.set_child(self.sidebar)
         def close(window):
@@ -542,7 +542,7 @@ class AdvancedFeatures:
             return
         cancel = threading.Event()
         self.batch_cancel = cancel
-        dialog = Gtk.Dialog(title='Stapelverarbeitung',transient_for=self,modal=True)
+        dialog = StandardDialog(title='Stapelverarbeitung',transient_for=self,modal=True)
         dialog.add_button('Nach aktueller Datei abbrechen',Gtk.ResponseType.CANCEL)
         label = Gtk.Label(label=f'0 / {len(plan)}',margin_top=20,margin_bottom=20,margin_start=20,margin_end=20)
         dialog.get_content_area().append(label)

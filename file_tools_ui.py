@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 from PIL import Image
+from dialog_layout import module_window
 from gi.repository import Gtk, Gio, GLib
 from image_tools import checked_size, erase_selection, auto_crop, reduce_colors, swap_channels
 from tool_dialogs import ToolDialog
@@ -67,7 +68,7 @@ class FileToolsUI:
             lambda image,v:swap_channels(image,v['order']))
 
     def histogram_dialog(self):
-        window=Gtk.Window(title='Histogramm',transient_for=self,destroy_with_parent=True,default_width=500,default_height=300)
+        window=module_window(self, 'Histogramm')
         area=Gtk.DrawingArea(hexpand=True,vexpand=True,margin_start=24,margin_end=24,margin_top=24,margin_bottom=24)
         channels=self.model.image.convert('RGB').histogram()
         def draw(_area,cr,w,h):
@@ -164,7 +165,7 @@ class FileToolsUI:
 
     def media_dialog(self):
         def play(path):
-            window=Gtk.Window(title=path.name,transient_for=self,destroy_with_parent=True,default_width=640,default_height=420)
+            window=module_window(self, path.name)
             video=Gtk.Video.new_for_filename(str(path)); video.set_autoplay(False)
             window.set_child(video)
             def error(stream,*_):

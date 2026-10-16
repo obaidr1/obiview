@@ -59,7 +59,7 @@ checkbutton check:checked, checkbutton radio:checked { background: @ink; }
 .choice { border: 1px solid transparent; border-radius: 14px; padding: 10px; min-height: 48px; }
 .choice:checked { background: white; border-color: #c6c6c0; }
 .choice:hover { background: #eeeeeb; }
-window.dialog { background: #f2f2f0; border-radius: 22px; }
+window.dialog { background: @surface; border-radius: 24px; }
 window.dialog headerbar { background: transparent; padding: 4px 12px; }
 window.dialog .dialog-action-area { padding: 0; }
 popover contents { background: @card; color: @ink; border: 1px solid @line; border-radius: 16px; padding: 8px; }

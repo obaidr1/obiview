@@ -303,8 +303,8 @@ def tick(window):
                 dialog.compare.set_active(True)
                 assert dialog.picture.get_paintable().get_width()==window.effect_before.width
                 dialog.compare.set_active(False)
-                adjustment=dialog.controls_scroll.get_vadjustment()
-                assert adjustment.get_upper() <= adjustment.get_page_size()+1, 'Effect controls must fit at the default dialog size'
+                assert dialog.get_width()==520 and dialog.get_height()==760, (dialog.get_width(),dialog.get_height())
+                assert dialog.body_scroll.get_height()>100, 'Scrollable effects body remains usable'
                 screenshot('effects')
                 # Hold one completed worker to exercise stale and post-close delivery.
                 submit=window.submit

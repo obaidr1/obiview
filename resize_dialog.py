@@ -2,13 +2,14 @@
 import gi
 gi.require_version('Gtk','4.0')
 from gi.repository import Gtk
+from dialog_layout import StandardDialog
 from resize_settings import ResizeSettings
 from image_tools import to_pixels
 from ui_theme import card, label, accessible
 from edit_controls import ChoiceButtons
 
 
-class ResizeDialog(Gtk.Dialog):
+class ResizeDialog(StandardDialog):
     def __init__(self,parent,on_apply):
         super().__init__(title='Größe ändern',transient_for=parent,modal=True,default_width=500,default_height=760)
         self.set_titlebar(Gtk.Box())
@@ -34,15 +35,15 @@ class ResizeDialog(Gtk.Dialog):
         grid = Gtk.Grid(column_spacing=16,row_spacing=14)
         section.append(grid)
         body.append(section)
-        grid.attach(Gtk.Label(label=f'Original: {self.settings.width} × {self.settings.height} Pixel',xalign=0),0,0,2,1)
+        grid.attach(Gtk.Label(label=f'Original: {self.settings.width} × {self.settings.height} Pixel',xalign=0),0,0,1,1)
         self.units = ChoiceButtons()
         self.units.append('pixels','Pixel')
         self.units.append('percent','Prozent')
         self.units.append('cm','Zentimeter')
         self.units.append('inch','Zoll')
         self.units.set_active_id('pixels')
-        grid.attach(Gtk.Label(label='Einheit',xalign=0),0,1,1,1)
-        grid.attach(self.units,1,1,1,1)
+        grid.attach(Gtk.Label(label='Einheit',xalign=0),0,2,1,1)
+        grid.attach(self.units,0,3,1,1)
         self.width = Gtk.SpinButton.new_with_range(1,80_000_000,1)
         self.height = Gtk.SpinButton.new_with_range(1,80_000_000,1)
         for row,(title,widget,axis) in enumerate((('Breite',self.width,'width'),('Höhe',self.height,'height')),2):
@@ -55,27 +56,27 @@ class ResizeDialog(Gtk.Dialog):
             grid.attach(widget,1,row,1,1)
         self.lock = Gtk.CheckButton(label='Seitenverhältnis beibehalten',active=True)
         self.lock.connect('toggled',self.lock_changed)
-        grid.attach(self.lock,0,4,2,1)
+        grid.attach(self.lock,0,8,1,1)
         presets = Gtk.Box(spacing=8,homogeneous=True)
         for amount in (25,50,100,200):
             button = Gtk.Button(label=f'{amount} %')
             button.connect('clicked',lambda _button,p=amount:self.use_preset(p))
             presets.append(button)
-        grid.attach(presets,0,5,2,1)
+        grid.attach(presets,0,10,1,1)
         self.method = ChoiceButtons()
         for ident,title in [('lanczos','Lanczos'),('bicubic','Bikubisch'),
                             ('bilinear','Bilinear'),('nearest','Pixelgrafik')]:
             self.method.append(ident,title)
         self.method.set_active_id('lanczos')
-        grid.attach(Gtk.Label(label='Interpolation',xalign=0),0,6,1,1)
-        grid.attach(self.method,1,6,1,1)
+        grid.attach(Gtk.Label(label='Interpolation',xalign=0),0,12,1,1)
+        grid.attach(self.method,0,13,1,1)
         self.summary = Gtk.Label(xalign=0,wrap=True)
-        grid.attach(self.summary,0,7,2,1)
+        grid.attach(self.summary,0,14,1,1)
         self.dpi = Gtk.SpinButton.new_with_range(1,9600,1)
         self.dpi.set_value(parent.model.dpi)
         self.dpi.connect('value-changed',lambda *_:self.sync_fields())
-        grid.attach(Gtk.Label(label='DPI (Druckauflösung)',xalign=0),0,8,1,1)
-        grid.attach(self.dpi,1,8,1,1)
+        grid.attach(Gtk.Label(label='DPI (Druckauflösung)',xalign=0),0,16,1,1)
+        grid.attach(self.dpi,0,17,1,1)
         self.resolution = ChoiceButtons()
         self.resolution.append('none','Auflösung wählen …')
         for w,h in ((640,480),(800,600),(1024,768),(1280,720),(1920,1080),(3840,2160)):
@@ -83,12 +84,12 @@ class ResizeDialog(Gtk.Dialog):
         self.resolution.append('screen','Bildschirmgröße')
         self.resolution.set_active_id('none')
         self.resolution.connect('changed',self.resolution_changed)
-        grid.attach(Gtk.Label(label='Größenvorgabe',xalign=0),0,9,1,1)
-        grid.attach(self.resolution,1,9,1,1)
+        grid.attach(Gtk.Label(label='Größenvorgabe',xalign=0),0,18,1,1)
+        grid.attach(self.resolution,0,19,1,1)
         note = Gtk.Label(label='50 % = halb, 200 % = doppelt. Gesperrtes Verhältnis passt in die Größenvorgabe. DPI allein ändert keine Pixel und erzeugt keine zusätzlichen Details.',
                          xalign=0,wrap=True,max_width_chars=55)
         note.add_css_class('dim-label')
-        grid.attach(note,0,10,2,1)
+        grid.attach(note,0,20,1,1)
         scroll = Gtk.ScrolledWindow(vexpand=True)
         scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         scroll.set_child(body)

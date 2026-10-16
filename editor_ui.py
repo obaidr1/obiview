@@ -1,6 +1,7 @@
 """Photo inspector with asynchronous previews and explicit reversible apply."""
 from PIL import Image
 from gi.repository import Gtk, GLib, GdkPixbuf
+from dialog_layout import StandardDialog
 from adjustments import adjusted, CONTROLS
 from ui_theme import card, label, accessible, icon_button
 
@@ -87,7 +88,7 @@ class EditorUI:
         if self.editor_dialog:
             self.editor_dialog.present()
             return
-        dialog = Gtk.Dialog(title='Bildanpassungen',transient_for=self,modal=True,
+        dialog = StandardDialog(title='Bildanpassungen',transient_for=self,modal=True,
                             default_width=740,default_height=700)
         dialog.set_titlebar(Gtk.Box())
         dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
@@ -101,10 +102,10 @@ class EditorUI:
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
                        margin_start=20,margin_end=20,margin_top=16)
         body.append(label('Bildanpassungen','dialog-title'))
-        content = Gtk.Box(spacing=16,vexpand=True)
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,vexpand=True)
         preview = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,hexpand=True)
         self.adjust_picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
-        self.adjust_picture.set_size_request(260,160)
+        self.adjust_picture.set_size_request(-1,160); self.adjust_picture.set_vexpand(False)
         accessible(self.adjust_picture,'Vorschau der Bildanpassungen')
         preview.append(self.adjust_picture)
         preview.append(self.reset_adjustments)

@@ -18,7 +18,8 @@ Bei widersprüchlichen Beispielen zuerst den Widerspruch in der Referenz auflös
 - Das Hauptfenster startet bei 720 × 640 logischen Pixeln. Menüleiste, kompakte Symbolleiste, Bildfläche und Statuszeile bilden seine Struktur.
 - Beim manuellen Vergrößern wächst es bis zur verfügbaren Bildschirmfläche. Weitere Vergrößerung verwendet Scrollleisten. Verkleinern schrumpft das Fenster nicht automatisch.
 - Werkzeuge öffnen eigene Dialoge. Keine permanente umfangreiche Bearbeitungsseitenleiste im Hauptfenster.
-- Bearbeitungsdialoge zeigen links die Vorschau, rechts Optionen und Regler. Auf kleinen Flächen dürfen Inhalte scrollen; Aktionen bleiben erreichbar.
+- Alle eigenen Dialoge und Nebenfenster verwenden 520 × 760 logische Pixel, einschließlich Export, Bearbeitung, Informationen und Hilfen. 520 px ist die gemeinsame Maximalbreite aus dem Exportmuster. Auf kleineren Bildschirmen werden beide Maße auf die verfügbare Fläche abzüglich 32 px begrenzt. Die Hauptansicht bleibt davon ausgenommen.
+- Vorschauen stehen über Optionen und Reglern. Lange Inhalte scrollen vertikal; die Aktionsleiste bleibt außerhalb des Scrollbereichs sichtbar. Keine horizontale Verbreiterung durch Pfade, Listen oder Auswahlgruppen.
 - Große Beispielüberschriften und die Navigationsseitenleiste dieser Dokumentationswebsite sind keine neuen Bestandteile der App.
 
 ## Farben und Form
@@ -90,7 +91,7 @@ Datei-, Farb-, Schrift-, Druck- und Portaloberflächen dürfen ihrer Linux-Umgeb
 - `save_dialog.py`, `resize_dialog.py`, `info_dialog.py`: spezialisierte vollständige Muster.
 - Die Tabelle „Inventar & Umsetzung“ in der Website ordnet alle benutzerseitigen Elementfamilien des aktuellen Quellenbestands zu. `Box`, `Grid`, `Stack` und `ScrolledWindow` erscheinen als Layoutmuster, nicht als sinnlose isolierte Container.
 
-Die vorhandene App wurde mit dieser Aufgabe nicht vollständig umgestaltet. Kleine Abweichungen der bisherigen GTK-Implementierung werden beim nächsten jeweiligen UI-Umbau an die Referenz angeglichen. Eine automatische Bindung von CSS-Tokens an GTK existiert noch nicht.
+`dialog_layout.py` setzt die gemeinsamen Maße aus `tokens.json` für alle eigenen Dialoge und Nebenfenster um. Fachdialoge verwenden diesen Rahmen; neue Dialoge müssen ebenfalls `StandardDialog` oder `module_window` verwenden. Der Migrations- und Prüfbericht steht in `docs/UI-AUDIT.md`. Systemdialoge bleiben die oben beschriebene Ausnahme.
 
 ## Ablauf für neue UI-Arbeit
 

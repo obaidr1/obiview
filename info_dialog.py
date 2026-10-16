@@ -1,11 +1,12 @@
 """Image properties, independent DPI axes and readable source metadata."""
 import threading
 from gi.repository import Gtk
+from dialog_layout import StandardDialog
 from image_info import info_values, count_rgb_colors, metadata_text
 from ui_theme import label, card, accessible
 
 
-class ImageInfoDialog(Gtk.Dialog):
+class ImageInfoDialog(StandardDialog):
     def __init__(self,parent):
         super().__init__(title='Bildinformationen',transient_for=parent,modal=True,
                          default_width=780,default_height=740)
@@ -31,13 +32,13 @@ class ImageInfoDialog(Gtk.Dialog):
                 ('index','Index im Ordner'),('modified','Datei geändert am'),
                 ('load_time','Geladen in'),('page','Seite / Einzelbild')]
         for row,(key,title) in enumerate(fields):
-            grid.attach(label(title,'muted'),0,row,1,1)
+            grid.attach(label(title,'muted'),0,row*2,1,1)
             if key=='dpi':
                 widget=Gtk.Box(spacing=8)
                 self.dpi_x=Gtk.SpinButton.new_with_range(1,9600,1)
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
-                    spin.set_digits(2); spin.set_width_chars(7); accessible(spin,title)
+                    spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7); accessible(spin,title)
                 widget.append(self.dpi_x); widget.append(label('×')); widget.append(self.dpi_y)
                 self.dpi_button=Gtk.Button(label='Ändern')
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)
@@ -48,9 +49,9 @@ class ImageInfoDialog(Gtk.Dialog):
                 self.count_active=Gtk.CheckButton(label='Zählen aktiv',active=True)
                 self.count_active.connect('toggled',self.start_count); widget.append(self.count_active)
             else:
-                widget=label('',selectable=True,wrap=True,max_width_chars=60,hexpand=True)
+                widget=label('',selectable=True,wrap=True,max_width_chars=36,hexpand=True)
                 self.values[key]=widget
-            grid.attach(widget,1,row,1,1)
+            grid.attach(widget,0,row*2+1,1,1)
         self.note=label('DPI ändert die Druckgröße, nicht die Bildpixel. RGB-Farben werden ohne Alphakanal gezählt.','small muted',wrap=True)
         body.append(self.note)
         buttons=Gtk.Box(spacing=8,homogeneous=True)
@@ -108,7 +109,7 @@ class ImageInfoDialog(Gtk.Dialog):
             values=source.get(kind,{})
             text='\n\n'.join(f'{key}: {metadata_text(value)}' for key,value in values.items())
             if not text: text=f'Keine {titles[kind]} verfügbar.'
-        dialog=Gtk.Dialog(title=titles[kind],transient_for=self,modal=True,default_width=700,default_height=480)
+        dialog=StandardDialog(title=titles[kind],transient_for=self,modal=True,default_width=700,default_height=480)
         dialog.add_button('Schließen',Gtk.ResponseType.CLOSE)
         scroll=Gtk.ScrolledWindow(vexpand=True)
         view=Gtk.TextView(editable=False,wrap_mode=Gtk.WrapMode.WORD_CHAR,

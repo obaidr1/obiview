@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from PIL import Image, ImageColor
 from gi.repository import Gtk, Gdk, Gio, Pango, GObject, GLib
+from dialog_layout import StandardDialog
 from image_model import ImageModel
 from image_tools import (fine_rotate, red_eye, frame, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
@@ -20,7 +21,7 @@ def image_clipboard_provider(image):
     return Gdk.ContentProvider.new_for_value(value)
 
 
-class ToolDialog(Gtk.Dialog):
+class ToolDialog(StandardDialog):
     def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=()):
         super().__init__(title=title, transient_for=parent, modal=True,
                          default_width=860 if preview else 520, default_height=700 if preview else 600)
@@ -44,15 +45,15 @@ class ToolDialog(Gtk.Dialog):
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
                        margin_top=20,margin_start=20,margin_end=20)
         body.append(label(title,'dialog-title'))
-        if note: body.append(label(note,'muted',wrap=True,max_width_chars=90 if preview else 55))
-        content = Gtk.Box(spacing=20,vexpand=True)
+        if note: body.append(label(note,'muted',wrap=True,max_width_chars=40))
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=20,vexpand=True)
         if preview:
             self.source = parent.model.image.copy()
             thumb = self.source.copy(); thumb.thumbnail((1200,1200))
             self.original_buffer = preview_pixbuf(thumb)
             left = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,hexpand=True)
             self.picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
-            self.picture.set_size_request(280,200)
+            self.picture.set_size_request(-1,160); self.picture.set_vexpand(False)
             accessible(self.picture,'Live-Vorschau: '+title)
             left.append(self.picture)
             self.compare = Gtk.ToggleButton(label='Original vergleichen')

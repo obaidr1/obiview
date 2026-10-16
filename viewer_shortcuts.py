@@ -3,6 +3,7 @@ import json
 import random
 from pathlib import Path
 from gi.repository import Gtk, Gdk, GLib
+from dialog_layout import StandardDialog
 from shortcuts import BINDINGS, display_scales
 from image_tools import selection_drag
 from ui_theme import label, card
@@ -256,7 +257,7 @@ class ViewerShortcuts:
         except Exception as error: self.message('Drucken fehlgeschlagen',str(error))
 
     def shortcut_help(self):
-        dialog=Gtk.Dialog(title='Tastenkürzel',transient_for=self,modal=True,default_width=720,default_height=640)
+        dialog=StandardDialog(title='Tastenkürzel',transient_for=self,modal=True,default_width=720,default_height=640)
         dialog.set_titlebar(Gtk.Box())
         close_button=dialog.add_button('Schließen',Gtk.ResponseType.CLOSE); close_button.add_css_class('primary')
         actions=close_button.get_parent()

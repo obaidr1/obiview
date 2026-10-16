@@ -1,12 +1,13 @@
 """Direct effect selection with isolated, cancellable asynchronous previews."""
 from PIL import Image
 from gi.repository import Gtk, GLib
+from dialog_layout import StandardDialog
 from editor_ui import preview_pixbuf
 from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
 from ui_theme import accessible, card, label
 
 
-class EffectsDialog(Gtk.Dialog):
+class EffectsDialog(StandardDialog):
     def __init__(self, parent):
         super().__init__(title='Effekte', transient_for=parent, modal=True,
                          default_width=860, default_height=700)
@@ -35,11 +36,11 @@ class EffectsDialog(Gtk.Dialog):
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16,
                        margin_start=20, margin_end=20, margin_top=20)
         body.append(label('Effekte', 'dialog-title'))
-        body.append(label('Effekt auswählen, einstellen und am Bild vergleichen.', 'muted'))
-        content = Gtk.Box(spacing=20, vexpand=True)
+        body.append(label('Effekt auswählen, einstellen und am Bild vergleichen.', 'muted',wrap=True))
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=20, vexpand=True)
         preview_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, hexpand=True)
         self.picture = Gtk.Picture(hexpand=True, vexpand=True, can_shrink=True)
-        self.picture.set_size_request(280, 200)
+        self.picture.set_size_request(-1, 160); self.picture.set_vexpand(False)
         self.picture.set_pixbuf(self.original)
         accessible(self.picture, 'Live-Vorschau des ausgewählten Effekts')
         preview_area.append(self.picture)

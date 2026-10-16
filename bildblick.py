@@ -8,6 +8,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
+from dialog_layout import StandardDialog
 from image_model import ImageModel, crop_box
 from advanced_ui import AdvancedFeatures
 from save_dialog import SaveAsDialog
@@ -155,7 +156,11 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
 
     def message(self, title, text, callback=None):
         self.set_scrim(True)
-        dialog = Gtk.MessageDialog(transient_for=self, modal=True, text=title, secondary_text=text)
+        dialog = StandardDialog(title=title, transient_for=self, modal=True)
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        body.append(label(title, 'dialog-title', wrap=True))
+        body.append(label(text, selectable=True, wrap=True))
+        dialog.get_content_area().append(body)
         if callback:
             dialog.add_button('Abbrechen', Gtk.ResponseType.CANCEL)
             dialog.add_button('Fortfahren', Gtk.ResponseType.ACCEPT)
@@ -168,6 +173,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
             if callback and answer == Gtk.ResponseType.ACCEPT:
                 callback()
         dialog.connect('response', response)
+        dialog.connect('close-request', lambda *_: (dialog.response(Gtk.ResponseType.CANCEL), True)[1])
         self.dialogs.append(dialog)
         dialog.present()
 
