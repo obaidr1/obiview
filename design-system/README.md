@@ -55,6 +55,10 @@ python3 scripts/prepare_check.py
 firefox --headless --screenshot /tmp/bildblick-design-check.png --window-size 1440,1000 "file://$PWD/.browser-check.html"
 ```
 
-Die erzeugte, ignorierte `.browser-check.html` führt 13 Browserprüfungen aus und zeigt ihren Bericht direkt auf der Seite. Sie ist getrennt von der normalen Designreferenz. Für schmale Ansichten `--window-size 390,1400` verwenden. Der Bericht muss **PASS · 13/13** zeigen; der Firefox-Exitcode allein genügt nicht, um erfolgreiche Assertions zu belegen.
+Die erzeugte, ignorierte `.browser-check.html` führt 13 Browserprüfungen aus und zeigt ihren Bericht direkt auf der Seite. Sie ist getrennt von der normalen Designreferenz. Für schmale Ansichten `--window-size 390,1400` verwenden. Der Bericht muss **PASS · 14/14** zeigen; der Firefox-Exitcode allein genügt nicht, um erfolgreiche Assertions zu belegen.
 
-Geprüft am 16. Oktober 2026: beide Größen mit 13/13 erfolgreichen Prüfungen. Desktop-Übersicht, mobile Übersicht, Werkzeugauswahl, Export und Bearbeitungsdialog wurden visuell geprüft. Strukturprüfung, JavaScript-Syntaxprüfung und Übereinstimmung der generierten Dateien bestehen ebenfalls. Eine vollständige Screenreader-Abnahme und ein vollständiger TypeScript-Typcheck stehen aus.
+Geprüft am 16. Oktober 2026: beide Größen mit 14/14 erfolgreichen Prüfungen. Desktop-Übersicht, mobile Übersicht, Werkzeugauswahl, Export und Bearbeitungsdialog wurden visuell geprüft. Strukturprüfung, JavaScript-Syntaxprüfung und Übereinstimmung der generierten Dateien bestehen ebenfalls. Eine vollständige Screenreader-Abnahme und ein vollständiger TypeScript-Typcheck stehen aus.
+
+## Gemeinsame Dialogmaße
+
+Alle eigenen App-Dialoge und Nebenfenster verwenden die Tokens `dialog-width` (520 px), `dialog-height` (760 px) und `dialog-screen-margin` (32 px). Vorschau und Optionen stehen untereinander; die Abschlussleiste bleibt beim Scrollen sichtbar. Die native Umsetzung liest dieselben Größen in `dialog_layout.py`. Der vollständige Abgleich steht in `../docs/UI-AUDIT.md`.

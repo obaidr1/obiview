@@ -23,6 +23,12 @@ def expanded(widget):
     for child in children(widget): expanded(child)
 
 def check(window,name):
+    if isinstance(window,Gtk.PopoverMenu):
+        assert 0<window.get_width()<=520,(name,'menu width',window.get_width())
+        monitor=window.get_display().get_monitor_at_surface(window.get_native().get_surface())
+        assert window.get_height()<=monitor.get_geometry().height,(name,'menu height',window.get_height())
+        print('PASS MENU',name,window.get_width(),window.get_height(),flush=True)
+        return
     expected=dialog_size(window.get_transient_for())
     actual=(window.get_surface().get_width(),window.get_surface().get_height())
     assert actual==expected,(name,'geometry',actual,expected)
@@ -48,7 +54,7 @@ def tick(w):
         if time.monotonic()-started>90: raise TimeoutError('dialog audit timed out')
         if w.busy or not w.folder_files: return True
         if index==len(cases):
-            print(f'{"FAIL" if failures else "PASS"}: {len(cases)} dialog/module cases, common geometry, expanded content and fixed actions',flush=True)
+            print(f'{"FAIL" if failures else "PASS"}: {len(cases)} dialog/module/menu cases, common geometry, expanded content and fixed actions',flush=True)
             w.cleanup(); app.quit(); return False
         name,factory=cases[index]
         if phase==0:
@@ -59,6 +65,7 @@ def tick(w):
         except AssertionError: failures.append(traceback.format_exc())
         capture(name)
         if isinstance(current,StandardDialog): current.response(Gtk.ResponseType.CANCEL)
+        elif isinstance(current,Gtk.PopoverMenu): current.popdown(); current.unparent()
         else: current.close()
         index+=1;phase=0
     except Exception:
@@ -72,6 +79,17 @@ def activate(application):
            'text_dialog','blank_dialog','auto_crop_dialog','palette_dialog','swap_dialog',
            'preferences_dialog','slideshow_settings','export_options','print_image','shortcut_help','recent_folders']
     cases.extend((name,getattr(w,name)) for name in names)
+    from save_options import FORMAT_CHOICES
+    def export_format(fmt):
+        w.save_dialog(); d=w.dialogs[-1]; d.format.set_active_id(fmt)
+        d.resolution_tiles['custom'].set_active(True)
+        return d
+    cases.extend(('export_'+fmt,lambda fmt=fmt:export_format(fmt)) for fmt in FORMAT_CHOICES)
+    model=w.menu_bar.get_menu_model()
+    def menu(i):
+        popover=Gtk.PopoverMenu.new_from_model(model.get_item_link(i,'submenu'))
+        popover.set_parent(w.canvas);popover.popup();return popover
+    cases.extend(('menu_'+str(i),lambda i=i:menu(i)) for i in range(model.get_n_items()))
     def metadata():
         info=w.show_info(); child=info.show_metadata('exif')
         child.connect('response',lambda *_:info.close_dialog()); return child

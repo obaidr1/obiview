@@ -43,8 +43,7 @@ Zeichnen und die getrennten Kürzel für Zuschnitt und Redo geprüft.
 Der Effekte-Dialog wird mit allen zehn direkten Schaltflächen, passenden Reglern,
 Intensität, Originalvergleich, Einstellungswechsel, Zurücksetzen, Abbrechen und
 Anwenden mit genau einem Undo-Schritt geprüft. Verspätete Vorschau-Ergebnisse
-werden vor und nach dem Schließen simuliert. Alle Effektregler müssen in der
-Standardgröße ohne Scrollen sichtbar sein.
+werden vor und nach dem Schließen simuliert. Alle Effekte und Regler liegen im gemeinsamen 520-px-Dialog; umfangreiche Inhalte scrollen vertikal, die Abschlussleiste bleibt sichtbar.
 
 Die Screenshots von Editor, Effekten, Export, kompaktem Fenster und Größenänderung wurden geprüft.
 Die GUI-Prüfung verlangt eine Startgröße von exakt 720 × 640 Pixeln, eine sichtbare
@@ -77,3 +76,7 @@ Elf zusätzliche Funktionstests prüfen die vollständige Aktionszuordnung, gena
 Der erweiterte GTK-Test prüft Vollbildwechsel über Enter/Escape, Strecken/Breite/Höhe, Maus- und Bildtextanzeige, Leisten, Scrollen ohne Dateisprung, Zoomsperre über einen Ladevorgang, Markierungen und Filter, Tastaturhilfe, Dateinamen-Zwischenablage und Strg+S-Speicherdialog. Die Monitorüberspannung wird als GDK-Anforderung geprüft; ein tatsächliches Mehrmonitor-/Wayland-Setup bleibt ungeprüft.
 
 Die Designreferenz wurde als alleinstehende HTML-Datei in einem fremden Ordner geprüft. Ihre 13 Browserprüfungen bestehen bei 1440 px und 390 px Breite; Screenshots wurden kontrolliert. CSS und JavaScript sind eingebettet. Ein vollständiger TypeScript-Typcheck und eine Screenreader-Abnahme bleiben offen.
+
+## Einheitliche Dialoge
+
+Der vollständige Abgleich, die erfassten Module und die Systemgrenze stehen in [UI-AUDIT.md](UI-AUDIT.md). Die gerenderten Größen und Inhalte werden durch `tests/ui_dialog_audit.py` zusätzlich zum funktionalen Integrationstest geprüft.
