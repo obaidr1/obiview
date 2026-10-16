@@ -548,11 +548,17 @@ class AdvancedFeatures:
         dialog.get_content_area().append(label)
         dialog.connect('response',lambda *_:cancel.set())
         dialog.connect('close-request',lambda *_:(cancel.set(),True)[1])
+        self.set_scrim(True)
+        self.dialogs.append(dialog)
         dialog.present()
+        def close_progress():
+            if dialog in self.dialogs:
+                self.dialogs.remove(dialog); self.set_scrim(False)
+            dialog.destroy()
         def progress(done,total,result):
             GLib.idle_add(lambda:(label.set_text(f'{done} / {total}  ·  {Path(result["source"]).name}'),False)[1])
         def finished(results):
-            dialog.destroy()
+            close_progress()
             self.batch_cancel = None
             good = sum(r['ok'] for r in results)
             errors = [f'{Path(r["source"]).name}: {r["error"]}' for r in results if not r['ok']]
@@ -560,7 +566,7 @@ class AdvancedFeatures:
         self.submit(lambda:run_batch(plan,max_width=int(values['width']),max_height=int(values['height']),
                     clockwise=values['rotate'],quality=int(values['quality']),metadata=values['metadata'],
                     copy_only=copy_only,cancel=cancel,progress=progress),finished,
-                    lambda e:(dialog.destroy(),setattr(self,'batch_cancel',None),self.message('Stapelverarbeitung fehlgeschlagen',str(e))))
+                    lambda e:(close_progress(),setattr(self,'batch_cancel',None),self.message('Stapelverarbeitung fehlgeschlagen',str(e))))
 
     def extra_key(self, key, modifiers):
         from shortcuts import dispatch

@@ -123,7 +123,8 @@ class ModuleWindow(Gtk.Window):
         self.add_css_class('dialog'); self.set_titlebar(Gtk.Box())
         root=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
                      margin_start=24,margin_end=24,margin_top=24,margin_bottom=24)
-        root.append(label(title,'dialog-title',wrap=True))
+        heading=label(title,'dialog-title',wrap=True,max_width_chars=36)
+        heading.set_wrap_mode(Pango.WrapMode.WORD_CHAR); root.append(heading)
         self.module_content=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,vexpand=True)
         root.append(self.module_content)
         close=Gtk.Button(label='Schließen',halign=Gtk.Align.END); close.add_css_class('primary')

@@ -48,7 +48,7 @@ def tick(w):
         if time.monotonic()-started>90: raise TimeoutError('dialog audit timed out')
         if w.busy or not w.folder_files: return True
         if index==len(cases):
-            print(f'PASS: {len(cases)} dialog/module cases, common geometry, expanded content and fixed actions',flush=True)
+            print(f'{"FAIL" if failures else "PASS"}: {len(cases)} dialog/module cases, common geometry, expanded content and fixed actions',flush=True)
             w.cleanup(); app.quit(); return False
         name,factory=cases[index]
         if phase==0:

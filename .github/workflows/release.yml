@@ -41,6 +41,12 @@ jobs:
           GSK_RENDERER: cairo
           BILDBLICK_SCREENSHOT_LOG: '1'
         run: xvfb-run -a -s '-screen 0 1440x1050x24' dbus-run-session -- sh -c 'openbox >/tmp/openbox.log 2>&1 & /usr/bin/python3 tests/ui_dialog_audit.py'
+      - name: Audit dialogs on a short screen
+        env:
+          PYTHONPATH: .
+          GDK_BACKEND: x11
+          GSK_RENDERER: cairo
+        run: xvfb-run -a -s '-screen 0 1024x640x24' dbus-run-session -- sh -c 'openbox >/tmp/openbox.log 2>&1 & /usr/bin/python3 tests/ui_dialog_audit.py'
       - name: Verify native GTK workflows and capture UI
         env:
           PYTHONPATH: .
