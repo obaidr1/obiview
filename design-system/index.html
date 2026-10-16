@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Lokale, verbindliche Designreferenz für Bildblick: Komponenten, Zustände und Dialogmuster."><title>Bildblick — Designreferenz</title>
+<style>
+/* Generated from tokens.json. Run npm run build. */
+:root {
+  --color-ink: #242424;
+  --color-muted: #626262;
+  --color-surface: #f5f5f3;
+  --color-card: #fafaf9;
+  --color-line: #dededb;
+  --color-white: #ffffff;
+  --color-hover: #e7e7e4;
+  --color-active: #d9d9d5;
+  --color-track: #8c8c87;
+  --color-error: #a02020;
+  --color-scrim: rgb(0 0 0 / 35%);
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-dialog: 24px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --font-family: Inter, Cantarell, system-ui, sans-serif;
+  --text-small: 12px;
+  --text-body: 14px;
+  --text-title: 22px;
+  --control-height: 44px;
+  --icon-size: 20px;
+  --focus-ring: 2px solid #242424;
+}
+
+</style>
+<style>
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+body { margin: 0; color: var(--color-ink); background: var(--color-surface); font: var(--text-body)/1.55 var(--font-family); }
+button, input, textarea, select { font: inherit; color: inherit; }
+button, summary { cursor: pointer; }
+a { color: inherit; text-underline-offset: 4px; }
+button, a, input, select, summary, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible, .state-focus { outline: var(--focus-ring); outline-offset: 3px; }
+[hidden] { display: none !important; }
+button:disabled, input:disabled { opacity: .42; cursor: not-allowed; }
+button { transition: background .15s, color .15s; }
+button svg, a svg { pointer-events: none; }
+svg.icon { width: var(--icon-size); height: var(--icon-size); flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.skip { position: fixed; top: -80px; left: 16px; z-index: 100; padding: 12px; background: white; }.skip:focus { top: 12px; }
+.sidebar { position: fixed; inset: 0 auto 0 0; width: 236px; border-right: 1px solid var(--color-line); padding: 32px 22px 18px; display: flex; flex-direction: column; background: var(--color-surface); z-index: 5; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 650; text-decoration: none; letter-spacing: -.5px; }
+.brand-mark { display: grid; place-items: center; background: var(--color-ink); color: white; width: 34px; height: 34px; border-radius: 11px; }
+.sidebar .caption { margin: 9px 0 30px; }.caption,.eyebrow { font-size: 11px; color: var(--color-muted); letter-spacing: .09em; text-transform: uppercase; }
+.nav-group { margin: 18px 10px 6px; font-size: 11px; color: var(--color-muted); text-transform: uppercase; letter-spacing: .08em; }
+nav a { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 9px; color: var(--color-muted); text-decoration: none; font-size: 13px; }
+nav a:hover { background: var(--color-hover); color: var(--color-ink); }nav a[aria-current] { color: white; background: var(--color-ink); }nav a span { opacity: .55; font-variant-numeric: tabular-nums; }
+.sidebar-foot { border-top: 1px solid var(--color-line); margin-top: 30px; padding-top: 18px; color: var(--color-muted); font-size: 12px; }
+main { margin-left: 236px; max-width: 1480px; padding: 36px 56px 80px; }
+.topline { display: flex; justify-content: space-between; gap: 16px; color: var(--color-muted); font-size: 12px; padding-bottom: 32px; border-bottom: 1px solid var(--color-line); }
+.tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 9px; border-radius: 99px; border: 1px solid var(--color-line); white-space: nowrap; }.dot { width: 5px; height: 5px; background: currentColor; border-radius: 50%; }
+h1 { font-weight: 550; font-size: clamp(36px, 4.3vw, 62px); line-height: 1.06; letter-spacing: -2.6px; margin: 18px 0 24px; }h1 span { color: #888884; }h2 { font-size: 25px; line-height: 1.25; letter-spacing: -.7px; font-weight: 550; margin: 0; }h3 { font-size: 15px; font-weight: 600; margin: 0 0 14px; }h4 { font-size: 14px; margin: 0 0 10px; }p { margin: 0 0 14px; }.muted { color: var(--color-muted); }.small { font-size: 12px; }.mono, code, kbd { font-family: ui-monospace, monospace; font-size: 11px; }
+.hero { padding: 50px 0 48px; }.hero-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 40px; }.hero .intro { font-size: 15px; max-width: 440px; color: var(--color-muted); }.hero-links { display: flex; gap: 16px; align-items: center; margin-top: 28px; }
+.specimen { padding: 40px 0; border-top: 1px solid var(--color-line); scroll-margin-top: 20px; }.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 22px; }.section-head p { max-width: 420px; color: var(--color-muted); font-size: 12px; margin: 0; }.section-number { color: #92928d; font-size: 11px; font-weight: 400; letter-spacing: 0; display: block; margin-bottom: 10px; }
+.grid { display: grid; gap: 16px; }.grid.two { grid-template-columns: repeat(2,minmax(0,1fr)); }.grid.three { grid-template-columns: repeat(3,minmax(0,1fr)); }.grid.four { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.card { background: var(--color-card); border: 1px solid white; border-radius: var(--radius-card); padding: 24px; min-width: 0; }.card.compact { padding: 16px; }.well { padding: 22px; border: 1px solid var(--color-line); border-radius: 16px; }.rule { display: flex; gap: 14px; }.rule strong { display: block; margin-bottom: 5px; }.rule p { font-size: 12px; color: var(--color-muted); margin: 0; }.rule-num { color: #92928d; font-size: 12px; padding-top: 2px; }
+.row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }.between { justify-content: space-between; }.stack { display: flex; flex-direction: column; gap: 16px; }.spaced { margin-top: 20px; }.divider { height: 1px; background: var(--color-line); margin: 20px 0; }
+.btn { min-height: var(--control-height); padding: 9px 18px; border: 1px solid transparent; border-radius: var(--radius-pill); background: transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; line-height: 1.4; white-space: nowrap; }.btn:hover,.btn.state-hover { background: var(--color-hover); }.btn:active,.btn.state-active { background: var(--color-active); }.btn.primary { color: white; background: var(--color-ink); }.btn.primary:hover { background: #404040; }.btn.secondary { border-color: var(--color-line); background: white; }.btn.secondary:hover { background: var(--color-hover); }.btn.danger { color: var(--color-error); border-color: #ddc0bd; }.btn.icon-only { width: 40px; min-height: 40px; padding: 8px; border-radius: 10px; }.btn.sm { min-height: 32px; padding: 5px 10px; font-size: 12px; }
+.state-grid { display: flex; flex-wrap: wrap; gap: 22px; align-items: start; }.state-sample { display: flex; flex-direction: column; align-items: center; gap: 12px; }.state-label { color: var(--color-muted); font-size: 11px; }
+.token-color { width: 100%; height: 80px; border-radius: 12px; margin-bottom: 14px; border: 1px solid rgb(0 0 0 / 6%); }.token-name { display: block; font-size: 13px; }.token-value { color: var(--color-muted); font-size: 11px; }.swatches { grid-template-columns: repeat(6, minmax(0,1fr)); }.swatch { padding: 12px; }.measure { height: 8px; background: #242424; border-radius: 4px; margin: 6px 0; }.type-sample { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--color-line); padding: 12px 0; gap: 12px; }.type-sample:last-child { border: 0; }
+.choice-group { display: grid; gap: 6px; grid-template-columns: repeat(3,minmax(0,1fr)); }.choice { min-height: 42px; padding: 10px; background: transparent; border: 1px solid var(--color-line); border-radius: 12px; text-align: center; }.choice:hover { background: var(--color-hover); }.choice[aria-checked=true],.choice[aria-pressed=true] { background: var(--color-ink); color: white; border-color: var(--color-ink); }.choice svg { display: block; margin: 0 auto 5px; }.tool-choices { grid-template-columns: repeat(6,minmax(0,1fr)); }.tool-choices .choice { min-height: 72px; }.format-choices .choice { text-align: left; background: transparent; padding: 14px 12px; border-color: transparent; }.format-choices .choice[aria-checked=true] { color: var(--color-ink); background: white; border-color: var(--color-line); }.format-choices .choice .radio-dot { float: right; margin-top: 3px; }.choice small { display: block; color: var(--color-muted); margin-top: 6px; font-size: 11px; }.radio-dot { width: 14px; height: 14px; background: var(--color-line); border-radius: 50%; }.choice[aria-checked=true] .radio-dot { background: white; border: 5px solid var(--color-ink); }
+.field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }.field label,.field-title { font-size: 13px; }.field small { font-size: 12px; color: var(--color-muted); }input:not([type=range],[type=checkbox],[type=radio],[type=color]), textarea, select { width: 100%; min-width: 0; min-height: 44px; background: white; border: 1px solid var(--color-line); border-radius: 12px; padding: 10px 12px; }textarea { min-height: 100px; resize: vertical; }input[aria-invalid=true] { border-color: var(--color-error); }.error-text { color: var(--color-error) !important; }.search-field { position: relative; }.search-field svg { position: absolute; left: 12px; top: 13px; width: 18px; }.search-field input { padding-left: 40px !important; }
+.spin { display: flex; align-items: center; background: white; border: 1px solid var(--color-line); border-radius: 12px; padding-right: 4px; min-width: 0; }.spin input { border: none !important; background: transparent !important; appearance: textfield; min-width: 50px; padding-right: 2px !important; }.spin input::-webkit-inner-spin-button { appearance: none; }.spin:focus-within { outline: var(--focus-ring); outline-offset: 3px; }.spin input:focus-visible { outline: none; }.spin button { border: none; background: transparent; min-width: 32px; height: 34px; border-radius: 8px; font-size: 19px; }.spin button:hover { background: var(--color-hover); }.unit { font-size: 12px; color: var(--color-muted); padding-right: 6px; }
+.slider-field { display: flex; align-items: center; gap: 16px; }.slider-field .spin { width: 122px; flex-shrink: 0; }.slider-field output { min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }input[type=range] { width: 100%; min-width: 50px; appearance: none; background: transparent; height: 30px; cursor: pointer; }input[type=range]::-webkit-slider-runnable-track { background: var(--color-line); height: 3px; border-radius: 8px; }input[type=range]::-moz-range-track { background: var(--color-line); height: 3px; border-radius: 8px; }input[type=range]::-webkit-slider-thumb { appearance: none; width: 17px; height: 17px; margin-top: -7px; background: white; border: 1px solid #b6b6b0; border-radius: 50%; box-shadow: 0 2px 5px #00000019; }input[type=range]::-moz-range-thumb { width: 17px; height: 17px; background: white; border: 1px solid #b6b6b0; border-radius: 50%; box-shadow: 0 2px 5px #00000019; }
+.range-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-muted); }
+.check,.radio { display: flex; align-items: center; gap: 10px; cursor: pointer; }.check input,.radio input { width: 17px; height: 17px; accent-color: var(--color-ink); margin: 0; }.switch-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; }.switch { padding: 0; width: 42px; height: 25px; flex-shrink: 0; border: 1px solid #aaa; background: #d8d8d3; border-radius: 99px; position: relative; }.switch::after { content: ''; position: absolute; width: 21px; height: 21px; left: 1px; top: 1px; border-radius: 50%; background: white; border: 1px solid #a0a09a; transition: transform .15s; }.switch[aria-checked=true] { background: var(--color-ink); border-color: var(--color-ink); }.switch[aria-checked=true]::after { transform: translateX(16px); }
+.color-input { display: flex; align-items: center; gap: 12px; }input[type=color] { width: 44px; height: 42px; padding: 0; border: none; background: none; cursor: pointer; }.font-sample { font-family: Georgia, serif; font-size: 27px; }
+details { border-top: 1px solid var(--color-line); padding: 14px 0; }summary { list-style: none; display: flex; align-items: center; justify-content: space-between; }summary::-webkit-details-marker { display: none; }summary::after { content: '+'; font-size: 20px; }details[open] summary::after { content: '−'; }details .detail-content { padding-top: 18px; }
+.window { border: 1px solid #d6d6d2; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px #0000000a; background: var(--color-surface); }.titlebar { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 12px; }.window-controls { display: flex; gap: 14px; color: var(--color-muted); }.menubar { display: flex; gap: 1px; padding: 2px 6px; border-block: 1px solid var(--color-line); }.menubar button { border: 0; border-radius: 6px; font-size: 11px; padding: 3px 7px; background: transparent; }.menubar button:hover { background: var(--color-hover); }.toolbar { display: flex; align-items: center; gap: 2px; padding: 5px 8px; flex-wrap: wrap; }.toolbar .btn { min-height: 30px; height: 30px; width: 30px; border-radius: 8px; padding: 5px; }.toolbar svg { width: 17px; height: 17px; }.toolbar-sep { width: 1px; height: 20px; background: var(--color-line); margin: 0 5px; }.file-count { border: 1px solid var(--color-line); background: white; padding: 2px 8px; border-radius: 7px; font-size: 10px; }.statusbar { display: flex; gap: 12px; padding: 5px 10px; color: var(--color-muted); font-size: 10px; border-top: 1px solid var(--color-line); }.art { width: 100%; aspect-ratio: 1.5; display: block; object-fit: cover; border-radius: 10px; }.viewer-art { padding: 10px; background: #e6e8e4; }.viewer-art .art { border-radius: 2px; }.hero-window { transform: rotate(-2deg); }.hero-window .art { aspect-ratio: 1.35; }
+.menu { max-width: 300px; border: 1px solid var(--color-line); padding: 8px; border-radius: 16px; background: var(--color-card); box-shadow: 0 8px 20px #00000008; }.menu button { display: flex; justify-content: space-between; align-items: center; gap: 16px; border: 0; border-radius: 8px; min-height: 36px; padding: 8px 10px; width: 100%; background: transparent; text-align: left; font-size: 13px; }.menu button:hover { background: var(--color-hover); }kbd { color: var(--color-muted); }.menu hr { border: 0; border-top: 1px solid var(--color-line); margin: 6px; }.tooltip-wrap { position: relative; display: inline-flex; }.tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); color: white; background: var(--color-ink); padding: 5px 9px; font-size: 11px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; z-index: 3; }.tooltip-wrap:hover .tooltip,.tooltip-wrap:focus-within .tooltip { opacity: 1; }
+.zoom-dock { display: inline-flex; align-items: center; background: white; border: 1px solid var(--color-line); border-radius: 28px; padding: 4px; gap: 8px; box-shadow: 0 3px 12px #0000000a; }.zoom-dock output { font-size: 12px; min-width: 40px; text-align: center; }
+.dialog-example { background: #e6e6e2; padding: 32px; border-radius: 20px; }.dialog-shell { background: var(--color-surface); border: 1px solid white; border-radius: 24px; box-shadow: 0 10px 30px #00000012; padding: 24px; max-width: 520px; margin: auto; }.dialog-shell h3 { font-size: 22px; letter-spacing: -.5px; margin-bottom: 20px; }.dialog-shell .card { padding: 16px; }.dialog-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 24px; }.dialog-shell .stack { gap: 12px; }.file-summary { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }.file-summary .art { width: 38px; height: 44px; border-radius: 6px; }.file-summary p { margin: 0; }.file-summary .tag { margin-left: auto; }
+.edit-example { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }.preview-area { display: flex; flex-direction: column; justify-content: center; gap: 14px; }.preview-well { background: #e9eae6; padding: 18px; border-radius: 16px; }.preview-area .art { aspect-ratio: 1.15; object-fit: cover; }.preview-caption { text-align: center; font-size: 11px; color: var(--color-muted); }.effect-choices { grid-template-columns: repeat(2,minmax(0,1fr)); }.effect-choices .choice { font-size: 12px; }.demo-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }.demo-title h3 { margin: 0; font-size: 22px; }
+.thumb-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }.thumb { background: transparent; border: 1px solid transparent; padding: 5px; border-radius: 12px; text-align: left; min-width: 0; }.thumb[aria-pressed=true] { border-color: var(--color-ink); background: white; }.thumb span { display: block; font-size: 11px; overflow: hidden; text-overflow: ellipsis; margin: 6px 0 0; }.thumb .art { border-radius: 7px; aspect-ratio: 1.3; }.crop-preview { position: relative; }.crop-box { position: absolute; top: 20%; left: 20%; right: 20%; bottom: 20%; border: 1px solid white; box-shadow: 0 0 0 100px #00000028; pointer-events: none; }.crop-box::before,.crop-box::after { content: ''; position: absolute; inset: 33% 0; border-block: 1px solid #ffffff88; }.crop-box::after { inset: 0 33%; border: 0; border-inline: 1px solid #ffffff88; }.crop-preview { overflow: hidden; border-radius: 10px; }.handles i { position: absolute; width: 7px; height: 7px; background: white; border: 1px solid #777; }.handles i:nth-child(1) { top: -4px; left: -4px; }.handles i:nth-child(2) { top: -4px; right: -4px; }.handles i:nth-child(3) { bottom: -4px; left: -4px; }.handles i:nth-child(4) { bottom: -4px; right: -4px; }
+.data-list { margin: 0; }.data-list > div { display: grid; grid-template-columns: minmax(120px,1fr) 2fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--color-line); font-size: 12px; }.data-list dt { color: var(--color-muted); }.data-list dd { margin: 0; overflow-wrap: anywhere; }.data-list div:last-child { border: 0; }.table-scroll { overflow-x: auto; }table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }th { font-weight: 500; color: var(--color-muted); }th,td { padding: 12px 10px; border-bottom: 1px solid var(--color-line); vertical-align: top; }td code { white-space: nowrap; }td:last-child { color: var(--color-muted); }
+.notice { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--color-line); padding: 14px 16px; border-radius: 12px; font-size: 12px; }.notice.error { border-color: #e2c5c0; color: var(--color-error); background: #fbf4f2; }.notice strong { display: block; font-size: 13px; }.empty { text-align: center; padding: 24px 10px; }.empty svg { width: 30px; height: 30px; margin-bottom: 12px; }.empty p { color: var(--color-muted); font-size: 12px; }.spinner { width: 18px; height: 18px; border: 2px solid var(--color-line); border-top-color: var(--color-ink); border-radius: 50%; animation: spin 1s linear infinite; }@keyframes spin { to { transform: rotate(360deg); } }progress { width: 100%; height: 5px; accent-color: var(--color-ink); border: 0; border-radius: 9px; overflow: hidden; }progress::-webkit-progress-bar { background: var(--color-line); }progress::-webkit-progress-value { background: var(--color-ink); }progress::-moz-progress-bar { background: var(--color-ink); }.skeleton { height: 12px; border-radius: 6px; background: #e7e7e4; margin: 10px 0; }
+.icon-library { display: grid; grid-template-columns: repeat(8,minmax(0,1fr)); gap: 8px; }.icon-cell { display: flex; align-items: center; flex-direction: column; gap: 12px; padding: 18px 2px; border: 1px solid var(--color-line); border-radius: 12px; font-size: 10px; color: var(--color-muted); }.icon-cell svg { color: var(--color-ink); width: 24px; height: 24px; }.contract { background: var(--color-ink); color: white; border-radius: 20px; padding: 30px; }.contract p { color: #c4c4be; font-size: 13px; }.contract a { color: white; }.contract li { padding: 4px 0; font-size: 13px; }.contract h3 { font-size: 21px; }
+dialog { max-width: min(520px,calc(100vw - 32px)); width: 520px; padding: 24px; border: 1px solid white; border-radius: 24px; background: var(--color-surface); color: var(--color-ink); max-height: calc(100dvh - 32px); overflow-y: auto; box-shadow: 0 16px 60px #00000026; }dialog::backdrop { background: var(--color-scrim); }dialog h2 { font-size: 22px; margin-bottom: 16px; }dialog .close-dialog { margin-left: auto; }#toast { position: fixed; left: calc(50% + 118px); transform: translateX(-50%); bottom: 24px; padding: 12px 20px; border-radius: 12px; background: var(--color-ink); color: white; box-shadow: 0 6px 20px #0002; z-index: 20; font-size: 12px; max-width: calc(100vw - 30px); }.footer { display: flex; justify-content: space-between; gap: 16px; color: var(--color-muted); font-size: 12px; border-top: 1px solid var(--color-line); padding-top: 24px; }.print-only { display: none; }
+@media (min-width:1600px) { main { padding-inline: 80px; } }
+@media (max-width:1100px) { main { padding-inline: 30px; }.sidebar { width: 206px; }main { margin-left: 206px; }.hero-grid { gap: 24px; }.hero-window { transform: none; }.section-head { flex-direction: column; gap: 10px; }.grid.four { grid-template-columns: repeat(2,minmax(0,1fr)); }.swatches { grid-template-columns: repeat(3,minmax(0,1fr)); }.icon-library { grid-template-columns: repeat(5,minmax(0,1fr)); }.dialog-example { padding: 20px; }.tool-choices { grid-template-columns: repeat(3,minmax(0,1fr)); }#toast { left: calc(50% + 103px); } }
+@media (max-width:800px) { .sidebar { position: relative; width: auto; padding: 18px 24px; border-right: none; border-bottom: 1px solid var(--color-line); }.sidebar nav { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 4px; }.sidebar nav a { white-space: nowrap; }.sidebar nav span,.nav-group,.sidebar-foot,.sidebar .caption { display: none; }.brand { margin-bottom: 16px; }main { margin: 0; padding: 24px; }.hero-grid { grid-template-columns: 1fr 1fr; }h1 { font-size: 40px; }.hero { padding-top: 32px; }.grid.two,.grid.three,.edit-example { grid-template-columns: 1fr; }.icon-library { grid-template-columns: repeat(6,minmax(0,1fr)); }#toast { left: 50%; }.tool-choices { grid-template-columns: repeat(6,minmax(0,1fr)); } }
+@media (max-width:560px) { main { padding-inline: 18px; }.topline { align-items: start; }.hero-grid { grid-template-columns: 1fr; }.hero-window { margin-top: 14px; }.hero-window .art { aspect-ratio: 1.65; }h1 { font-size: 44px; letter-spacing: -2px; }.hero-links { margin-bottom: 12px; }.specimen { padding-block: 30px; }.card { padding: 18px; }.swatches { grid-template-columns: repeat(2,minmax(0,1fr)); }.grid.four { grid-template-columns: 1fr 1fr; }.icon-library { grid-template-columns: repeat(4,minmax(0,1fr)); }.tool-choices { grid-template-columns: repeat(3,minmax(0,1fr)); }.dialog-example { padding: 10px; margin-inline: -8px; }.dialog-shell { padding: 16px; }.format-choices .choice { padding: 10px 8px; }.file-summary .tag { display: none; }.data-list > div { grid-template-columns: 1fr; gap: 3px; }.contract { padding: 22px; }.footer { flex-direction: column; }.slider-field { gap: 10px; } }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+@media print { .sidebar,.topline,.hero-links,#toast,dialog { display: none; }main { margin: 0; padding: 0; max-width: none; }.specimen { break-inside: avoid; }.hero-window { transform: none; }body { font-size: 11px; }.card { border: 1px solid #ddd; }.print-only { display: block; } }
+
+</style>
+</head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs><symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m14 3 5 9m2-1H10m7 9-5-9m-2 10-5-9M3 13h11M7 4l5 9"/></symbol><symbol id="i-open" viewBox="0 0 24 24"><path d="M3 7h6l2-3h4l2 3h4v13H3z"/><path d="m3 10 3 10 3-10h12"/></symbol><symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 4-5 5 5 5M3 9h11a6 6 0 0 1 0 12"/></symbol><symbol id="i-redo" viewBox="0 0 24 24"><path d="m16 4 5 5-5 5m5-5H10a6 6 0 0 0 0 12"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol><symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15"/></symbol><symbol id="i-pen" viewBox="0 0 24 24"><path d="m5 15 11-11 4 4L9 19l-5 1zM14 6l4 4M5 15l4 4"/></symbol><symbol id="i-brush" viewBox="0 0 24 24"><path d="m10 13 8-10c2-2 5 1 3 3l-8 10zm0 0c-6-2-3 7-8 7 10 3 15-1 11-4"/></symbol><symbol id="i-line" viewBox="0 0 24 24"><path d="M4 20 20 4"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4m-9 0h9v9"/></symbol><symbol id="i-rectangle" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/></symbol><symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="7"/></symbol><symbol id="i-left" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol><symbol id="i-right" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/></symbol><symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><rect x="7" y="7" width="10" height="10"/></symbol><symbol id="i-adjust" viewBox="0 0 24 24"><path d="M4 7h6m4 0h6M4 17h10m4 0h2"/><circle cx="12" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="8" r="2"/><path d="m3 17 5-5 4 4 4-7 5 7"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8z"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 4v16M16 4v16"/></symbol><symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H3V8h18v9h-4"/><path d="M7 14h10v7H7zM17 11h1"/></symbol><symbol id="i-rotate" viewBox="0 0 24 24"><path d="M4 9a8 8 0 1 1 0 6M4 3v6h6"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 5V3H3v13h2"/></symbol><symbol id="i-delete" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol><symbol id="i-font" viewBox="0 0 24 24"><path d="m3 20 7-16 7 16M6 14h8m2-5h6m-3 0v11"/></symbol><symbol id="i-warning" viewBox="0 0 24 24"><path d="m12 3 10 18H2zM12 9v5m0 3v.1"/></symbol><symbol id="landscape" viewBox="0 0 640 420"><rect width="640" height="420" fill="#e5e2d6"/><circle cx="456" cy="128" r="57" fill="#bf8559"/><path d="M0 280Q120 145 310 275T640 230V420H0" fill="#c3c0a9"/><path d="M0 315Q160 205 345 300T640 290V420H0" fill="#8d9787"/><path d="M0 350Q190 270 380 340T640 320V420H0" fill="#596c62"/><path d="M0 395Q240 320 640 410V420H0" fill="#344d46"/></symbol></defs></svg><a href="#main" class="skip">Zum Inhalt springen</a>
+<aside class="sidebar"><a class="brand" href="#overview"><span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-aperture"/></svg></span>Bildblick</a>
+<p class="caption">Design reference · v1.0
+</p>
+<nav aria-label="Designreferenz"><a href="#overview" aria-current="page">Übersicht<span>00</span></a>
+<p class="nav-group">Grundlage
+</p><a href="#principles">Prinzipien<span>01</span></a><a href="#foundations">Grundlagen<span>02</span></a>
+<p class="nav-group">Komponenten
+</p><a href="#buttons">Buttons<span>03</span></a><a href="#choices">Auswahl<span>04</span></a><a href="#sliders">Slider<span>05</span></a><a href="#inputs">Eingaben<span>06</span></a><a href="#toggles">Schalter<span>07</span></a><a href="#special">Spezialfelder<span>08</span></a><a href="#navigation">Navigation<span>09</span></a>
+<p class="nav-group">Muster
+</p><a href="#preview">Bild & Vorschau<span>10</span></a><a href="#editor">Bearbeiten<span>11</span></a><a href="#export">Export<span>12</span></a><a href="#data">Informationen<span>13</span></a><a href="#feedback">Rückmeldung<span>14</span></a>
+<p class="nav-group">Referenz
+</p><a href="#icons">Symbole<span>15</span></a><a href="#inventory">Inventar<span>16</span></a><a href="#contract">Designvertrag<span>17</span></a>
+</nav>
+<div class="sidebar-foot">Für die native Linux-App.<br>Offline. Lokal. Verbindlich.<br><a href="DESIGN.md">Designvertrag ↗</a>
+</div>
+</aside>
+<main id="main" tabindex="-1">
+<div class="topline"><span>Produkt / Bildblick / Designreferenz</span><span class="tag"><span class="dot"></span>Lokale Referenz · 1.0</span>
+</div>
+<section class="hero" id="overview">
+<div class="hero-grid">
+<div><span class="eyebrow">Bildblick · Design system / 01</span>
+<h1>Ein klarer Blick.<br><span>Bis ins Detail.</span></h1>
+<p class="intro">Die gemeinsame Grundlage für jede Oberfläche in Bildblick. Alle Elemente, alle Zustände, ein vertrautes Bediengefühl.
+</p>
+<div class="hero-links"><a class="btn primary" href="#buttons">Elemente entdecken <svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></a><a class="small" href="#contract">Die Regeln</a>
+</div>
+</div>
+<div class="window hero-window">
+<div class="titlebar"><span>duenen-sommer.jpg</span><span class="window-controls" aria-hidden="true">− &nbsp; □ &nbsp; ×</span>
+</div>
+<div class="menubar">
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Datei
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Bearbeiten
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Bild
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Ansicht
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Extras
+</button>
+</div>
+<div class="toolbar">
+<button type="button" class="btn icon-only" aria-label="Datei öffnen" title="Datei öffnen" data-native-open><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Export öffnen" title="Export öffnen" data-open="export"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Rückgängig" title="Rückgängig" disabled><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Bildinformationen" title="Bildinformationen" data-open="info"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Zoom verkleinern" title="Zoom verkleinern" data-zoom="-25"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Zoom vergrößern" title="Zoom vergrößern" data-zoom="25"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Vorheriges Bild" title="Vorheriges Bild" data-toast="Beispiel: vorheriges Bild."><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Nächstes Bild" title="Nächstes Bild" data-toast="Beispiel: nächstes Bild."><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg>
+</button><span class="file-count">1 / 12</span>
+</div>
+<div class="viewer-art"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+</div>
+<div class="statusbar"><span>1920 × 1280 px</span><span>100 %</span><span>842 KB</span>
+</div>
+</div>
+</div>
+</section>
+<section id="principles" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">01</span>Eine Sprache. Jedes Werkzeug.</h2>
+<p>Diese Regeln gelten für neue Funktionen und jede Überarbeitung bestehender Oberflächen.
+</p>
+</div>
+<div class="grid two">
+<div class="card rule"><span class="rule-num">01</span>
+<div><strong>Das Bild bleibt im Mittelpunkt</strong>
+<p>Kompaktes Hauptfenster mit Menü, Symbolleiste, Bildfläche und Status. Werkzeuge öffnen eigene Dialoge.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">02</span>
+<div><strong>Optionen sichtbar machen</strong>
+<p>Effekte und endliche Varianten direkt als beschriftete Schaltflächen zeigen. Keine versteckten Effekt-Dropdowns.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">03</span>
+<div><strong>Werte begreifbar machen</strong>
+<p>Stärke, Kontrast und ähnliche Parameter erhalten Slider. Exakte Maße erhalten Zahleneingaben, bei Bedarf gekoppelt.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">04</span>
+<div><strong>Änderungen kontrollierbar halten</strong>
+<p>Vorschau, Originalvergleich und Zurücksetzen. Abbrechen verwirft, Anwenden erzeugt einen Undo-Schritt.
+</p>
+</div>
+</div>
+</div>
+</section>
+<section id="foundations" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">02</span>Farben & Grundlagen</h2>
+<p>Die Ausgangswerte kommen aus ui_theme.py. tokens.json hält die verbindlichen Web-Tokens.
+</p>
+</div>
+<div class="grid swatches">
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-ink)">
+</div><strong class="token-name">Text / Hauptaktion</strong><span class="token-value">#242424</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-muted)">
+</div><strong class="token-name">Sekundärtext</strong><span class="token-value">#626262</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-surface)">
+</div><strong class="token-name">Fensterfläche</strong><span class="token-value">#f5f5f3</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-card)">
+</div><strong class="token-name">Karte</strong><span class="token-value">#fafaf9</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-line)">
+</div><strong class="token-name">Trennlinie</strong><span class="token-value">#dededb</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-white)">
+</div><strong class="token-name">Eingabe / Griff</strong><span class="token-value">#ffffff</span>
+</div>
+</div>
+<div class="grid two spaced">
+<div class="card">
+<h3>Typografie</h3>
+<div class="type-sample"><span style="font-size:22px;font-weight:600">Bild bearbeiten</span><span class="mono">22 / 600 · Titel</span>
+</div>
+<div class="type-sample"><strong>Einstellungen</strong><span class="mono">14 / 600 · Abschnitt</span>
+</div>
+<div class="type-sample"><span>Original vergleichen</span><span class="mono">14 / 400 · Text</span>
+</div>
+<div class="type-sample"><span class="small muted">960 × 600 px · 100 %</span><span class="mono">12 / 400 · Hilfstext</span>
+</div>
+<p class="small muted spaced">Inter → Cantarell → Systemschrift. Kein externer Font-Download.
+</p>
+</div>
+<div class="card">
+<h3>Abstände & Form</h3>
+<div class="row between">
+<div>
+<div class="measure" style="width:4px">
+</div><span class="mono">4</span>
+</div>
+<div>
+<div class="measure" style="width:8px">
+</div><span class="mono">8</span>
+</div>
+<div>
+<div class="measure" style="width:12px">
+</div><span class="mono">12</span>
+</div>
+<div>
+<div class="measure" style="width:16px">
+</div><span class="mono">16</span>
+</div>
+<div>
+<div class="measure" style="width:20px">
+</div><span class="mono">20</span>
+</div>
+<div>
+<div class="measure" style="width:24px">
+</div><span class="mono">24</span>
+</div>
+<div>
+<div class="measure" style="width:32px">
+</div><span class="mono">32</span>
+</div>
+</div>
+<div class="divider">
+</div>
+<div class="row"><span class="tag">12 px · Eingaben</span><span class="tag">20 px · Karten</span><span class="tag">24 px · Dialoge</span><span class="tag">Pille · Aktionen</span>
+</div>
+<p class="small muted spaced">Dialogrand 20–24 px · Kartenspalt 12–16 px · Standardaktion 44 px hoch. Die Hauptsymbolleiste bleibt kompakt.
+</p>
+</div>
+</div>
+</section>
+<section id="buttons" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">03</span>Buttons & Zustände</h2>
+<p>Pro Dialog eine schwarze Hauptaktion. Fokus bleibt immer sichtbar, auch bei Tastaturbedienung.
+</p>
+</div>
+<div class="card">
+<h3>Hierarchie</h3>
+<div class="row">
+<button type="button" class="btn primary" data-toast="Beispieländerung angewendet.">Anwenden
+</button>
+<button type="button" class="btn secondary" data-toast="Beispieländerung verworfen.">Abbrechen
+</button>
+<button type="button" class="btn " data-toast="Beispielwerte zurückgesetzt.">Zurücksetzen
+</button>
+<button type="button" class="btn danger" data-open="confirm"><svg class="icon" aria-hidden="true"><use href="#i-delete"/></svg> Entfernen
+</button>
+<button type="button" class="btn icon-only" aria-label="Bild speichern" title="Bild speichern" data-open="export"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button>
+</div>
+<div class="divider">
+</div>
+<h3>Interaktionszustände</h3>
+<div class="state-grid">
+<div class="state-sample">
+<button type="button" class="btn secondary" >Button
+</button><span class="state-label">Standard</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn state-hover" >Button
+</button><span class="state-label">Hover</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn state-active" >Button
+</button><span class="state-label">Gedrückt</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn secondary state-focus" >Button
+</button><span class="state-label">Fokus</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn primary" disabled>Button
+</button><span class="state-label">Deaktiviert</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn secondary" disabled><span class=spinner></span> Berechnung
+</button><span class="state-label">Beschäftigt</span>
+</div>
+</div>
+<p class="small muted spaced">Die markierten Hover-, Druck- und Fokusbeispiele zeigen Zustände dauerhaft. Alle normalen Buttons reagieren auf Maus und Tastatur.
+</p>
+</div>
+</section>
+<section id="choices" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">04</span>Direkte Auswahl</h2>
+<p>Werkzeuge, Formate und Effekte sind sofort sichtbar. Pfeiltasten wechseln innerhalb einer Auswahlgruppe.
+</p>
+</div>
+<div class="card">
+<h3>Werkzeuge · Symbol + Beschriftung</h3>
+<div class="choice-group tool-choices" role="radiogroup" aria-label="Zeichenwerkzeug" >
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="pen"><svg class="icon" aria-hidden="true"><use href="#i-pen"/></svg>Stift
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="brush"><svg class="icon" aria-hidden="true"><use href="#i-brush"/></svg>Pinsel
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="line"><svg class="icon" aria-hidden="true"><use href="#i-line"/></svg>Linie
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="arrow"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>Pfeil
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="rectangle"><svg class="icon" aria-hidden="true"><use href="#i-rectangle"/></svg>Rechteck
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="ellipse"><svg class="icon" aria-hidden="true"><use href="#i-ellipse"/></svg>Ellipse
+</button>
+</div>
+<p class="small muted spaced" id="tool-description">Stift · präziser Strich mit harter Kante.
+</p>
+</div>
+<div class="grid two spaced">
+<div class="card">
+<h3>Varianten / Looks</h3>
+<div class="choice-group " role="radiogroup" aria-label="Look" style="grid-template-columns:repeat(4,1fr)">
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="Original">Original
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Film">Film
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Fade">Fade
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Warm">Warm
+</button>
+</div>
+<p class="small muted spaced">Dunkle Fläche kennzeichnet die aktive Variante. Ein Textlabel bleibt immer sichtbar.
+</p>
+</div>
+<div class="card">
+<h3>Formatkarten</h3>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Beispielformat" >
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="JPG"><span class="radio-dot"></span>JPG<small>Für Fotos</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="PNG"><span class="radio-dot"></span>PNG<small>Transparenz</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="WebP"><span class="radio-dot"></span>WebP<small>Kleine Dateien</small>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section id="sliders" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">05</span>Slider & genaue Werte</h2>
+<p>Visuelle Parameter sind kontinuierlich steuerbar. Zahlenfeld und Slider verwenden denselben Wert.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="contrast">Kontrast</label>
+<div class="slider-field"><input id="contrast" type="range" min="-100" max="100" step="1" value="0" ><output for="contrast">0</output>
+</div>
+</div>
+<div class="field"><label for="quality">Qualität</label>
+<div class="slider-field"><input id="quality" type="range" min="1" max="100" step="1" value="85" ><output for="quality">85</output>
+</div>
+</div>
+<div class="range-ends"><span>Kleinere Datei</span><span>Beste Qualität</span>
+</div>
+<div class="field"><label for="disabled-range">Nicht verfügbar</label>
+<div class="slider-field"><input id="disabled-range" type="range" min="0" max="100" step="1" value="45" disabled><output for="disabled-range">45</output>
+</div>
+</div>
+</div>
+<div class="card stack">
+<div class="field"><label for="stroke">Strichbreite</label>
+<div class="slider-field"><input id="stroke" type="range" min="1" max="500" step="1" value="4" >
+<div class="spin"><input id="stroke-number" type="number" min="1" max="500" step="1" value="4" aria-label="Strichbreite – genauer Wert" data-sync="stroke"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Strichbreite – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Strichbreite – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<div class="field"><label for="angle">Drehwinkel</label>
+<div class="slider-field"><input id="angle" type="range" min="-180" max="180" step="1" value="0" >
+<div class="spin"><input id="angle-number" type="number" min="-180" max="180" step="1" value="0" aria-label="Drehwinkel – genauer Wert" data-sync="angle"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Drehwinkel – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Drehwinkel – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<p class="small muted">Pfeiltasten verändern einen Schritt. Home/End springen zum Rand. Exakte Eingaben bleiben innerhalb der angegebenen Grenzen.
+</p>
+</div>
+</div>
+</section>
+<section id="inputs" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">06</span>Eingaben & Validierung</h2>
+<p>Beschriftungen stehen über dem Feld. Ein Fehler erklärt die Korrektur direkt am betroffenen Wert.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="filename">Dateiname</label><input id="filename" value="duenen-sommer.jpg" aria-describedby="filename-help"><small id="filename-help">Die Endung folgt dem gewählten Format.</small>
+</div>
+<div class="field"><label for="search-demo">Bilder suchen</label>
+<div class="search-field"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input id="search-demo" type="search" placeholder="Dateiname …">
+</div><small id="search-result" aria-live="polite">Filtert die Vorschaubilder im Abschnitt „Bild & Vorschau“.</small>
+</div>
+<div class="grid two">
+<div class="field"><label for="width-demo">Breite</label>
+<div class="spin"><input id="width-demo" type="number" min="1" max="10000" step="1" value="1920" aria-label="Breite" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Breite verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Breite erhöhen">+
+</button>
+</div>
+</div>
+<div class="field"><label for="height-demo">Höhe</label>
+<div class="spin"><input id="height-demo" type="number" min="1" max="10000" step="1" value="1080" aria-label="Höhe" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Höhe verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Höhe erhöhen">+
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="card stack">
+<div class="field"><label for="invalid-name">Ungültiger Dateiname</label><input id="invalid-name" value="urlaub/foto.jpg" aria-invalid="true" aria-describedby="invalid-help"><small id="invalid-help" class="error-text">Bitte einen Dateinamen ohne / eingeben.</small>
+</div>
+<div class="field"><label for="readonly-path">Nur lesen · Quellpfad</label><input id="readonly-path" value="/Bilder/duenen-sommer.jpg" readonly>
+</div>
+<div class="field"><label for="disabled-input">Gesperrte Option</label><input id="disabled-input" value="Nicht verfügbar" disabled>
+</div>
+</div>
+</div>
+</section>
+<section id="toggles" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">07</span>Schalter & Auswahlfelder</h2>
+<p>Schalter aktivieren eine Einstellung. Checkboxen erlauben mehrere Optionen, Radiobuttons genau eine.
+</p>
+</div>
+<div class="grid three">
+<div class="card stack">
+<div class="switch-row"><span id="metadata-label">Metadaten entfernen</span>
+<button type="button" class="switch" role="switch" aria-checked="true" aria-labelledby="metadata-label">
+</button>
+</div>
+<div class="switch-row"><span id="preview-label">Vorschau anzeigen</span>
+<button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="preview-label">
+</button>
+</div>
+<div class="switch-row"><span id="locked-label">Nicht verfügbar</span>
+<button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="locked-label" disabled>
+</button>
+</div>
+</div>
+<div class="card stack"><label class="check"><input type="checkbox" checked>Seitenverhältnis erhalten</label><label class="check"><input type="checkbox">Progressives JPEG</label><label class="check"><input type="checkbox" id="mixed-check">Teilweise ausgewählt</label><label class="check muted"><input type="checkbox" disabled>Nicht verfügbar</label>
+</div>
+<div class="card stack" role="group" aria-label="Druckausrichtung"><label class="radio"><input type="radio" name="orientation" checked>Hochformat</label><label class="radio"><input type="radio" name="orientation">Querformat</label>
+<p class="small muted">Bei umfangreichen visuellen Varianten die direkten Auswahlkarten verwenden.
+</p>
+</div>
+</div>
+</section>
+<section id="special" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">08</span>Farbe, Schrift & Details</h2>
+<p>Systemdialoge bleiben nativ. Die Auslöser und die umgebenden Felder folgen unserem Design.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="color-demo">Zeichenfarbe</label>
+<div class="color-input"><input id="color-demo" type="color" value="#e43b2c"><output for="color-demo">#e43b2c</output><span class="small muted">System-Farbwahl öffnen</span>
+</div>
+</div>
+<div class="field"><label for="font-demo">Schriftfamilie · Browserbeispiel</label><select id="font-demo"><option value="Georgia,serif">Serif</option><option value="system-ui,sans-serif">System Sans</option><option value="monospace">Monospace</option></select>
+<p class="font-sample" id="font-preview">Ein Moment im Bild.
+</p>
+</div>
+<p class="small muted">In GTK öffnet die Schriftwahl den nativen Font-Dialog. Systemschriften und Profilnamen dürfen Such- oder Auswahllisten verwenden.
+</p>
+</div>
+<div class="card">
+<div class="field"><label for="text-demo">Text einfügen</label><textarea id="text-demo">Ein Moment im Bild.</textarea>
+</div>
+<details class="spaced"><summary>Erweiterte Optionen</summary>
+<div class="detail-content stack"><label class="check"><input type="checkbox" checked>ICC-Farbprofil erhalten</label><label class="check"><input type="checkbox">Kommentar erhalten</label>
+<div class="field"><label for="profile-demo">Benanntes Profil</label><input id="profile-demo" list="profile-list" placeholder="Profil wählen oder benennen"><datalist id="profile-list"><option value="Web"><option value="Druck"><option value="Archiv"></datalist>
+</div>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section id="navigation" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">09</span>Navigation & Menüs</h2>
+<p>Die App startet kompakt mit 720 × 640 px. Die Website zeigt verkleinerte Strukturbeispiele.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Menüeinträge</h3>
+<div class="menu" aria-label="Beispielmenü Bild">
+<button type="button" class="btn " data-open="resize">Größe ändern …<kbd>Strg+R</kbd>
+</button>
+<button type="button" class="btn " data-open="info">Bildinformationen …<kbd>I</kbd>
+</button>
+<button type="button" class="btn " data-toast="Die Zeichenwerkzeuge stehen im Abschnitt Direkte Auswahl.">Zeichnen …<kbd>F12</kbd>
+</button><hr>
+<button type="button" class="btn " data-toast="Beispiel: 90° rechts drehen.">90° rechts drehen<kbd>R</kbd>
+</button>
+<button type="button" class="btn " disabled>Rückgängig<kbd>Strg+Z</kbd>
+</button>
+</div>
+</div>
+<div class="card stack">
+<h3>Symbolleiste</h3>
+<div class="toolbar">
+<button type="button" class="btn icon-only" aria-label="Öffnen" title="Öffnen" data-toast="Beispielaktion: Öffnen"><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Vorschaubilder" title="Vorschaubilder" data-toast="Beispielaktion: Vorschaubilder"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Speichern" title="Speichern" data-toast="Beispielaktion: Speichern"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Rückgängig" title="Rückgängig" disabled><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Wiederholen" title="Wiederholen" disabled><svg class="icon" aria-hidden="true"><use href="#i-redo"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Bildinformationen" title="Bildinformationen" data-open="info"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+</button>
+</div>
+<h3>Zoom</h3>
+<div class="row">
+<div class="zoom-dock">
+<button type="button" class="btn icon-only" aria-label="Zoom verkleinern" title="Zoom verkleinern" data-zoom="-25"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>
+</button><output id="zoom-value">100 %</output>
+<button type="button" class="btn icon-only" aria-label="Zoom vergrößern" title="Zoom vergrößern" data-zoom="25"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+</button>
+</div><span class="tooltip-wrap">
+<button type="button" class="btn icon-only" aria-label="Bild einpassen" title="Bild einpassen" data-toast="Beispiel: Bild einpassen."><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg>
+</button><span class="tooltip" role="tooltip">Bild einpassen · F</span></span>
+</div>
+<p class="small muted">Nur Symbolbuttons erhalten einen zugänglichen Namen und Tooltip. Die kompakte App-Symbolleiste verwendet 30-px-Ziele.
+</p>
+</div>
+</div>
+<div class="grid two spaced"><div class="card"><h3>Tastenkürzel-Hilfe · F1</h3><p class="small muted">Eigener Dialog: Titel, Suchfeld, scrollbare Liste und Schließen. Die verbindliche Belegung steht in docs/SHORTCUTS.md.</p><div class="field"><label for="shortcut-reference-search">Kürzel oder Aktion suchen</label><input id="shortcut-reference-search" type="search" placeholder="Zum Beispiel: Vollbild"></div><table class="spaced" id="shortcut-reference-table"><tbody><tr><td><kbd>Enter</kbd></td><td>Vollbild umschalten</td></tr><tr><td><kbd>Strg+R</kbd></td><td>Größe ändern</td></tr><tr><td><kbd>I</kbd></td><td>Bildinformationen</td></tr></tbody></table></div><div class="card"><h3>Bildtext im Vollbild</h3><div class="preview-well"><svg class="art" viewBox="0 0 640 420" role="img" aria-label="Beispielbild"><use href="#landscape"/></svg><p style="background:rgb(0 0 0 / 65%);color:white;border-radius:12px;padding:8px 12px;font-size:12px;margin-top:12px">duenen.jpg · 1920 × 1280 px · 100 % · Markiert</p></div><p class="small muted spaced">Mit N ausblendbar. Markierungen zusätzlich als Text anzeigen; Leisten im Vollbild verbergen und beim Verlassen wiederherstellen.</p></div></div></section>
+<section id="preview" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">10</span>Bild & Vorschau</h2>
+<p>Bildflächen sind ruhig. Auswahlrahmen und Bedienelemente bleiben klar von den Bildpixeln getrennt.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Zuschnitt · visuelles Muster</h3>
+<div class="crop-preview"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+<div class="crop-box">
+<div class="handles"><i></i><i></i><i></i><i></i>
+</div>
+</div>
+</div>
+<p class="small muted spaced">In der App: an Kanten ziehen, Auswahl verschieben, anschließend zuschneiden.
+</p>
+</div>
+<div class="card">
+<h3>Vorschaubilder · auswählbar & filterbar</h3>
+<div class="thumb-grid">
+<button type="button" class="thumb" data-name="duenen.jpg" aria-pressed="true"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(0deg)"><use href="#landscape"/></svg><span>duenen.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="abend.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(30deg)"><use href="#landscape"/></svg><span>abend.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="meer.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(60deg)"><use href="#landscape"/></svg><span>meer.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="morgen.png" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(90deg)"><use href="#landscape"/></svg><span>morgen.png</span>
+</button>
+<button type="button" class="thumb" data-name="kueste.webp" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(120deg)"><use href="#landscape"/></svg><span>kueste.webp</span>
+</button>
+<button type="button" class="thumb" data-name="sand.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(150deg)"><use href="#landscape"/></svg><span>sand.jpg</span>
+</button>
+</div>
+<p class="small muted spaced" id="thumb-status" aria-live="polite">duenen.jpg ausgewählt
+</p>
+</div>
+</div>
+<div class="card spaced">
+<div class="row between">
+<h3>Mediensteuerung · Zustandsbeispiel</h3><span class="tag">Keine Mediendatei geladen</span>
+</div>
+<div class="row">
+<button type="button" class="btn icon-only" aria-label="Wiedergabe-Beispiel starten" title="Wiedergabe-Beispiel starten" id="play-demo" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>
+</button><span class="small" id="play-state">Pausiert · Demo</span><input type="range" min="0" max="100" value="25" aria-label="Wiedergabeposition als Beispiel" style="max-width:360px"><span class="small muted">00:15 / 01:00</span>
+</div>
+</div>
+</section>
+<section id="editor" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">11</span>Muster: Bearbeitungsdialog</h2>
+<p>Dieses Beispiel definiert den Aufbau neuer Werkzeuge: Vorschau links, direkte Optionen und Slider rechts.
+</p>
+</div>
+<div class="card">
+<div class="demo-title">
+<h3>Effekte</h3><span class="tag">Interaktive Design-Demo</span>
+</div>
+<div class="edit-example">
+<div class="preview-area">
+<div class="preview-well"><svg class="art effect-preview" viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" id="effect-image"><use href="#landscape"/></svg>
+</div>
+<button type="button" class="btn secondary" id="compare" aria-pressed="false">Original vergleichen
+</button>
+<p class="preview-caption" id="effect-note">Sepia · Vorschau mit CSS simuliert
+</p>
+</div>
+<div class="stack">
+<div class="card compact" style="background:var(--color-surface)">
+<div class="choice-group effect-choices" role="radiogroup" aria-label="Effekt" id="effect-choices">
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="Sepia">Sepia
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Weichzeichnen">Weichzeichnen
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Relief">Relief
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Ölgemälde">Ölgemälde
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Kanten">Kanten
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Median">Median
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Explosion">Explosion
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Pixelieren">Pixelieren
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="3D-Schaltfläche">3D-Schaltfläche
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Regentropfen">Regentropfen
+</button>
+</div>
+</div>
+<div class="field"><label for="intensity">Intensität</label>
+<div class="slider-field"><input id="intensity" type="range" min="0" max="100" step="1" value="65" >
+<div class="spin"><input id="intensity-number" type="number" min="0" max="100" step="1" value="65" aria-label="Intensität – genauer Wert" data-sync="intensity"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Intensität – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Intensität – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<button type="button" class="btn " id="reset-effect">Zurücksetzen
+</button>
+</div>
+</div>
+<div class="dialog-footer">
+<button type="button" class="btn " id="cancel-effect">Abbrechen
+</button>
+<button type="button" class="btn primary" id="apply-effect">Anwenden
+</button>
+</div>
+<p class="small muted spaced">Die Website bearbeitet keine Dateien. Alle zehn Effekte sind auswählbar; nur Sepia, Weichzeichnen und Kanten werden hier visuell angenähert. Die Pixeloperationen bleiben in der nativen App.
+</p>
+</div>
+</section>
+<section id="export" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">12</span>Muster: Exportdialog</h2>
+<p>Die Gestaltung folgt dem vereinbarten Kartenlayout. Weiterführende Optionen stehen in aufklappbaren Bereichen.
+</p>
+</div>
+<div class="grid two">
+<div class="dialog-example">
+<div class="dialog-shell">
+<h3>Bild exportieren</h3>
+<div id="export-example">
+<div class="file-summary"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+<div>
+<p>duenen-sommer.jpg
+</p><span class="small muted">Original: 1920 × 1280 px</span>
+</div><span class="tag">Beispieldatei</span>
+</div>
+<div class="stack">
+<div class="card">
+<h4>Format</h4>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Exportformat" data-export-format>
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="JPG"><span class="radio-dot"></span>JPG<small>Für Fotos</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="PNG"><span class="radio-dot"></span>PNG<small>Verlustfrei</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="WebP"><span class="radio-dot"></span>WebP<small>Kleine Dateien</small>
+</button>
+</div>
+</div>
+<div class="card" data-quality-panel>
+<div class="field"><label for="export-quality">Qualität</label>
+<div class="slider-field"><input id="export-quality" type="range" min="1" max="100" step="1" value="85" ><output for="export-quality">85</output>
+</div>
+</div>
+<div class="range-ends"><span>Kleinere Datei</span><span>Beste Qualität</span>
+</div>
+<p class="small muted" data-quality-note hidden>PNG speichert verlustfrei. Kompression verändert die Dateigröße, nicht die Bildqualität.
+</p>
+</div>
+<div class="card">
+<h4>Auflösung</h4>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Exportauflösung" data-export-size>
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="50 %"><span class="radio-dot"></span>50 %<small>960 × 640</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="100 %"><span class="radio-dot"></span>100 %<small>1920 × 1280</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Eigene"><span class="radio-dot"></span>Eigene<small>Pixel festlegen</small>
+</button>
+</div>
+<div class="field spaced" data-custom-size hidden><label for="custom-width">Breite bei erhaltenem Verhältnis</label>
+<div class="spin"><input id="custom-width" type="number" min="1" max="10000" step="1" value="1920" aria-label="Exportbreite" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Exportbreite verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Exportbreite erhöhen">+
+</button>
+</div><small data-custom-height>Höhe: 1280 px</small>
+</div>
+</div>
+<div class="card switch-row">
+<div><span id="export-meta-label">Metadaten entfernen</span>
+<p class="small muted" style="margin:4px 0 0">EXIF, Standort und Kameradaten
+</p>
+</div>
+<button class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="export-meta-label">
+</button>
+</div>
+</div>
+</div>
+<div class="dialog-footer">
+<button type="button" class="btn " data-toast="Exportbeispiel verworfen.">Abbrechen
+</button>
+<button type="button" class="btn primary" data-toast="Design-Demo: Es wurde keine Datei gespeichert.">Bild speichern
+</button>
+</div>
+</div>
+</div>
+<div class="stack">
+<div class="card">
+<h3>Verbindliche Reihenfolge</h3><ol class="small"><li>Datei und Originalabmessungen</li><li>Format als direkte Auswahl</li><li>Formatabhängige Qualität / Kompression</li><li>Auflösung und exakte eigene Größe</li><li>Metadaten und weitere Optionen</li><li>Abbrechen links, Hauptaktion rechts</li></ol>
+<p class="small muted">Dateigrößen nur anzeigen, wenn sie berechnet wurden. Keine geschätzte Ausgabe als echtes Ergebnis darstellen.
+</p>
+</div>
+<div class="card">
+<h3>Echte Dialogmechanik testen</h3>
+<p class="small muted">Modaler Hintergrund, Fokus im Dialog, Escape zum Schließen, Fokus zurück auf den Auslöser.
+</p>
+<div class="row">
+<button type="button" class="btn primary" data-open="export">Export öffnen
+</button>
+<button type="button" class="btn secondary" data-open="resize">Größe ändern
+</button>
+<button type="button" class="btn " data-open="info">Bildinformationen
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="data" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">13</span>Informationen & Listen</h2>
+<p>Informationswerte sind auswählbar. Dateipfade dürfen umbrechen, Metadaten haben eigene Leseansichten.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Bildinformationen · Beispielwerte</h3><dl class="data-list">
+<div><dt>Dateiname</dt><dd>duenen-sommer.jpg</dd>
+</div>
+<div><dt>Verzeichnis</dt><dd>/Bilder/Urlaub</dd>
+</div>
+<div><dt>Format</dt><dd>JPEG</dd>
+</div>
+<div><dt>Originalgröße</dt><dd>1920 × 1280 px · 2,46 MP · 3:2</dd>
+</div>
+<div><dt>Aktuelle Größe</dt><dd>1920 × 1280 px</dd>
+</div>
+<div><dt>Auflösung</dt><dd>300 × 300 DPI</dd>
+</div>
+<div><dt>Druckgröße</dt><dd>16,26 × 10,84 cm</dd>
+</div>
+<div><dt>Farbtiefe</dt><dd>24 Bit RGB</dd>
+</div>
+<div><dt>Gezählte RGB-Farben</dt><dd>Berechnung …</dd>
+</div></dl>
+<div class="row spaced">
+<button type="button" class="btn sm" data-toast="Beispiel: EXIF in eigener Leseansicht.">EXIF
+</button>
+<button type="button" class="btn sm" data-toast="Beispiel: IPTC in eigener Leseansicht.">IPTC
+</button>
+<button type="button" class="btn sm" data-toast="Beispiel: Kommentar in eigener Leseansicht.">Kommentar
+</button>
+</div>
+</div>
+<div class="card">
+<h3>Stapel / Ergebnisliste</h3>
+<div class="table-scroll">
+<table><thead>
+<tr><th>Datei</th><th>Ergebnis</th><th>Größe</th>
+</tr></thead><tbody>
+<tr><td>duenen.jpg</td><td>✓ Fertig</td><td>842 KB</td>
+</tr>
+<tr><td>abend.jpg</td><td>In Bearbeitung</td><td>—</td>
+</tr>
+<tr><td>meer.jpg</td><td>Wartet</td><td>—</td>
+</tr></tbody></table>
+</div>
+<p class="small muted spaced">Status nicht nur durch Farbe vermitteln. Fehlende Daten als „—“ oder „Nicht verfügbar“ kennzeichnen.
+</p><label for="metadata-text" class="small">Metadaten · Nur lesen</label><textarea id="metadata-text" readonly class="spaced">Artist: Beispiel
+Resolution: 300 DPI
+Comment: Sommer am Meer</textarea>
+</div>
+</div>
+</section>
+<section id="feedback" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">14</span>Rückmeldung & Sonderzustände</h2>
+<p>Laden, Leere, Fehler und Bestätigung gehören zum Entwurf jeder neuen Funktion.
+</p>
+</div>
+<div class="grid two">
+<div class="card empty"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>
+<h3>Noch kein Bild geöffnet</h3>
+<p>Öffne eine Datei oder ziehe ein Bild in das Fenster.
+</p>
+<button type="button" class="btn primary" data-native-open><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg> Bild öffnen
+</button><input type="file" accept="image/*" id="file-demo" hidden>
+<p class="small muted spaced" id="file-demo-result">Browser-Dateiauswahl · keine Datei wird hochgeladen.
+</p>
+</div>
+<div class="card stack">
+<h3>Vorschau wird berechnet</h3>
+<div class="row"><span class="spinner" aria-hidden="true"></span><span class="small">Das Original bleibt unverändert.</span>
+</div>
+<div class="skeleton" style="width:80%">
+</div>
+<div class="skeleton" style="width:55%">
+</div><label for="batch-progress" class="small">Stapelverarbeitung · 4 von 10</label><progress id="batch-progress" max="10" value="4">4 von 10</progress>
+</div>
+<div class="notice error"><svg class="icon" aria-hidden="true"><use href="#i-warning"/></svg>
+<div><strong>Die Datei konnte nicht gespeichert werden.</strong>Wähle einen beschreibbaren Ordner und versuche es erneut.
+</div>
+</div>
+<div class="notice"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+<div><strong>Änderung angewendet.</strong>Mit Strg+Z kannst du sie rückgängig machen.
+</div>
+</div>
+</div>
+<div class="row spaced">
+<button type="button" class="btn secondary" data-open="confirm">Bestätigung anzeigen
+</button>
+<button type="button" class="btn " data-toast="Beispielstatus: Einstellungen zurückgesetzt.">Statusmeldung testen
+</button>
+</div>
+</section>
+<section id="icons" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">15</span>Symbolbibliothek</h2>
+<p>Einheitliche Linien, 24 × 24 Raster, 1,7 px Strich. Keine Emoji- oder uneinheitlichen Clipart-Symbole.
+</p>
+</div>
+<div class="icon-library">
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-aperture"/></svg><span>aperture</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg><span>open</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg><span>save</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg><span>undo</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-redo"/></svg><span>redo</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>plus</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg><span>minus</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>info</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-crop"/></svg><span>crop</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-pen"/></svg><span>pen</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-brush"/></svg><span>brush</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-line"/></svg><span>line</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg><span>arrow</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-rectangle"/></svg><span>rectangle</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-ellipse"/></svg><span>ellipse</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg><span>left</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg><span>right</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span>grid</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg><span>fit</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-adjust"/></svg><span>adjust</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span>search</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span>close</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>check</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg><span>image</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg><span>play</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg><span>pause</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-print"/></svg><span>print</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-rotate"/></svg><span>rotate</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span>copy</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-delete"/></svg><span>delete</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-font"/></svg><span>font</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-warning"/></svg><span>warning</span>
+</div>
+</div>
+<p class="small muted spaced">Neue Symbole ergänzen denselben SVG-Satz. In der App als GTK-Symbol oder Cairo-Vektor umsetzen. Zeichenwerkzeuge erhalten zusätzlich Text.
+</p>
+</section>
+<section id="inventory" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">16</span>Inventar & Umsetzung</h2>
+<p>Alle benutzerseitigen Elementfamilien der aktuellen App sind zugeordnet. Layoutcontainer werden durch die zusammengesetzten Beispiele abgedeckt.
+</p>
+</div>
+<div class="card table-scroll">
+<table><thead>
+<tr><th>Elementfamilie</th><th>Beispiel</th><th>Native Umsetzung</th>
+</tr></thead><tbody>
+<tr><td>Buttons / Symbolbuttons</td><td>03, 09</td><td>ui_theme.py · icon_button / Gtk.Button</td>
+</tr>
+<tr><td>Zustände / Fokus / deaktiviert</td><td>03, 06, 14</td><td>ui_theme.py · GTK-Pseudoklassen</td>
+</tr>
+<tr><td>Direkte Auswahl / Toggle</td><td>04, 11, 12</td><td>edit_controls.py · ChoiceButtons</td>
+</tr>
+<tr><td>Slider / gekoppelter Zahlenwert</td><td>05</td><td>edit_controls.py · SliderField</td>
+</tr>
+<tr><td>Eingabe / Suche / Zahl / Text</td><td>06, 08, 13</td><td>Gtk.Entry / SearchEntry / SpinButton / TextView</td>
+</tr>
+<tr><td>Checkbox / Radio / Switch</td><td>07, 12</td><td>Gtk.CheckButton / Switch</td>
+</tr>
+<tr><td>Farb- / Schriftauswahl</td><td>08</td><td>Gtk.ColorButton / FontButton · Systemdialoge</td>
+</tr>
+<tr><td>Profile / aufklappbare Details</td><td>08</td><td>save_dialog.py · ComboBoxText / Expander</td>
+</tr>
+<tr><td>Menü / Popover / Tooltip</td><td>09</td><td>menus.py · PopoverMenuBar</td>
+</tr>
+<tr><td>Titel / Werkzeug- / Statusleiste</td><td>Übersicht, 09</td><td>bildblick.py · HeaderBar / Toolbar</td>
+</tr>
+<tr><td>Karte / Label / Trennlinie</td><td>02, alle</td><td>ui_theme.py · card / label</td>
+</tr>
+<tr><td>Bild / Auswahl / Vorschau</td><td>10, 11</td><td>DrawingArea / Picture / ScrolledWindow</td>
+</tr>
+<tr><td>Vorschauraster / Selektion</td><td>10</td><td>advanced_ui.py · FlowBox</td>
+</tr>
+<tr><td>Mediensteuerung</td><td>10</td><td>file_tools_ui.py · Video</td>
+</tr>
+<tr><td>Bearbeiten / Originalvergleich</td><td>11</td><td>ToolDialog / EffectsDialog</td>
+</tr>
+<tr><td>Export / Größenänderung</td><td>12</td><td>SaveDialog / ResizeDialog</td>
+</tr>
+<tr><td>Information / Metadaten</td><td>13</td><td>info_dialog.py · ImageInfoDialog</td>
+</tr>
+<tr><td>Modal / Scrim / Bestätigung</td><td>12, 14</td><td>Gtk.Dialog / MessageDialog</td>
+</tr>
+<tr><td>Laden / Fortschritt / Fehler / leer</td><td>14</td><td>Gtk.Spinner / Status / Validierung</td>
+</tr>
+<tr><td>Datei / Druck / Scanner</td><td>14, Regeln</td><td>Native Portale, PrintOperation, scanimage</td>
+</tr></tbody></table>
+</div>
+<p class="small muted spaced">Datei-, Schrift-, Farb- und Druckdialoge können durch Betriebssystem und Portal anders aussehen. Verbindlich sind unsere Auslöser und Inhalte; Systemoberflächen werden nicht künstlich nachgebaut.
+</p>
+</section>
+<section id="contract" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">17</span>Ab jetzt die Referenz.</h2>
+<p>Designregeln, Tokens und Beispiele bilden gemeinsam den Vertrag für die native App.
+</p>
+</div>
+<div class="contract">
+<h3>Neue Funktion? Hier anfangen.</h3><ol><li>Passendes Element aus diesem Katalog verwenden.</li><li>Farbe, Abstand, Radius und Schrift aus den Tokens übernehmen.</li><li>Standard, Fokus, deaktiviert, Laden und Fehler berücksichtigen.</li><li>Vorschau, Abbrechen, Anwenden und Undo definieren.</li><li>Fehlendes Muster zuerst hier ergänzen, dann in GTK umsetzen.</li></ol>
+<p>Die native App bleibt GTK. Diese Website ist die verbindliche visuelle und funktionale Referenz, keine zweite Bildbearbeitung und keine automatische Migration bestehender Ansichten.
+</p>
+<div class="row"><a href="DESIGN.md">Designvertrag lesen ↗</a><a href="tokens.json">Tokens öffnen ↗</a><a href="README.md">Lokal bearbeiten ↗</a>
+</div>
+</div>
+</section>
+<footer class="footer"><span>Bildblick · Designreferenz 1.0 · 16. Oktober 2026</span><a href="#overview">Zurück nach oben ↑</a>
+</footer>
+</main>
+<dialog id="demo-dialog" aria-labelledby="modal-title">
+<h2 id="modal-title"></h2>
+<div id="modal-content">
+</div>
+</dialog>
+<div id="toast" role="status" aria-live="polite" hidden>
+</div><noscript>
+<p class="notice" style="position:fixed;bottom:0;background:white">JavaScript ist deaktiviert. Alle Designbeispiele sind sichtbar; interaktive Demonstrationen benötigen JavaScript.
+</p></noscript><script>
+// Generated from src/app.ts. Run npm run build.
+/** Bildblick reference interactions. Demo state only; never edits or uploads files. */
+(() => {
+                                      
+  const one =                                  (selector        , root            = document)    => {
+    const element = root.querySelector   (selector);
+    if (!element) throw new Error(`Missing reference element: ${selector}`);
+    return element;
+  };
+  const all =                                  (selector        , root            = document)      => Array.from(root.querySelectorAll   (selector));
+  let toastTimer                               ;
+  function notify(message        )       {
+    const toast = one('#toast');
+    toast.textContent = message; toast.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.hidden = true; }, 4000);
+  }
+  function syncRange(range                  )       {
+    const value = Number(range.value);
+    all                   ('output').filter(output => output.htmlFor.value === range.id).forEach(output => { output.value = String(value); });
+    all                  ('input[data-sync]').filter(input => input.dataset.sync === range.id).forEach(input => { input.value = String(value); });
+  }
+  function clampInput(input                  )       {
+    if (input.value === '') return;
+    const n = Number(input.value);
+    if (!Number.isFinite(n)) return;
+    input.value = String(Math.max(Number(input.min || -Infinity), Math.min(Number(input.max || Infinity), n)));
+  }
+  function selectChoice(button                   )       {
+    const group = button.closest             ('[role=radiogroup]');
+    if (!group) return;
+    all                   ('[role=radio]', group).forEach(other => {
+      const active = other === button;
+      other.setAttribute('aria-checked', String(active)); other.tabIndex = active ? 0 : -1;
+    });
+    if (group.classList.contains('tool-choices')) {
+      const descriptions                         = {pen: 'Stift · präziser Strich mit harter Kante.', brush: 'Pinsel · weich auslaufende Striche.', line: 'Linie · gerade Verbindung zwischen zwei Punkten.', arrow: 'Pfeil · Richtung oder Detail hervorheben.', rectangle: 'Rechteck · rechteckige Kontur zeichnen.', ellipse: 'Ellipse · ovale oder kreisförmige Kontur zeichnen.'};
+      one('#tool-description').textContent = descriptions[button.dataset.value || 'pen'];
+    }
+    if (group.id === 'effect-choices') renderEffect();
+    if (group.hasAttribute('data-export-format')) {
+      const scope = group.closest('.export-scope') || one('#export-example');
+      const isPng = button.dataset.value === 'PNG';
+      const panel = one('[data-quality-panel]', scope);
+      one                  ('input[type=range]', panel).disabled = isPng;
+      one('[data-quality-note]', panel).hidden = !isPng;
+    }
+    if (group.hasAttribute('data-export-size')) {
+      const scope = group.closest('.export-scope') || one('#export-example');
+      one('[data-custom-size]', scope).hidden = button.dataset.value !== 'Eigene';
+    }
+  }
+  function renderEffect()       {
+    const selected = one                   ('#effect-choices [aria-checked=true]').dataset.value || 'Sepia';
+    const value = Number(one                  ('#intensity').value) / 100;
+    const compare = one('#compare').getAttribute('aria-pressed') === 'true';
+    const simulations                         = {Sepia: `sepia(${value})`, Weichzeichnen: `blur(${value * 5}px)`, Kanten: `grayscale(1) contrast(${1 + value * 5})`};
+    one            ('#effect-image').style.filter = compare ? 'none' : simulations[selected] || 'none';
+    one('#effect-note').textContent = compare ? 'Unverändertes Original · Vergleich aktiv' : `${selected} · ${simulations[selected] ? 'Vorschau mit CSS simuliert' : 'Auswahlbeispiel; Pixelvorschau in der nativen App'}`;
+  }
+  const initialIntensity = 65;
+  let appliedIntensity = initialIntensity;
+  let appliedEffect = 'Sepia';
+  function restoreEffect(value        , effect        )       {
+    const range = one                  ('#intensity'); range.value = String(value); syncRange(range);
+    const button = all                   ('#effect-choices [role=radio]').find(b => b.dataset.value === effect);
+    if (button) selectChoice(button);
+    one('#compare').setAttribute('aria-pressed', 'false'); renderEffect();
+  }
+  document.addEventListener('click', event => {
+    const target = event.target instanceof Element ? event.target.closest                   ('button') : null;
+    if (!target || target.disabled) return;
+    if (target.dataset.toast) notify(target.dataset.toast);
+    if (target.getAttribute('role') === 'radio') selectChoice(target);
+    if (target.getAttribute('role') === 'switch') target.setAttribute('aria-checked', String(target.getAttribute('aria-checked') !== 'true'));
+    if (target.dataset.step) {
+      const input = one                  ('input', target.closest('.spin') );
+      if (input.disabled) return;
+      if (Number(target.dataset.step) > 0) input.stepUp(); else input.stepDown();
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+    if (target.dataset.zoom) {
+      const output = one                   ('#zoom-value');
+      const value = Math.max(25, Math.min(800, parseInt(output.value) + Number(target.dataset.zoom)));
+      output.value = `${value} %`;
+    }
+    if (target.matches('.thumb')) {
+      all('.thumb').forEach(thumb => thumb.setAttribute('aria-pressed', String(thumb === target)));
+      one('#thumb-status').textContent = `${target.dataset.name} ausgewählt`;
+    }
+    if (target.hasAttribute('data-native-open')) one                  ('#file-demo').click();
+    if (target.id === 'compare') { target.setAttribute('aria-pressed', String(target.getAttribute('aria-pressed') !== 'true')); renderEffect(); }
+    if (target.id === 'reset-effect') restoreEffect(initialIntensity, 'Sepia');
+    if (target.id === 'cancel-effect') { restoreEffect(appliedIntensity, appliedEffect); notify('Demo: Nicht angewendete Änderungen verworfen.'); }
+    if (target.id === 'apply-effect') {
+      appliedIntensity = Number(one                  ('#intensity').value);
+      appliedEffect = one                   ('#effect-choices [aria-checked=true]').dataset.value || 'Sepia';
+      notify(`Demo: ${appliedEffect} mit ${appliedIntensity} % übernommen. Keine Datei verändert.`);
+    }
+    if (target.id === 'play-demo') {
+      const active = target.getAttribute('aria-pressed') !== 'true';
+      target.setAttribute('aria-pressed', String(active)); target.setAttribute('aria-label', active ? 'Wiedergabe-Beispiel pausieren' : 'Wiedergabe-Beispiel starten');
+      one('use', target).setAttribute('href', active ? '#i-pause' : '#i-play');
+      one('#play-state').textContent = active ? 'Wiedergabe · Zustandsdemo' : 'Pausiert · Demo';
+    }
+    if (target.dataset.open) openDialog(target.dataset.open);
+    if (target.hasAttribute('data-close-dialog')) one                   ('#demo-dialog').close();
+    if (target.hasAttribute('data-demo-submit')) { one                   ('#demo-dialog').close(); notify('Design-Demo bestätigt. Keine Datei wurde verändert.'); }
+  });
+  document.addEventListener('keydown', event => {
+    const target = event.target instanceof Element ? event.target.closest                   ('[role=radio]') : null;
+    if (!target || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(event.key)) return;
+    const buttons = all                   ('[role=radio]:not(:disabled)', target.closest('[role=radiogroup]') );
+    const index = buttons.indexOf(target);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (['ArrowLeft','ArrowUp'].includes(event.key) ? -1 : 1) + buttons.length) % buttons.length;
+    event.preventDefault(); selectChoice(buttons[next]); buttons[next].focus();
+  });
+  document.addEventListener('input', event => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) return;
+    if (input instanceof HTMLInputElement) {
+      if (input.type === 'range') { syncRange(input); if (input.id === 'intensity') renderEffect(); }
+      if (input.dataset.sync) {
+        clampInput(input);
+        const range = document.getElementById(input.dataset.sync)                           ;
+        if (range && input.value !== '') { range.value = input.value; syncRange(range); if (range.id === 'intensity') renderEffect(); }
+      }
+      if (input.id === 'color-demo') one                   ('output[for=color-demo]').value = input.value;
+      if (input.id === 'invalid-name') {
+        const invalid = !input.value.trim() || /[\/\\]/.test(input.value);
+        input.setAttribute('aria-invalid', String(invalid));
+        one('#invalid-help').textContent = invalid ? 'Bitte einen Dateinamen ohne / oder \\ eingeben.' : 'Der Dateiname ist gültig.';
+        one('#invalid-help').classList.toggle('error-text', invalid);
+      }
+      if (input.id === 'search-demo') {
+        let count = 0;
+        all                   ('.thumb').forEach(thumb => { thumb.hidden = !thumb.dataset.name .includes(input.value.toLowerCase()); if (!thumb.hidden) count++; });
+        one('#search-result').textContent = `${count} Vorschaubilder gefunden.`;
+        one('#thumb-status').textContent = count ? 'Treffer nach Dateinamen gefiltert.' : 'Keine Bilder gefunden. Suchbegriff ändern.';
+      }
+      if (input.id.endsWith('custom-width')) {
+        const scope = input.closest('.export-scope') || one('#export-example');
+        const width = Number(input.value);
+        one('[data-custom-height]', scope).textContent = input.validity.valid && width ? `Höhe: ${Math.round(width * 2/3)} px` : 'Breite zwischen 1 und 10 000 px eingeben.';
+      }
+    }
+    if (input.id === 'shortcut-reference-search') all                     ('#shortcut-reference-table tr').forEach(row => { row.hidden = !row.textContent .toLowerCase().includes(input.value.toLowerCase()); });
+    if (input.id === 'text-demo') one('#font-preview').textContent = input.value || 'Textvorschau';
+  });
+  document.addEventListener('change', event => {
+    const input = event.target;
+    if (input instanceof HTMLInputElement && input.type === 'number') { clampInput(input); input.dispatchEvent(new Event('input', {bubbles: true})); }
+  });
+  one                   ('#font-demo').addEventListener('change', event => { one('#font-preview').style.fontFamily = (event.target                     ).value; });
+  one                  ('#file-demo').addEventListener('change', event => {
+    const file = (event.target                    ).files?.[0];
+    one('#file-demo-result').textContent = file ? `Lokal ausgewählt: ${file.name}. Keine Übertragung oder Bearbeitung.` : 'Keine Datei gewählt.';
+  });
+  one                  ('#mixed-check').indeterminate = true;
+  function openDialog(kind        )       {
+    const dialog = one                   ('#demo-dialog');
+    const content = one('#modal-content'); content.replaceChildren();
+    const titles                        = {export: 'Bild exportieren', resize: 'Größe ändern', info: 'Bildinformationen', confirm: 'Änderungen verwerfen?'};
+    one('#modal-title').textContent = titles[kind] || 'Beispieldialog';
+    if (kind === 'export') {
+      const clone = one('#export-example').cloneNode(true)               ;
+      clone.id = 'modal-export'; clone.classList.add('export-scope');
+      all             ('[id]', clone).forEach(element => { element.id = `modal-${element.id}`; });
+      all             ('[for],[aria-labelledby],[data-sync]', clone).forEach(element => {
+        for (const attr of ['for','aria-labelledby','data-sync']) {
+          const value = element.getAttribute(attr); if (value) element.setAttribute(attr, value.split(' ').map(id => 'modal-'+id).join(' '));
+        }
+      });
+      content.append(clone);
+    } else if (kind === 'resize') {
+      content.innerHTML = '<p class="muted small">Exakte Abmessungen · Beispielwerte, kein Bild wird verändert.</p><div class="card stack"><div class="field"><label for="modal-width">Breite (px)</label><input id="modal-width" type="number" min="1" max="10000" value="1920"></div><div class="field"><label for="modal-height">Höhe (px)</label><input id="modal-height" type="number" min="1" max="10000" value="1280"></div><label class="check"><input id="modal-ratio" type="checkbox" checked>Seitenverhältnis erhalten</label></div>';
+      const width = one                  ('#modal-width'); const height = one                  ('#modal-height');
+      width.addEventListener('input', () => { if (one                  ('#modal-ratio').checked && width.validity.valid && width.value) height.value = String(Math.max(1,Math.round(Number(width.value)*2/3))); });
+      height.addEventListener('input', () => { if (one                  ('#modal-ratio').checked && height.validity.valid && height.value) width.value = String(Math.min(10000,Math.round(Number(height.value)*3/2))); });
+    } else if (kind === 'info') {
+      const source = one('#data .data-list').cloneNode(true); content.append(source);
+      const note = document.createElement('p'); note.className = 'small muted spaced'; note.textContent = 'Beispielwerte. Die native App zeigt zusätzlich vollständige Pfade, Original-/aktuelle Farben, Datei-/Pixel-Speicher, Ordnerposition, Datum, Ladezeit sowie EXIF/IPTC/Kommentar.'; content.append(note);
+    } else {
+      content.innerHTML = '<p>Deine Änderungen wurden noch nicht angewendet. Möchtest du sie verwerfen?</p><p class="small muted">Bestätigungsbeispiel. Es werden keine Dateien verändert.</p>';
+    }
+    const footer = document.createElement('div'); footer.className = 'dialog-footer';
+    footer.innerHTML = `<button type="button" class="btn secondary" data-close-dialog>${kind === 'info' ? 'Schließen' : 'Abbrechen'}</button>`;
+    if (kind !== 'info') footer.innerHTML += `<button type="button" class="btn primary" data-demo-submit>${kind === 'confirm' ? 'Verwerfen' : kind === 'export' ? 'Bild speichern' : 'Größe ändern'}</button>`;
+    content.append(footer);
+    content.oninput = () => {
+      const submit = content.querySelector                   ('[data-demo-submit]');
+      if (submit) submit.disabled = all                  ('input[type=number]',content).some(input => !input.closest('[hidden]') && (!input.value || !input.validity.valid));
+    };
+    dialog.showModal();
+    // Safe focus for destructive confirmation. Native dialog traps and restores focus.
+    one                   ('[data-close-dialog]', dialog).focus();
+  }
+  all                  ('input[type=range]').forEach(syncRange);
+  const defaultExport = all                   ('[data-export-size] [role=radio]').find(button => button.dataset.value === '100 %');
+  if (defaultExport) selectChoice(defaultExport);
+  renderEffect();
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (!visible.length) return;
+    all                   ('.sidebar nav a').forEach(link => {
+      if (link.hash === `#${visible[0].target.id}`) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
+    });
+  }, {rootMargin: '-5% 0px -65% 0px'});
+  all             ('main section').forEach(section => observer.observe(section));
+})();
+
+</script></body></html>

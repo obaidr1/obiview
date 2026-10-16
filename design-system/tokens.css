@@ -1,0 +1,32 @@
+/* Generated from tokens.json. Run npm run build. */
+:root {
+  --color-ink: #242424;
+  --color-muted: #626262;
+  --color-surface: #f5f5f3;
+  --color-card: #fafaf9;
+  --color-line: #dededb;
+  --color-white: #ffffff;
+  --color-hover: #e7e7e4;
+  --color-active: #d9d9d5;
+  --color-track: #8c8c87;
+  --color-error: #a02020;
+  --color-scrim: rgb(0 0 0 / 35%);
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-dialog: 24px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --font-family: Inter, Cantarell, system-ui, sans-serif;
+  --text-small: 12px;
+  --text-body: 14px;
+  --text-title: 22px;
+  --control-height: 44px;
+  --icon-size: 20px;
+  --focus-ring: 2px solid #242424;
+}

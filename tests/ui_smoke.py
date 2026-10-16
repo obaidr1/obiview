@@ -620,7 +620,90 @@ def tick(window):
             assert window.model.image.tobytes()==window.paint_expected
             window.undo()
             assert window.model.image.tobytes()==window.info_pixels
-            print('PASS: GTK editing + I information fields/metadata/DPI/count, grow with zoom to monitor limit, symbolic drawing tools and soft brush')
+            window.set_focus(None)
+            assert window.key_pressed(None,Gdk.KEY_Return,0,Gdk.ModifierType(0))
+        elif step == 59:
+            if not window.is_fullscreen(): return True
+            assert not window.toolbar.get_visible() and not window.menu_bar.get_visible()
+            assert window.fullscreen_label.get_visible()
+            window.key_pressed(None,Gdk.KEY_4,0,Gdk.ModifierType(0))
+        elif step == 60:
+            assert window.view_mode=='stretch' and window.scale!=window.scale_y
+            screenshot('fullscreen-shortcuts')
+            window.key_pressed(None,Gdk.KEY_5,0,Gdk.ModifierType(0))
+        elif step == 61:
+            assert window.view_mode=='width' and window.scale==window.scale_y
+            window.key_pressed(None,Gdk.KEY_6,0,Gdk.ModifierType(0))
+        elif step == 62:
+            assert window.view_mode=='height' and window.scale==window.scale_y
+            window.key_pressed(None,Gdk.KEY_n,0,Gdk.ModifierType(0))
+            assert not window.fullscreen_label.get_visible()
+            window.key_pressed(None,Gdk.KEY_F11,0,Gdk.ModifierType(0))
+            assert window.cursor_hidden
+            window.key_pressed(None,Gdk.KEY_F11,0,Gdk.ModifierType(0))
+            assert not window.cursor_hidden
+            window.key_pressed(None,Gdk.KEY_w,0,Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK)
+            assert window.get_surface().get_property('fullscreen-mode')==Gdk.FullscreenMode.ALL_MONITORS
+            window.key_pressed(None,Gdk.KEY_w,0,Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK)
+            assert window.get_surface().get_property('fullscreen-mode')==Gdk.FullscreenMode.CURRENT_MONITOR
+            window.key_pressed(None,Gdk.KEY_Escape,0,Gdk.ModifierType(0))
+        elif step == 63:
+            if window.is_fullscreen(): return True
+            assert window.toolbar.get_visible() and window.menu_bar.get_visible()
+            mods=Gdk.ModifierType.ALT_MASK|Gdk.ModifierType.SHIFT_MASK
+            for key,widget in ((Gdk.KEY_t,window.toolbar),(Gdk.KEY_s,window.status),(Gdk.KEY_m,window.menu_bar)):
+                window.key_pressed(None,key,0,mods); assert not widget.get_visible()
+                window.key_pressed(None,key,0,mods); assert widget.get_visible()
+            window.actual_size(); window.zoom(3)
+        elif step == 64:
+            before=window.model.source_path
+            h=window.scroll.get_hadjustment(); v=window.scroll.get_vadjustment()
+            h.set_value(0)
+            window.key_pressed(None,Gdk.KEY_Right,0,Gdk.ModifierType(0))
+            assert h.get_value()>0 and window.model.source_path==before
+            window.key_pressed(None,Gdk.KEY_Page_Down,0,Gdk.ModifierType(0))
+            assert v.get_value()==v.get_upper()-v.get_page_size()
+            window.key_pressed(None,Gdk.KEY_Home,0,Gdk.ModifierType(0)); assert h.get_value()==0
+            window.key_pressed(None,Gdk.KEY_l,0,Gdk.ModifierType.SHIFT_MASK)
+            assert window.zoom_locked
+            window.locked_zoom=window.scale
+            window.request_load(sample)
+        elif step == 65:
+            assert not window.fit and window.scale==window.locked_zoom
+            window.key_pressed(None,Gdk.KEY_l,0,Gdk.ModifierType.SHIFT_MASK)
+            window.fit_image()
+            window.key_pressed(None,Gdk.KEY_x,0,Gdk.ModifierType(0))
+            assert str(sample) in window.tags
+            window.key_pressed(None,Gdk.KEY_q,0,Gdk.ModifierType.SHIFT_MASK)
+            assert window.thumbnail_window and window.tag_filter.get_active()
+        elif step == 66:
+            assert window.thumbnails.get_first_child()
+            window.thumbnail_key(None,Gdk.KEY_Tab,0,Gdk.ModifierType(0))
+            window.set_focus(None)
+            window.key_pressed(None,Gdk.KEY_x,0,Gdk.ModifierType.SHIFT_MASK)
+            assert str(sample) not in window.tags
+            window.toggle_sidebar()
+            window.key_pressed(None,Gdk.KEY_F1,0,Gdk.ModifierType(0))
+            assert window.dialogs[-1].get_title()=='Tastenkürzel'
+            assert not window.key_pressed(None,Gdk.KEY_i,0,Gdk.ModifierType(0))
+        elif step == 67:
+            screenshot('shortcut-help')
+            window.dialogs[-1].response(Gtk.ResponseType.CLOSE)
+            window.set_focus(None)
+            window.key_pressed(None,Gdk.KEY_p,0,Gdk.ModifierType.SHIFT_MASK)
+            def got_text(clipboard,result):
+                window.copied_name=clipboard.read_text_finish(result)
+            window.copied_name=None
+            window.get_clipboard().read_text_async(None,got_text)
+        elif step == 68:
+            if window.copied_name is None: return True
+            assert window.copied_name==sample.name
+            window.set_focus(None)
+            window.key_pressed(None,Gdk.KEY_s,0,Gdk.ModifierType.CONTROL_MASK)
+            assert window.dialogs
+        elif step == 69:
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            print('PASS: GTK editing, information, window growth, drawing symbols and full shortcut integration (fullscreen modes, pan, tags, clipboard, zoom lock, help and save dialog)')
             window.cleanup()
             app.quit()
             return False

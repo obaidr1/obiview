@@ -1,0 +1,13 @@
+{
+  "name": "bildblick-design-reference",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline design contract for the native Bildblick app",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "start": "python3 -m http.server 4173 --bind 127.0.0.1"
+  }
+}

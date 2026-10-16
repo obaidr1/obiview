@@ -45,7 +45,7 @@ Dateisuche ist ein Namensfilter im aktuellen Ordner, keine rekursive Volltext- o
 | Ausschnitt auswählen | Auswahlmodus aktivieren; direkte Mausauswahl funktioniert auch ohne Vorwahl |
 | Zuschneiden | Auswahl als neue Bildabmessungen übernehmen |
 
-Kanten und Ecken sind mit links veränderbar, der Rahmen mit rechts verschiebbar. Umschalt+Pfeil verschiebt um einen Pixel. **Strg+Y** ist Zuschneiden; Wiederholen liegt auf **Strg+Umschalt+Z**. Eine Auswahl dient Text und Rote-Augen-Korrektur als Begrenzung. Die normalen Farbeffekte betreffen das ganze Bild.
+Kanten und Ecken sind mit links veränderbar, der Rahmen mit rechts verschiebbar. Umschalt+Pfeil verschiebt um einen Pixel. **Enter** schaltet Vollbild; **Strg+Y** ist Zuschneiden; Wiederholen liegt auf **Strg+Umschalt+Z**. Eine Auswahl dient Text und Rote-Augen-Korrektur als Begrenzung. Die normalen Farbeffekte betreffen das ganze Bild.
 
 ## Bild
 
@@ -104,3 +104,8 @@ Die native CLI bietet die mit `python3 cli.py --help` aufgeführten Optionen. Ei
 ## Gemeinsame Bedienung der Werkzeuge
 
 Freie Drehung, Rahmen, Rote Augen, Farbanzahl, Farbkanäle, automatischer Zuschnitt, Leinwand und Text verwenden ebenso wie Helligkeit/Kontrast und Schärfen einen eigenen Dialog mit Live-Vorschau, Originalvergleich und Zurücksetzen. Anwenden erzeugt einen Undo-Schritt, Abbrechen lässt Bild und Historie unverändert. Visuelle Stärkeparameter haben Slider; exakte Abmessungen und Positionen bleiben Zahleneingaben. Auswahloptionen stehen als Schaltflächen bereit, darunter Zeichenwerkzeuge, Interpolation, Einheiten, Größenvorgaben, Druckmodi und Exportformate.
+
+
+## Tastatur und Vollbild
+
+Die vollständige Belegung steht in [SHORTCUTS.md](SHORTCUTS.md) und unter Hilfe → Tastenkürzel (F1). Dazu gehören kontextabhängiges Scrollen/Navigieren, 1–9-Dateisprünge, Markierungen, Zoomsperre, sechs Vollbildmodi, Maus-/Textanzeige im Vollbild sowie einblendbare Leisten. F5 aktualisiert die Ansicht, F9 steuert die Diashow. Strg+S öffnet den Speicherdialog; Enter schaltet Vollbild.

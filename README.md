@@ -153,7 +153,7 @@ Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **
 
 1. **Bild öffnen:** `Strg+O` verwenden oder eine einzelne Datei ins Fenster ziehen.
 2. **Ordner durchsuchen:** Über **Datei → Ordner öffnen** einen Bildordner wählen. Vorschaubilder lassen sich im Menü **Ansicht** einblenden und nach Dateinamen filtern.
-3. **Ansicht einstellen:** Mit `F` einpassen, mit `1` auf 100 % wechseln oder mit `+` und `−` zoomen.
+3. **Ansicht einstellen:** Mit `F` an den Desktop anpassen, mit `Strg+H` auf 100 % wechseln oder mit `+` und `−` zoomen.
 4. **Bearbeiten:** Eine Auswahl aufziehen und zuschneiden, das Bild drehen oder mit `Strg+R` die Pixelgröße ändern.
 5. **Speichern:** Mit `Strg+Umschalt+S` Dateiname, Zielordner, Format und Optionen festlegen.
 
@@ -169,21 +169,23 @@ Die Farbzählung läuft im Hintergrund und lässt sich abschalten; unterschiedli
 
 ## Tastenkürzel
 
+Die [vollständige Belegung](docs/SHORTCUTS.md) ist in der App über **F1** durchsuchbar. Im Zoom scrollen Pfeiltasten das Bild, sonst wechseln sie die Datei.
+
 | Kürzel | Aktion |
 | --- | --- |
 | `O`, `Strg+O` | Bild öffnen |
 | `S`, `Strg+Umschalt+S` | Speichern unter |
-| `Strg+S` | Aktuelle Datei speichern; Ersetzen wird bestätigt |
+| `Strg+S` | Speicherdialog öffnen |
 | `Strg+R` | Größe ändern |
 | `I` | Bildinformationen |
 | `Strg+Z` / `Strg+Umschalt+Z` | Rückgängig / Wiederholen |
-| `Strg+Y`, `Enter` | Auswahl zuschneiden |
+| `Strg+Y` | Auswahl zuschneiden |
 | `Strg+C` / `Strg+V` | Auswahl oder ganzes Bild kopieren / Bild als neues Dokument einfügen |
 | `Strg+X` / `Strg+A` | Auswahl ausschneiden / alles auswählen |
 | `Umschalt+C` | Eigene Auswahl |
 | `Umschalt` + Pfeiltasten | Auswahl um einen Pixel verschieben |
 | `Strg+T` | Text in die Auswahl einfügen |
-| `Strg+N` | Neues Fenster |
+| `Strg+N` | Arbeitsbild in neuem Fenster öffnen |
 | `D` | Bild vom Bildschirm entfernen, Datei behalten |
 | `Umschalt+R` | Gespeicherte Datei erneut öffnen |
 | `Strg+F` | Dateinamen in den Vorschaubildern suchen |
@@ -192,12 +194,14 @@ Die Farbzählung läuft im Hintergrund und lässt sich abschalten; unterschiedli
 | `Strg+P` | Drucken |
 | `R` | 90° im Uhrzeigersinn drehen |
 | `+` / `−` | Vergrößern / Verkleinern |
-| `F` / `1` | Einpassen / 100 % |
+| `F` / `Strg+H` | Desktop-/Fensteranpassung / 100 % |
 | `←` / `→` | Vorherige / nächste Datei im Ordner |
-| `Bild auf` / `Bild ab` | Vorherige / nächste Seite oder Frame |
+| `Strg+Bild auf` / `Strg+Bild ab` | Vorherige / nächste Seite oder Frame |
 | `Esc` | Auswahlmodus verlassen |
-| `F5` | Diashow starten oder stoppen |
-| `F11` | Vollbild umschalten |
+| `F5` / `F9` | Ansicht aktualisieren / Diashow starten oder stoppen |
+| `Enter` | Vollbild umschalten |
+| `F11` | Vollbild öffnen; darin Mauszeiger umschalten |
+| `F1` | Durchsuchbare Tastaturhilfe |
 
 ## Größe ändern
 
@@ -425,3 +429,8 @@ Beiträge sollten einen klaren Anwendungsfall behandeln und passende Prüfungen 
 ## Lizenz und verwendete Komponenten
 
 Bildblick wird unter der [MIT-Lizenz](LICENSE) veröffentlicht. Das Eisvogel-Symbol wurde generiert; der [Asset-Prompt](assets/ICON_PROMPT.txt) ist dokumentiert. Die installierten Bibliotheken und optionalen Decoder bleiben eigenständige Komponenten mit ihren jeweiligen Lizenzen; sie werden nicht in das Anwendungspaket gebündelt.
+
+
+## Verbindliche Designreferenz
+
+Die lokale [Designreferenz](design-system/index.html) zeigt alle vorhandenen Elementfamilien, ihre Zustände und vollständige Dialogmuster als offline nutzbare HTML/CSS/TypeScript-Website. [DESIGN.md](design-system/DESIGN.md) und [tokens.json](design-system/tokens.json) legen die Gestaltung für neue und überarbeitete App-Bereiche fest. Vor UI-Änderungen die projektweite [AGENTS.md](AGENTS.md) beachten. Start und Bearbeitung sind in [design-system/README.md](design-system/README.md) beschrieben.

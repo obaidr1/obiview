@@ -14,6 +14,7 @@ class MenuWindow:
         self.group = Gio.SimpleActionGroup()
         self.handlers = {}
         self.crop_toggle = Mock()
+        self.model = ImageModel(); self.model.image = Image.new('RGBA',(8,6))
 
     def add_action(self,action):
         self.group.add_action(action)
@@ -29,7 +30,7 @@ class ResizeMenuTests(unittest.TestCase):
         window = MenuWindow()
         menu,actions = build_menus(window)
         names = [menu.get_item_attribute_value(i,'label',None).unpack() for i in range(menu.get_n_items())]
-        self.assertEqual(names,['Datei','Bearbeiten','Bild','Ansicht','Extras'])
+        self.assertEqual(names,['Datei','Bearbeiten','Bild','Ansicht','Extras','Hilfe'])
         image_menu = menu.get_item_link(2,'submenu')
         self.assertEqual(image_menu.get_item_attribute_value(0,'action',None).unpack(),'win.resize')
         self.assertEqual(image_menu.get_item_attribute_value(0,'accel',None).unpack(),RESIZE_ACCELERATOR)

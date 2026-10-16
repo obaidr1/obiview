@@ -76,6 +76,7 @@ window.viewer headerbar button { min-height: 22px; min-width: 22px; padding: 0 4
 window.viewer menubar { background: @surface; padding: 0 8px; border-bottom: 1px solid @line; }
 window.viewer menubar > item { padding: 3px 8px; min-height: 18px; border-radius: 6px; }
 window.viewer menubar > item:hover { background: #e7e7e4; }
+.fullscreen-info { color: white; background: alpha(black,.65); border-radius: 12px; padding: 8px 12px; font-size: 12px; }
 .status-bar { color: @muted; font-size: 12px; }
 textview text { background: @card; color: @ink; }
 '''

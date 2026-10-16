@@ -9,7 +9,7 @@ def build_menus(window):
     actions = []
     groups = [
         ('Datei', [
-            ('new-window','Neues Fenster',window.new_window,False),
+            ('new-window','Bild in neuem Fenster',window.duplicate_window,False),
             ('open','Öffnen …',window.open_dialog,False),
             ('reopen','Erneut öffnen',window.reopen,True),
             ('external','Öffnen mit …',window.external_editor,True),
@@ -26,6 +26,8 @@ def build_menus(window):
             ('export-pages','Alle Seiten exportieren …',window.export_pages,True),
             ('export-options','Exportoptionen …',window.export_options,False),
             ('print','Drucken …',window.print_image,True),
+            ('direct-print','Direkt drucken',window.direct_print,True),
+            ('random','Zufälliges Bild',window.random_image,True),
             ('scan','Scannen …',window.scan_dialog,False),
             ('scan-print','Scannen und drucken …',lambda:window.scan_dialog(True),False),
             ('clear','Bild schließen (D)',window.clear_image,True),
@@ -36,6 +38,7 @@ def build_menus(window):
             ('paint','Zeichnen …',window.paint_dialog,True),
             ('paste','Bild einfügen (Strg+V)',window.paste_image,False),
             ('copy','Auswahl / Bild kopieren (Strg+C)',window.copy_image,True),
+            ('copy-name','Dateinamen kopieren',window.copy_filename,True),
             ('clear-clipboard','Zwischenablage leeren',lambda:window.get_clipboard().set_content(None),False),
             ('select-all','Alles auswählen',window.select_all,True),
             ('center-selection','Auswahl maximieren und zentrieren',window.center_selection,True),
@@ -74,14 +77,29 @@ def build_menus(window):
             ('zoom-out','Verkleinern',lambda:window.zoom(.8),True),
             ('fit','Einpassen',window.fit_image,True),
             ('actual-size','100 % anzeigen',window.actual_size,True),
-            ('fullscreen','Vollbild (F11)',window.toggle_fullscreen,False),
+            ('fullscreen','Vollbild (Enter)',window.toggle_fullscreen,False),
             ('thumbnails','Vorschaubilder …',window.toggle_sidebar,False),
-            ('slideshow','Diashow starten / stoppen (F5)',window.toggle_slideshow,True),
+            ('slideshow','Diashow starten / stoppen (F9)',window.toggle_slideshow,True),
             ('slideshow-options','Diashow-Intervall …',window.slideshow_settings,False),
+            ('refresh-view','Ansicht aktualisieren',window.refresh_view,True),
+            ('fit-desktop','An Desktop anpassen',window.fit_desktop,True),
+            ('fit-window','Ins Fenster einpassen',lambda:window.set_view_mode('all'),True),
+            ('window-to-image','Fenster an Bild anpassen',window.window_to_image,True),
+            ('zoom-lock','Zoom sperren / lösen',window.toggle_zoom_lock,True),
+            ('tag','Bild markieren',lambda:window.tag_image(True),True),
+            ('untag','Markierung entfernen',lambda:window.tag_image(False),True),
+            ('tagged','Markierte Bilder anzeigen',window.show_tagged,False),
+            ('span','Vollbild über alle Monitore',window.toggle_span,True),
+            ('toggle-menu','Menüleiste ein- / ausblenden',lambda:window.toggle_chrome('menu'),False),
+            ('toggle-toolbar','Symbolleiste ein- / ausblenden',lambda:window.toggle_chrome('toolbar'),False),
+            ('toggle-status','Statuszeile ein- / ausblenden',lambda:window.toggle_chrome('status'),False),
+            ('toggle-border','Fensterrahmen ein- / ausblenden',lambda:window.toggle_chrome('border'),False),
             ('animation','Animation starten / stoppen',lambda:window.toggle_slideshow(True),True)]),
         ('Extras', [('preferences','Ansicht einstellen …',window.preferences_dialog,False),
                     ('panorama','Bilder zusammenfügen …',window.panorama_dialog,False),
                     ('batch','Stapelverarbeitung …',window.batch_dialog,False)]),
+        ('Hilfe', [('shortcuts','Tastenkürzel …',window.shortcut_help,False),
+                   ('about','Über Bildblick',window.about_dialog,False)]),
     ]
     for title, entries in groups:
         submenu = Gio.Menu()
@@ -91,12 +109,9 @@ def build_menus(window):
             window.add_action(action)
             actions.append((action,requires_image))
             item = Gio.MenuItem.new(label,'win.'+name)
-            if name == 'resize':
-                item.set_attribute_value('accel',GLib.Variant('s',RESIZE_ACCELERATOR))
-            elif name == 'save-as':
-                item.set_attribute_value('accel',GLib.Variant('s','<Primary><Shift>s'))
-            elif name == 'info':
-                item.set_attribute_value('accel',GLib.Variant('s','i'))
+            from shortcuts import MENU_SHORTCUTS
+            if name in MENU_SHORTCUTS:
+                item.set_attribute_value('accel',GLib.Variant('s',MENU_SHORTCUTS[name]))
             submenu.append_item(item)
         menu.append_submenu(title,submenu)
     return menu, actions

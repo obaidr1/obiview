@@ -226,7 +226,7 @@ Bildblick wird unter der [MIT-Lizenz](LICENSE) bereitgestellt. Installation und 
 - Gespeicherte Dateien umbenennen, kopieren, verschieben, extern öffnen oder nach Bestätigung in den Papierkorb legen.
 - Druckgröße und Position festlegen; optional mit SANE scannen oder lokale Medien über GTK/GStreamer wiedergeben.
 
-Alle Ergänzungen bleiben in separaten Dialogen. Das Hauptfenster behält 720 × 640 Pixel als Startgröße. **Strg+Y** schneidet jetzt zu; **Strg+Umschalt+Z** wiederholt. **Strg+S** speichert die aktuelle Datei mit Ersetzungsabfrage; **S** öffnet Speichern unter.
+Alle Ergänzungen bleiben in separaten Dialogen. Das Hauptfenster behält 720 × 640 Pixel als Startgröße. **Strg+Y** schneidet jetzt zu; **Strg+Umschalt+Z** wiederholt. **Strg+S** und **S** öffnen den Speicherdialog; die Menüaktion „Speichern“ speichert die aktuelle Datei mit Ersetzungsabfrage.
 
 Die aktuelle, funktionsweise Menüübersicht steht in [docs/FEATURES.md](docs/FEATURES.md). Hardwareabhängige Integrationen sind implementiert, aber noch keine Zusage für jeden Scanner, Drucker oder Mediencodec. Eine vollständige Umsetzung sämtlicher denkbarer Spezialformate und Zusatzmodule wird nicht behauptet.
 

@@ -474,12 +474,14 @@ class ImageToolsUI:
         mode_changed()
         return dialog
 
-    def run_print(self,values,export_path=None):
+    def run_print(self,values,export_path=None,direct=False):
         self.stop_slideshow()
+        self.last_print_values=dict(values)
         values = dict(values)
         orientation = values.pop('orientation')
         operation = Gtk.PrintOperation()
         operation.set_n_pages(1); operation.set_unit(Gtk.Unit.POINTS)
+        if getattr(self,'last_print_settings',None): operation.set_print_settings(self.last_print_settings)
         setup = Gtk.PageSetup()
         setup.set_orientation(Gtk.PageOrientation.LANDSCAPE if orientation=='landscape' else Gtk.PageOrientation.PORTRAIT)
         operation.set_default_page_setup(setup)
@@ -493,5 +495,7 @@ class ImageToolsUI:
             Gdk.cairo_set_source_pixbuf(cr,buffer,0,0); cr.paint()
         operation.connect('draw-page',draw_page)
         if export_path: operation.set_export_filename(str(export_path))
-        operation.run(Gtk.PrintOperationAction.EXPORT if export_path else Gtk.PrintOperationAction.PRINT_DIALOG,self)
+        mode=Gtk.PrintOperationAction.EXPORT if export_path else Gtk.PrintOperationAction.PRINT if direct else Gtk.PrintOperationAction.PRINT_DIALOG
+        result=operation.run(mode,self)
+        if result==Gtk.PrintOperationResult.APPLY and not export_path: self.last_print_settings=operation.get_print_settings()
         return operation

@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Lokale, verbindliche Designreferenz für Bildblick: Komponenten, Zustände und Dialogmuster."><title>Bildblick — Designreferenz</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script></head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><defs><symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m14 3 5 9m2-1H10m7 9-5-9m-2 10-5-9M3 13h11M7 4l5 9"/></symbol><symbol id="i-open" viewBox="0 0 24 24"><path d="M3 7h6l2-3h4l2 3h4v13H3z"/><path d="m3 10 3 10 3-10h12"/></symbol><symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 4-5 5 5 5M3 9h11a6 6 0 0 1 0 12"/></symbol><symbol id="i-redo" viewBox="0 0 24 24"><path d="m16 4 5 5-5 5m5-5H10a6 6 0 0 0 0 12"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol><symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15"/></symbol><symbol id="i-pen" viewBox="0 0 24 24"><path d="m5 15 11-11 4 4L9 19l-5 1zM14 6l4 4M5 15l4 4"/></symbol><symbol id="i-brush" viewBox="0 0 24 24"><path d="m10 13 8-10c2-2 5 1 3 3l-8 10zm0 0c-6-2-3 7-8 7 10 3 15-1 11-4"/></symbol><symbol id="i-line" viewBox="0 0 24 24"><path d="M4 20 20 4"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 20 20 4m-9 0h9v9"/></symbol><symbol id="i-rectangle" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14"/></symbol><symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="7"/></symbol><symbol id="i-left" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol><symbol id="i-right" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/></symbol><symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><rect x="7" y="7" width="10" height="10"/></symbol><symbol id="i-adjust" viewBox="0 0 24 24"><path d="M4 7h6m4 0h6M4 17h10m4 0h2"/><circle cx="12" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="8" r="2"/><path d="m3 17 5-5 4 4 4-7 5 7"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8z"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 4v16M16 4v16"/></symbol><symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H3V8h18v9h-4"/><path d="M7 14h10v7H7zM17 11h1"/></symbol><symbol id="i-rotate" viewBox="0 0 24 24"><path d="M4 9a8 8 0 1 1 0 6M4 3v6h6"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 5V3H3v13h2"/></symbol><symbol id="i-delete" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol><symbol id="i-font" viewBox="0 0 24 24"><path d="m3 20 7-16 7 16M6 14h8m2-5h6m-3 0v11"/></symbol><symbol id="i-warning" viewBox="0 0 24 24"><path d="m12 3 10 18H2zM12 9v5m0 3v.1"/></symbol><symbol id="landscape" viewBox="0 0 640 420"><rect width="640" height="420" fill="#e5e2d6"/><circle cx="456" cy="128" r="57" fill="#bf8559"/><path d="M0 280Q120 145 310 275T640 230V420H0" fill="#c3c0a9"/><path d="M0 315Q160 205 345 300T640 290V420H0" fill="#8d9787"/><path d="M0 350Q190 270 380 340T640 320V420H0" fill="#596c62"/><path d="M0 395Q240 320 640 410V420H0" fill="#344d46"/></symbol></defs></svg><a href="#main" class="skip">Zum Inhalt springen</a>
+<aside class="sidebar"><a class="brand" href="#overview"><span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-aperture"/></svg></span>Bildblick</a>
+<p class="caption">Design reference · v1.0
+</p>
+<nav aria-label="Designreferenz"><a href="#overview" aria-current="page">Übersicht<span>00</span></a>
+<p class="nav-group">Grundlage
+</p><a href="#principles">Prinzipien<span>01</span></a><a href="#foundations">Grundlagen<span>02</span></a>
+<p class="nav-group">Komponenten
+</p><a href="#buttons">Buttons<span>03</span></a><a href="#choices">Auswahl<span>04</span></a><a href="#sliders">Slider<span>05</span></a><a href="#inputs">Eingaben<span>06</span></a><a href="#toggles">Schalter<span>07</span></a><a href="#special">Spezialfelder<span>08</span></a><a href="#navigation">Navigation<span>09</span></a>
+<p class="nav-group">Muster
+</p><a href="#preview">Bild & Vorschau<span>10</span></a><a href="#editor">Bearbeiten<span>11</span></a><a href="#export">Export<span>12</span></a><a href="#data">Informationen<span>13</span></a><a href="#feedback">Rückmeldung<span>14</span></a>
+<p class="nav-group">Referenz
+</p><a href="#icons">Symbole<span>15</span></a><a href="#inventory">Inventar<span>16</span></a><a href="#contract">Designvertrag<span>17</span></a>
+</nav>
+<div class="sidebar-foot">Für die native Linux-App.<br>Offline. Lokal. Verbindlich.<br><a href="DESIGN.md">Designvertrag ↗</a>
+</div>
+</aside>
+<main id="main" tabindex="-1">
+<div class="topline"><span>Produkt / Bildblick / Designreferenz</span><span class="tag"><span class="dot"></span>Lokale Referenz · 1.0</span>
+</div>
+<section class="hero" id="overview">
+<div class="hero-grid">
+<div><span class="eyebrow">Bildblick · Design system / 01</span>
+<h1>Ein klarer Blick.<br><span>Bis ins Detail.</span></h1>
+<p class="intro">Die gemeinsame Grundlage für jede Oberfläche in Bildblick. Alle Elemente, alle Zustände, ein vertrautes Bediengefühl.
+</p>
+<div class="hero-links"><a class="btn primary" href="#buttons">Elemente entdecken <svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></a><a class="small" href="#contract">Die Regeln</a>
+</div>
+</div>
+<div class="window hero-window">
+<div class="titlebar"><span>duenen-sommer.jpg</span><span class="window-controls" aria-hidden="true">− &nbsp; □ &nbsp; ×</span>
+</div>
+<div class="menubar">
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Datei
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Bearbeiten
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Bild
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Ansicht
+</button>
+<button type="button" data-toast="Menübeispiele stehen im Abschnitt Navigation.">Extras
+</button>
+</div>
+<div class="toolbar">
+<button type="button" class="btn icon-only" aria-label="Datei öffnen" title="Datei öffnen" data-native-open><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Export öffnen" title="Export öffnen" data-open="export"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Rückgängig" title="Rückgängig" disabled><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Bildinformationen" title="Bildinformationen" data-open="info"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Zoom verkleinern" title="Zoom verkleinern" data-zoom="-25"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Zoom vergrößern" title="Zoom vergrößern" data-zoom="25"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Vorheriges Bild" title="Vorheriges Bild" data-toast="Beispiel: vorheriges Bild."><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Nächstes Bild" title="Nächstes Bild" data-toast="Beispiel: nächstes Bild."><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg>
+</button><span class="file-count">1 / 12</span>
+</div>
+<div class="viewer-art"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+</div>
+<div class="statusbar"><span>1920 × 1280 px</span><span>100 %</span><span>842 KB</span>
+</div>
+</div>
+</div>
+</section>
+<section id="principles" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">01</span>Eine Sprache. Jedes Werkzeug.</h2>
+<p>Diese Regeln gelten für neue Funktionen und jede Überarbeitung bestehender Oberflächen.
+</p>
+</div>
+<div class="grid two">
+<div class="card rule"><span class="rule-num">01</span>
+<div><strong>Das Bild bleibt im Mittelpunkt</strong>
+<p>Kompaktes Hauptfenster mit Menü, Symbolleiste, Bildfläche und Status. Werkzeuge öffnen eigene Dialoge.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">02</span>
+<div><strong>Optionen sichtbar machen</strong>
+<p>Effekte und endliche Varianten direkt als beschriftete Schaltflächen zeigen. Keine versteckten Effekt-Dropdowns.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">03</span>
+<div><strong>Werte begreifbar machen</strong>
+<p>Stärke, Kontrast und ähnliche Parameter erhalten Slider. Exakte Maße erhalten Zahleneingaben, bei Bedarf gekoppelt.
+</p>
+</div>
+</div>
+<div class="card rule"><span class="rule-num">04</span>
+<div><strong>Änderungen kontrollierbar halten</strong>
+<p>Vorschau, Originalvergleich und Zurücksetzen. Abbrechen verwirft, Anwenden erzeugt einen Undo-Schritt.
+</p>
+</div>
+</div>
+</div>
+</section>
+<section id="foundations" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">02</span>Farben & Grundlagen</h2>
+<p>Die Ausgangswerte kommen aus ui_theme.py. tokens.json hält die verbindlichen Web-Tokens.
+</p>
+</div>
+<div class="grid swatches">
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-ink)">
+</div><strong class="token-name">Text / Hauptaktion</strong><span class="token-value">#242424</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-muted)">
+</div><strong class="token-name">Sekundärtext</strong><span class="token-value">#626262</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-surface)">
+</div><strong class="token-name">Fensterfläche</strong><span class="token-value">#f5f5f3</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-card)">
+</div><strong class="token-name">Karte</strong><span class="token-value">#fafaf9</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-line)">
+</div><strong class="token-name">Trennlinie</strong><span class="token-value">#dededb</span>
+</div>
+<div class="card swatch">
+<div class="token-color" style="background:var(--color-white)">
+</div><strong class="token-name">Eingabe / Griff</strong><span class="token-value">#ffffff</span>
+</div>
+</div>
+<div class="grid two spaced">
+<div class="card">
+<h3>Typografie</h3>
+<div class="type-sample"><span style="font-size:22px;font-weight:600">Bild bearbeiten</span><span class="mono">22 / 600 · Titel</span>
+</div>
+<div class="type-sample"><strong>Einstellungen</strong><span class="mono">14 / 600 · Abschnitt</span>
+</div>
+<div class="type-sample"><span>Original vergleichen</span><span class="mono">14 / 400 · Text</span>
+</div>
+<div class="type-sample"><span class="small muted">960 × 600 px · 100 %</span><span class="mono">12 / 400 · Hilfstext</span>
+</div>
+<p class="small muted spaced">Inter → Cantarell → Systemschrift. Kein externer Font-Download.
+</p>
+</div>
+<div class="card">
+<h3>Abstände & Form</h3>
+<div class="row between">
+<div>
+<div class="measure" style="width:4px">
+</div><span class="mono">4</span>
+</div>
+<div>
+<div class="measure" style="width:8px">
+</div><span class="mono">8</span>
+</div>
+<div>
+<div class="measure" style="width:12px">
+</div><span class="mono">12</span>
+</div>
+<div>
+<div class="measure" style="width:16px">
+</div><span class="mono">16</span>
+</div>
+<div>
+<div class="measure" style="width:20px">
+</div><span class="mono">20</span>
+</div>
+<div>
+<div class="measure" style="width:24px">
+</div><span class="mono">24</span>
+</div>
+<div>
+<div class="measure" style="width:32px">
+</div><span class="mono">32</span>
+</div>
+</div>
+<div class="divider">
+</div>
+<div class="row"><span class="tag">12 px · Eingaben</span><span class="tag">20 px · Karten</span><span class="tag">24 px · Dialoge</span><span class="tag">Pille · Aktionen</span>
+</div>
+<p class="small muted spaced">Dialogrand 20–24 px · Kartenspalt 12–16 px · Standardaktion 44 px hoch. Die Hauptsymbolleiste bleibt kompakt.
+</p>
+</div>
+</div>
+</section>
+<section id="buttons" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">03</span>Buttons & Zustände</h2>
+<p>Pro Dialog eine schwarze Hauptaktion. Fokus bleibt immer sichtbar, auch bei Tastaturbedienung.
+</p>
+</div>
+<div class="card">
+<h3>Hierarchie</h3>
+<div class="row">
+<button type="button" class="btn primary" data-toast="Beispieländerung angewendet.">Anwenden
+</button>
+<button type="button" class="btn secondary" data-toast="Beispieländerung verworfen.">Abbrechen
+</button>
+<button type="button" class="btn " data-toast="Beispielwerte zurückgesetzt.">Zurücksetzen
+</button>
+<button type="button" class="btn danger" data-open="confirm"><svg class="icon" aria-hidden="true"><use href="#i-delete"/></svg> Entfernen
+</button>
+<button type="button" class="btn icon-only" aria-label="Bild speichern" title="Bild speichern" data-open="export"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button>
+</div>
+<div class="divider">
+</div>
+<h3>Interaktionszustände</h3>
+<div class="state-grid">
+<div class="state-sample">
+<button type="button" class="btn secondary" >Button
+</button><span class="state-label">Standard</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn state-hover" >Button
+</button><span class="state-label">Hover</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn state-active" >Button
+</button><span class="state-label">Gedrückt</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn secondary state-focus" >Button
+</button><span class="state-label">Fokus</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn primary" disabled>Button
+</button><span class="state-label">Deaktiviert</span>
+</div>
+<div class="state-sample">
+<button type="button" class="btn secondary" disabled><span class=spinner></span> Berechnung
+</button><span class="state-label">Beschäftigt</span>
+</div>
+</div>
+<p class="small muted spaced">Die markierten Hover-, Druck- und Fokusbeispiele zeigen Zustände dauerhaft. Alle normalen Buttons reagieren auf Maus und Tastatur.
+</p>
+</div>
+</section>
+<section id="choices" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">04</span>Direkte Auswahl</h2>
+<p>Werkzeuge, Formate und Effekte sind sofort sichtbar. Pfeiltasten wechseln innerhalb einer Auswahlgruppe.
+</p>
+</div>
+<div class="card">
+<h3>Werkzeuge · Symbol + Beschriftung</h3>
+<div class="choice-group tool-choices" role="radiogroup" aria-label="Zeichenwerkzeug" >
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="pen"><svg class="icon" aria-hidden="true"><use href="#i-pen"/></svg>Stift
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="brush"><svg class="icon" aria-hidden="true"><use href="#i-brush"/></svg>Pinsel
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="line"><svg class="icon" aria-hidden="true"><use href="#i-line"/></svg>Linie
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="arrow"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>Pfeil
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="rectangle"><svg class="icon" aria-hidden="true"><use href="#i-rectangle"/></svg>Rechteck
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="ellipse"><svg class="icon" aria-hidden="true"><use href="#i-ellipse"/></svg>Ellipse
+</button>
+</div>
+<p class="small muted spaced" id="tool-description">Stift · präziser Strich mit harter Kante.
+</p>
+</div>
+<div class="grid two spaced">
+<div class="card">
+<h3>Varianten / Looks</h3>
+<div class="choice-group " role="radiogroup" aria-label="Look" style="grid-template-columns:repeat(4,1fr)">
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="Original">Original
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Film">Film
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Fade">Fade
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Warm">Warm
+</button>
+</div>
+<p class="small muted spaced">Dunkle Fläche kennzeichnet die aktive Variante. Ein Textlabel bleibt immer sichtbar.
+</p>
+</div>
+<div class="card">
+<h3>Formatkarten</h3>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Beispielformat" >
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="JPG"><span class="radio-dot"></span>JPG<small>Für Fotos</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="PNG"><span class="radio-dot"></span>PNG<small>Transparenz</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="WebP"><span class="radio-dot"></span>WebP<small>Kleine Dateien</small>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section id="sliders" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">05</span>Slider & genaue Werte</h2>
+<p>Visuelle Parameter sind kontinuierlich steuerbar. Zahlenfeld und Slider verwenden denselben Wert.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="contrast">Kontrast</label>
+<div class="slider-field"><input id="contrast" type="range" min="-100" max="100" step="1" value="0" ><output for="contrast">0</output>
+</div>
+</div>
+<div class="field"><label for="quality">Qualität</label>
+<div class="slider-field"><input id="quality" type="range" min="1" max="100" step="1" value="85" ><output for="quality">85</output>
+</div>
+</div>
+<div class="range-ends"><span>Kleinere Datei</span><span>Beste Qualität</span>
+</div>
+<div class="field"><label for="disabled-range">Nicht verfügbar</label>
+<div class="slider-field"><input id="disabled-range" type="range" min="0" max="100" step="1" value="45" disabled><output for="disabled-range">45</output>
+</div>
+</div>
+</div>
+<div class="card stack">
+<div class="field"><label for="stroke">Strichbreite</label>
+<div class="slider-field"><input id="stroke" type="range" min="1" max="500" step="1" value="4" >
+<div class="spin"><input id="stroke-number" type="number" min="1" max="500" step="1" value="4" aria-label="Strichbreite – genauer Wert" data-sync="stroke"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Strichbreite – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Strichbreite – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<div class="field"><label for="angle">Drehwinkel</label>
+<div class="slider-field"><input id="angle" type="range" min="-180" max="180" step="1" value="0" >
+<div class="spin"><input id="angle-number" type="number" min="-180" max="180" step="1" value="0" aria-label="Drehwinkel – genauer Wert" data-sync="angle"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Drehwinkel – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Drehwinkel – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<p class="small muted">Pfeiltasten verändern einen Schritt. Home/End springen zum Rand. Exakte Eingaben bleiben innerhalb der angegebenen Grenzen.
+</p>
+</div>
+</div>
+</section>
+<section id="inputs" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">06</span>Eingaben & Validierung</h2>
+<p>Beschriftungen stehen über dem Feld. Ein Fehler erklärt die Korrektur direkt am betroffenen Wert.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="filename">Dateiname</label><input id="filename" value="duenen-sommer.jpg" aria-describedby="filename-help"><small id="filename-help">Die Endung folgt dem gewählten Format.</small>
+</div>
+<div class="field"><label for="search-demo">Bilder suchen</label>
+<div class="search-field"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input id="search-demo" type="search" placeholder="Dateiname …">
+</div><small id="search-result" aria-live="polite">Filtert die Vorschaubilder im Abschnitt „Bild & Vorschau“.</small>
+</div>
+<div class="grid two">
+<div class="field"><label for="width-demo">Breite</label>
+<div class="spin"><input id="width-demo" type="number" min="1" max="10000" step="1" value="1920" aria-label="Breite" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Breite verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Breite erhöhen">+
+</button>
+</div>
+</div>
+<div class="field"><label for="height-demo">Höhe</label>
+<div class="spin"><input id="height-demo" type="number" min="1" max="10000" step="1" value="1080" aria-label="Höhe" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Höhe verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Höhe erhöhen">+
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="card stack">
+<div class="field"><label for="invalid-name">Ungültiger Dateiname</label><input id="invalid-name" value="urlaub/foto.jpg" aria-invalid="true" aria-describedby="invalid-help"><small id="invalid-help" class="error-text">Bitte einen Dateinamen ohne / eingeben.</small>
+</div>
+<div class="field"><label for="readonly-path">Nur lesen · Quellpfad</label><input id="readonly-path" value="/Bilder/duenen-sommer.jpg" readonly>
+</div>
+<div class="field"><label for="disabled-input">Gesperrte Option</label><input id="disabled-input" value="Nicht verfügbar" disabled>
+</div>
+</div>
+</div>
+</section>
+<section id="toggles" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">07</span>Schalter & Auswahlfelder</h2>
+<p>Schalter aktivieren eine Einstellung. Checkboxen erlauben mehrere Optionen, Radiobuttons genau eine.
+</p>
+</div>
+<div class="grid three">
+<div class="card stack">
+<div class="switch-row"><span id="metadata-label">Metadaten entfernen</span>
+<button type="button" class="switch" role="switch" aria-checked="true" aria-labelledby="metadata-label">
+</button>
+</div>
+<div class="switch-row"><span id="preview-label">Vorschau anzeigen</span>
+<button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="preview-label">
+</button>
+</div>
+<div class="switch-row"><span id="locked-label">Nicht verfügbar</span>
+<button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="locked-label" disabled>
+</button>
+</div>
+</div>
+<div class="card stack"><label class="check"><input type="checkbox" checked>Seitenverhältnis erhalten</label><label class="check"><input type="checkbox">Progressives JPEG</label><label class="check"><input type="checkbox" id="mixed-check">Teilweise ausgewählt</label><label class="check muted"><input type="checkbox" disabled>Nicht verfügbar</label>
+</div>
+<div class="card stack" role="group" aria-label="Druckausrichtung"><label class="radio"><input type="radio" name="orientation" checked>Hochformat</label><label class="radio"><input type="radio" name="orientation">Querformat</label>
+<p class="small muted">Bei umfangreichen visuellen Varianten die direkten Auswahlkarten verwenden.
+</p>
+</div>
+</div>
+</section>
+<section id="special" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">08</span>Farbe, Schrift & Details</h2>
+<p>Systemdialoge bleiben nativ. Die Auslöser und die umgebenden Felder folgen unserem Design.
+</p>
+</div>
+<div class="grid two">
+<div class="card stack">
+<div class="field"><label for="color-demo">Zeichenfarbe</label>
+<div class="color-input"><input id="color-demo" type="color" value="#e43b2c"><output for="color-demo">#e43b2c</output><span class="small muted">System-Farbwahl öffnen</span>
+</div>
+</div>
+<div class="field"><label for="font-demo">Schriftfamilie · Browserbeispiel</label><select id="font-demo"><option value="Georgia,serif">Serif</option><option value="system-ui,sans-serif">System Sans</option><option value="monospace">Monospace</option></select>
+<p class="font-sample" id="font-preview">Ein Moment im Bild.
+</p>
+</div>
+<p class="small muted">In GTK öffnet die Schriftwahl den nativen Font-Dialog. Systemschriften und Profilnamen dürfen Such- oder Auswahllisten verwenden.
+</p>
+</div>
+<div class="card">
+<div class="field"><label for="text-demo">Text einfügen</label><textarea id="text-demo">Ein Moment im Bild.</textarea>
+</div>
+<details class="spaced"><summary>Erweiterte Optionen</summary>
+<div class="detail-content stack"><label class="check"><input type="checkbox" checked>ICC-Farbprofil erhalten</label><label class="check"><input type="checkbox">Kommentar erhalten</label>
+<div class="field"><label for="profile-demo">Benanntes Profil</label><input id="profile-demo" list="profile-list" placeholder="Profil wählen oder benennen"><datalist id="profile-list"><option value="Web"><option value="Druck"><option value="Archiv"></datalist>
+</div>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section id="navigation" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">09</span>Navigation & Menüs</h2>
+<p>Die App startet kompakt mit 720 × 640 px. Die Website zeigt verkleinerte Strukturbeispiele.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Menüeinträge</h3>
+<div class="menu" aria-label="Beispielmenü Bild">
+<button type="button" class="btn " data-open="resize">Größe ändern …<kbd>Strg+R</kbd>
+</button>
+<button type="button" class="btn " data-open="info">Bildinformationen …<kbd>I</kbd>
+</button>
+<button type="button" class="btn " data-toast="Die Zeichenwerkzeuge stehen im Abschnitt Direkte Auswahl.">Zeichnen …<kbd>F12</kbd>
+</button><hr>
+<button type="button" class="btn " data-toast="Beispiel: 90° rechts drehen.">90° rechts drehen<kbd>R</kbd>
+</button>
+<button type="button" class="btn " disabled>Rückgängig<kbd>Strg+Z</kbd>
+</button>
+</div>
+</div>
+<div class="card stack">
+<h3>Symbolleiste</h3>
+<div class="toolbar">
+<button type="button" class="btn icon-only" aria-label="Öffnen" title="Öffnen" data-toast="Beispielaktion: Öffnen"><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Vorschaubilder" title="Vorschaubilder" data-toast="Beispielaktion: Vorschaubilder"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Speichern" title="Speichern" data-toast="Beispielaktion: Speichern"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Rückgängig" title="Rückgängig" disabled><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg>
+</button>
+<button type="button" class="btn icon-only" aria-label="Wiederholen" title="Wiederholen" disabled><svg class="icon" aria-hidden="true"><use href="#i-redo"/></svg>
+</button><span class="toolbar-sep"></span>
+<button type="button" class="btn icon-only" aria-label="Bildinformationen" title="Bildinformationen" data-open="info"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+</button>
+</div>
+<h3>Zoom</h3>
+<div class="row">
+<div class="zoom-dock">
+<button type="button" class="btn icon-only" aria-label="Zoom verkleinern" title="Zoom verkleinern" data-zoom="-25"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>
+</button><output id="zoom-value">100 %</output>
+<button type="button" class="btn icon-only" aria-label="Zoom vergrößern" title="Zoom vergrößern" data-zoom="25"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+</button>
+</div><span class="tooltip-wrap">
+<button type="button" class="btn icon-only" aria-label="Bild einpassen" title="Bild einpassen" data-toast="Beispiel: Bild einpassen."><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg>
+</button><span class="tooltip" role="tooltip">Bild einpassen · F</span></span>
+</div>
+<p class="small muted">Nur Symbolbuttons erhalten einen zugänglichen Namen und Tooltip. Die kompakte App-Symbolleiste verwendet 30-px-Ziele.
+</p>
+</div>
+</div>
+<div class="grid two spaced"><div class="card"><h3>Tastenkürzel-Hilfe · F1</h3><p class="small muted">Eigener Dialog: Titel, Suchfeld, scrollbare Liste und Schließen. Die verbindliche Belegung steht in docs/SHORTCUTS.md.</p><div class="field"><label for="shortcut-reference-search">Kürzel oder Aktion suchen</label><input id="shortcut-reference-search" type="search" placeholder="Zum Beispiel: Vollbild"></div><table class="spaced" id="shortcut-reference-table"><tbody><tr><td><kbd>Enter</kbd></td><td>Vollbild umschalten</td></tr><tr><td><kbd>Strg+R</kbd></td><td>Größe ändern</td></tr><tr><td><kbd>I</kbd></td><td>Bildinformationen</td></tr></tbody></table></div><div class="card"><h3>Bildtext im Vollbild</h3><div class="preview-well"><svg class="art" viewBox="0 0 640 420" role="img" aria-label="Beispielbild"><use href="#landscape"/></svg><p style="background:rgb(0 0 0 / 65%);color:white;border-radius:12px;padding:8px 12px;font-size:12px;margin-top:12px">duenen.jpg · 1920 × 1280 px · 100 % · Markiert</p></div><p class="small muted spaced">Mit N ausblendbar. Markierungen zusätzlich als Text anzeigen; Leisten im Vollbild verbergen und beim Verlassen wiederherstellen.</p></div></div></section>
+<section id="preview" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">10</span>Bild & Vorschau</h2>
+<p>Bildflächen sind ruhig. Auswahlrahmen und Bedienelemente bleiben klar von den Bildpixeln getrennt.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Zuschnitt · visuelles Muster</h3>
+<div class="crop-preview"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+<div class="crop-box">
+<div class="handles"><i></i><i></i><i></i><i></i>
+</div>
+</div>
+</div>
+<p class="small muted spaced">In der App: an Kanten ziehen, Auswahl verschieben, anschließend zuschneiden.
+</p>
+</div>
+<div class="card">
+<h3>Vorschaubilder · auswählbar & filterbar</h3>
+<div class="thumb-grid">
+<button type="button" class="thumb" data-name="duenen.jpg" aria-pressed="true"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(0deg)"><use href="#landscape"/></svg><span>duenen.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="abend.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(30deg)"><use href="#landscape"/></svg><span>abend.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="meer.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(60deg)"><use href="#landscape"/></svg><span>meer.jpg</span>
+</button>
+<button type="button" class="thumb" data-name="morgen.png" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(90deg)"><use href="#landscape"/></svg><span>morgen.png</span>
+</button>
+<button type="button" class="thumb" data-name="kueste.webp" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(120deg)"><use href="#landscape"/></svg><span>kueste.webp</span>
+</button>
+<button type="button" class="thumb" data-name="sand.jpg" aria-pressed="false"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" style="filter:hue-rotate(150deg)"><use href="#landscape"/></svg><span>sand.jpg</span>
+</button>
+</div>
+<p class="small muted spaced" id="thumb-status" aria-live="polite">duenen.jpg ausgewählt
+</p>
+</div>
+</div>
+<div class="card spaced">
+<div class="row between">
+<h3>Mediensteuerung · Zustandsbeispiel</h3><span class="tag">Keine Mediendatei geladen</span>
+</div>
+<div class="row">
+<button type="button" class="btn icon-only" aria-label="Wiedergabe-Beispiel starten" title="Wiedergabe-Beispiel starten" id="play-demo" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>
+</button><span class="small" id="play-state">Pausiert · Demo</span><input type="range" min="0" max="100" value="25" aria-label="Wiedergabeposition als Beispiel" style="max-width:360px"><span class="small muted">00:15 / 01:00</span>
+</div>
+</div>
+</section>
+<section id="editor" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">11</span>Muster: Bearbeitungsdialog</h2>
+<p>Dieses Beispiel definiert den Aufbau neuer Werkzeuge: Vorschau links, direkte Optionen und Slider rechts.
+</p>
+</div>
+<div class="card">
+<div class="demo-title">
+<h3>Effekte</h3><span class="tag">Interaktive Design-Demo</span>
+</div>
+<div class="edit-example">
+<div class="preview-area">
+<div class="preview-well"><svg class="art effect-preview" viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" id="effect-image"><use href="#landscape"/></svg>
+</div>
+<button type="button" class="btn secondary" id="compare" aria-pressed="false">Original vergleichen
+</button>
+<p class="preview-caption" id="effect-note">Sepia · Vorschau mit CSS simuliert
+</p>
+</div>
+<div class="stack">
+<div class="card compact" style="background:var(--color-surface)">
+<div class="choice-group effect-choices" role="radiogroup" aria-label="Effekt" id="effect-choices">
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="Sepia">Sepia
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Weichzeichnen">Weichzeichnen
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Relief">Relief
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Ölgemälde">Ölgemälde
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Kanten">Kanten
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Median">Median
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Explosion">Explosion
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Pixelieren">Pixelieren
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="3D-Schaltfläche">3D-Schaltfläche
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Regentropfen">Regentropfen
+</button>
+</div>
+</div>
+<div class="field"><label for="intensity">Intensität</label>
+<div class="slider-field"><input id="intensity" type="range" min="0" max="100" step="1" value="65" >
+<div class="spin"><input id="intensity-number" type="number" min="0" max="100" step="1" value="65" aria-label="Intensität – genauer Wert" data-sync="intensity"><span class="unit"></span>
+<button type="button" data-step="-1" aria-label="Intensität – genauer Wert verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Intensität – genauer Wert erhöhen">+
+</button>
+</div>
+</div>
+</div>
+<button type="button" class="btn " id="reset-effect">Zurücksetzen
+</button>
+</div>
+</div>
+<div class="dialog-footer">
+<button type="button" class="btn " id="cancel-effect">Abbrechen
+</button>
+<button type="button" class="btn primary" id="apply-effect">Anwenden
+</button>
+</div>
+<p class="small muted spaced">Die Website bearbeitet keine Dateien. Alle zehn Effekte sind auswählbar; nur Sepia, Weichzeichnen und Kanten werden hier visuell angenähert. Die Pixeloperationen bleiben in der nativen App.
+</p>
+</div>
+</section>
+<section id="export" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">12</span>Muster: Exportdialog</h2>
+<p>Die Gestaltung folgt dem vereinbarten Kartenlayout. Weiterführende Optionen stehen in aufklappbaren Bereichen.
+</p>
+</div>
+<div class="grid two">
+<div class="dialog-example">
+<div class="dialog-shell">
+<h3>Bild exportieren</h3>
+<div id="export-example">
+<div class="file-summary"><svg class="art " viewBox="0 0 640 420" role="img" aria-label="Illustration: Dünen und Sonne" ><use href="#landscape"/></svg>
+<div>
+<p>duenen-sommer.jpg
+</p><span class="small muted">Original: 1920 × 1280 px</span>
+</div><span class="tag">Beispieldatei</span>
+</div>
+<div class="stack">
+<div class="card">
+<h4>Format</h4>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Exportformat" data-export-format>
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="JPG"><span class="radio-dot"></span>JPG<small>Für Fotos</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="PNG"><span class="radio-dot"></span>PNG<small>Verlustfrei</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="WebP"><span class="radio-dot"></span>WebP<small>Kleine Dateien</small>
+</button>
+</div>
+</div>
+<div class="card" data-quality-panel>
+<div class="field"><label for="export-quality">Qualität</label>
+<div class="slider-field"><input id="export-quality" type="range" min="1" max="100" step="1" value="85" ><output for="export-quality">85</output>
+</div>
+</div>
+<div class="range-ends"><span>Kleinere Datei</span><span>Beste Qualität</span>
+</div>
+<p class="small muted" data-quality-note hidden>PNG speichert verlustfrei. Kompression verändert die Dateigröße, nicht die Bildqualität.
+</p>
+</div>
+<div class="card">
+<h4>Auflösung</h4>
+<div class="choice-group format-choices" role="radiogroup" aria-label="Exportauflösung" data-export-size>
+<button class="choice" type="button" role="radio" aria-checked="true" tabindex="0" data-value="50 %"><span class="radio-dot"></span>50 %<small>960 × 640</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="100 %"><span class="radio-dot"></span>100 %<small>1920 × 1280</small>
+</button>
+<button class="choice" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="Eigene"><span class="radio-dot"></span>Eigene<small>Pixel festlegen</small>
+</button>
+</div>
+<div class="field spaced" data-custom-size hidden><label for="custom-width">Breite bei erhaltenem Verhältnis</label>
+<div class="spin"><input id="custom-width" type="number" min="1" max="10000" step="1" value="1920" aria-label="Exportbreite" ><span class="unit">px</span>
+<button type="button" data-step="-1" aria-label="Exportbreite verringern">−
+</button>
+<button type="button" data-step="1" aria-label="Exportbreite erhöhen">+
+</button>
+</div><small data-custom-height>Höhe: 1280 px</small>
+</div>
+</div>
+<div class="card switch-row">
+<div><span id="export-meta-label">Metadaten entfernen</span>
+<p class="small muted" style="margin:4px 0 0">EXIF, Standort und Kameradaten
+</p>
+</div>
+<button class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="export-meta-label">
+</button>
+</div>
+</div>
+</div>
+<div class="dialog-footer">
+<button type="button" class="btn " data-toast="Exportbeispiel verworfen.">Abbrechen
+</button>
+<button type="button" class="btn primary" data-toast="Design-Demo: Es wurde keine Datei gespeichert.">Bild speichern
+</button>
+</div>
+</div>
+</div>
+<div class="stack">
+<div class="card">
+<h3>Verbindliche Reihenfolge</h3><ol class="small"><li>Datei und Originalabmessungen</li><li>Format als direkte Auswahl</li><li>Formatabhängige Qualität / Kompression</li><li>Auflösung und exakte eigene Größe</li><li>Metadaten und weitere Optionen</li><li>Abbrechen links, Hauptaktion rechts</li></ol>
+<p class="small muted">Dateigrößen nur anzeigen, wenn sie berechnet wurden. Keine geschätzte Ausgabe als echtes Ergebnis darstellen.
+</p>
+</div>
+<div class="card">
+<h3>Echte Dialogmechanik testen</h3>
+<p class="small muted">Modaler Hintergrund, Fokus im Dialog, Escape zum Schließen, Fokus zurück auf den Auslöser.
+</p>
+<div class="row">
+<button type="button" class="btn primary" data-open="export">Export öffnen
+</button>
+<button type="button" class="btn secondary" data-open="resize">Größe ändern
+</button>
+<button type="button" class="btn " data-open="info">Bildinformationen
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="data" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">13</span>Informationen & Listen</h2>
+<p>Informationswerte sind auswählbar. Dateipfade dürfen umbrechen, Metadaten haben eigene Leseansichten.
+</p>
+</div>
+<div class="grid two">
+<div class="card">
+<h3>Bildinformationen · Beispielwerte</h3><dl class="data-list">
+<div><dt>Dateiname</dt><dd>duenen-sommer.jpg</dd>
+</div>
+<div><dt>Verzeichnis</dt><dd>/Bilder/Urlaub</dd>
+</div>
+<div><dt>Format</dt><dd>JPEG</dd>
+</div>
+<div><dt>Originalgröße</dt><dd>1920 × 1280 px · 2,46 MP · 3:2</dd>
+</div>
+<div><dt>Aktuelle Größe</dt><dd>1920 × 1280 px</dd>
+</div>
+<div><dt>Auflösung</dt><dd>300 × 300 DPI</dd>
+</div>
+<div><dt>Druckgröße</dt><dd>16,26 × 10,84 cm</dd>
+</div>
+<div><dt>Farbtiefe</dt><dd>24 Bit RGB</dd>
+</div>
+<div><dt>Gezählte RGB-Farben</dt><dd>Berechnung …</dd>
+</div></dl>
+<div class="row spaced">
+<button type="button" class="btn sm" data-toast="Beispiel: EXIF in eigener Leseansicht.">EXIF
+</button>
+<button type="button" class="btn sm" data-toast="Beispiel: IPTC in eigener Leseansicht.">IPTC
+</button>
+<button type="button" class="btn sm" data-toast="Beispiel: Kommentar in eigener Leseansicht.">Kommentar
+</button>
+</div>
+</div>
+<div class="card">
+<h3>Stapel / Ergebnisliste</h3>
+<div class="table-scroll">
+<table><thead>
+<tr><th>Datei</th><th>Ergebnis</th><th>Größe</th>
+</tr></thead><tbody>
+<tr><td>duenen.jpg</td><td>✓ Fertig</td><td>842 KB</td>
+</tr>
+<tr><td>abend.jpg</td><td>In Bearbeitung</td><td>—</td>
+</tr>
+<tr><td>meer.jpg</td><td>Wartet</td><td>—</td>
+</tr></tbody></table>
+</div>
+<p class="small muted spaced">Status nicht nur durch Farbe vermitteln. Fehlende Daten als „—“ oder „Nicht verfügbar“ kennzeichnen.
+</p><label for="metadata-text" class="small">Metadaten · Nur lesen</label><textarea id="metadata-text" readonly class="spaced">Artist: Beispiel
+Resolution: 300 DPI
+Comment: Sommer am Meer</textarea>
+</div>
+</div>
+</section>
+<section id="feedback" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">14</span>Rückmeldung & Sonderzustände</h2>
+<p>Laden, Leere, Fehler und Bestätigung gehören zum Entwurf jeder neuen Funktion.
+</p>
+</div>
+<div class="grid two">
+<div class="card empty"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>
+<h3>Noch kein Bild geöffnet</h3>
+<p>Öffne eine Datei oder ziehe ein Bild in das Fenster.
+</p>
+<button type="button" class="btn primary" data-native-open><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg> Bild öffnen
+</button><input type="file" accept="image/*" id="file-demo" hidden>
+<p class="small muted spaced" id="file-demo-result">Browser-Dateiauswahl · keine Datei wird hochgeladen.
+</p>
+</div>
+<div class="card stack">
+<h3>Vorschau wird berechnet</h3>
+<div class="row"><span class="spinner" aria-hidden="true"></span><span class="small">Das Original bleibt unverändert.</span>
+</div>
+<div class="skeleton" style="width:80%">
+</div>
+<div class="skeleton" style="width:55%">
+</div><label for="batch-progress" class="small">Stapelverarbeitung · 4 von 10</label><progress id="batch-progress" max="10" value="4">4 von 10</progress>
+</div>
+<div class="notice error"><svg class="icon" aria-hidden="true"><use href="#i-warning"/></svg>
+<div><strong>Die Datei konnte nicht gespeichert werden.</strong>Wähle einen beschreibbaren Ordner und versuche es erneut.
+</div>
+</div>
+<div class="notice"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+<div><strong>Änderung angewendet.</strong>Mit Strg+Z kannst du sie rückgängig machen.
+</div>
+</div>
+</div>
+<div class="row spaced">
+<button type="button" class="btn secondary" data-open="confirm">Bestätigung anzeigen
+</button>
+<button type="button" class="btn " data-toast="Beispielstatus: Einstellungen zurückgesetzt.">Statusmeldung testen
+</button>
+</div>
+</section>
+<section id="icons" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">15</span>Symbolbibliothek</h2>
+<p>Einheitliche Linien, 24 × 24 Raster, 1,7 px Strich. Keine Emoji- oder uneinheitlichen Clipart-Symbole.
+</p>
+</div>
+<div class="icon-library">
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-aperture"/></svg><span>aperture</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-open"/></svg><span>open</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-save"/></svg><span>save</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg><span>undo</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-redo"/></svg><span>redo</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>plus</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg><span>minus</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>info</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-crop"/></svg><span>crop</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-pen"/></svg><span>pen</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-brush"/></svg><span>brush</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-line"/></svg><span>line</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg><span>arrow</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-rectangle"/></svg><span>rectangle</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-ellipse"/></svg><span>ellipse</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg><span>left</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg><span>right</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span>grid</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg><span>fit</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-adjust"/></svg><span>adjust</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span>search</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg><span>close</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>check</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg><span>image</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg><span>play</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg><span>pause</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-print"/></svg><span>print</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-rotate"/></svg><span>rotate</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span>copy</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-delete"/></svg><span>delete</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-font"/></svg><span>font</span>
+</div>
+<div class="icon-cell"><svg class="icon" aria-hidden="true"><use href="#i-warning"/></svg><span>warning</span>
+</div>
+</div>
+<p class="small muted spaced">Neue Symbole ergänzen denselben SVG-Satz. In der App als GTK-Symbol oder Cairo-Vektor umsetzen. Zeichenwerkzeuge erhalten zusätzlich Text.
+</p>
+</section>
+<section id="inventory" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">16</span>Inventar & Umsetzung</h2>
+<p>Alle benutzerseitigen Elementfamilien der aktuellen App sind zugeordnet. Layoutcontainer werden durch die zusammengesetzten Beispiele abgedeckt.
+</p>
+</div>
+<div class="card table-scroll">
+<table><thead>
+<tr><th>Elementfamilie</th><th>Beispiel</th><th>Native Umsetzung</th>
+</tr></thead><tbody>
+<tr><td>Buttons / Symbolbuttons</td><td>03, 09</td><td>ui_theme.py · icon_button / Gtk.Button</td>
+</tr>
+<tr><td>Zustände / Fokus / deaktiviert</td><td>03, 06, 14</td><td>ui_theme.py · GTK-Pseudoklassen</td>
+</tr>
+<tr><td>Direkte Auswahl / Toggle</td><td>04, 11, 12</td><td>edit_controls.py · ChoiceButtons</td>
+</tr>
+<tr><td>Slider / gekoppelter Zahlenwert</td><td>05</td><td>edit_controls.py · SliderField</td>
+</tr>
+<tr><td>Eingabe / Suche / Zahl / Text</td><td>06, 08, 13</td><td>Gtk.Entry / SearchEntry / SpinButton / TextView</td>
+</tr>
+<tr><td>Checkbox / Radio / Switch</td><td>07, 12</td><td>Gtk.CheckButton / Switch</td>
+</tr>
+<tr><td>Farb- / Schriftauswahl</td><td>08</td><td>Gtk.ColorButton / FontButton · Systemdialoge</td>
+</tr>
+<tr><td>Profile / aufklappbare Details</td><td>08</td><td>save_dialog.py · ComboBoxText / Expander</td>
+</tr>
+<tr><td>Menü / Popover / Tooltip</td><td>09</td><td>menus.py · PopoverMenuBar</td>
+</tr>
+<tr><td>Titel / Werkzeug- / Statusleiste</td><td>Übersicht, 09</td><td>bildblick.py · HeaderBar / Toolbar</td>
+</tr>
+<tr><td>Karte / Label / Trennlinie</td><td>02, alle</td><td>ui_theme.py · card / label</td>
+</tr>
+<tr><td>Bild / Auswahl / Vorschau</td><td>10, 11</td><td>DrawingArea / Picture / ScrolledWindow</td>
+</tr>
+<tr><td>Vorschauraster / Selektion</td><td>10</td><td>advanced_ui.py · FlowBox</td>
+</tr>
+<tr><td>Mediensteuerung</td><td>10</td><td>file_tools_ui.py · Video</td>
+</tr>
+<tr><td>Bearbeiten / Originalvergleich</td><td>11</td><td>ToolDialog / EffectsDialog</td>
+</tr>
+<tr><td>Export / Größenänderung</td><td>12</td><td>SaveDialog / ResizeDialog</td>
+</tr>
+<tr><td>Information / Metadaten</td><td>13</td><td>info_dialog.py · ImageInfoDialog</td>
+</tr>
+<tr><td>Modal / Scrim / Bestätigung</td><td>12, 14</td><td>Gtk.Dialog / MessageDialog</td>
+</tr>
+<tr><td>Laden / Fortschritt / Fehler / leer</td><td>14</td><td>Gtk.Spinner / Status / Validierung</td>
+</tr>
+<tr><td>Datei / Druck / Scanner</td><td>14, Regeln</td><td>Native Portale, PrintOperation, scanimage</td>
+</tr></tbody></table>
+</div>
+<p class="small muted spaced">Datei-, Schrift-, Farb- und Druckdialoge können durch Betriebssystem und Portal anders aussehen. Verbindlich sind unsere Auslöser und Inhalte; Systemoberflächen werden nicht künstlich nachgebaut.
+</p>
+</section>
+<section id="contract" class="specimen">
+<div class="section-head">
+<h2><span class="section-number">17</span>Ab jetzt die Referenz.</h2>
+<p>Designregeln, Tokens und Beispiele bilden gemeinsam den Vertrag für die native App.
+</p>
+</div>
+<div class="contract">
+<h3>Neue Funktion? Hier anfangen.</h3><ol><li>Passendes Element aus diesem Katalog verwenden.</li><li>Farbe, Abstand, Radius und Schrift aus den Tokens übernehmen.</li><li>Standard, Fokus, deaktiviert, Laden und Fehler berücksichtigen.</li><li>Vorschau, Abbrechen, Anwenden und Undo definieren.</li><li>Fehlendes Muster zuerst hier ergänzen, dann in GTK umsetzen.</li></ol>
+<p>Die native App bleibt GTK. Diese Website ist die verbindliche visuelle und funktionale Referenz, keine zweite Bildbearbeitung und keine automatische Migration bestehender Ansichten.
+</p>
+<div class="row"><a href="DESIGN.md">Designvertrag lesen ↗</a><a href="tokens.json">Tokens öffnen ↗</a><a href="README.md">Lokal bearbeiten ↗</a>
+</div>
+</div>
+</section>
+<footer class="footer"><span>Bildblick · Designreferenz 1.0 · 16. Oktober 2026</span><a href="#overview">Zurück nach oben ↑</a>
+</footer>
+</main>
+<dialog id="demo-dialog" aria-labelledby="modal-title">
+<h2 id="modal-title"></h2>
+<div id="modal-content">
+</div>
+</dialog>
+<div id="toast" role="status" aria-live="polite" hidden>
+</div><noscript>
+<p class="notice" style="position:fixed;bottom:0;background:white">JavaScript ist deaktiviert. Alle Designbeispiele sind sichtbar; interaktive Demonstrationen benötigen JavaScript.
+</p></noscript></body></html>

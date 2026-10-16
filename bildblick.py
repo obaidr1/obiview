@@ -20,9 +20,11 @@ from ui_theme import install_theme, label, icon_button
 from copy import copy
 from dataclasses import replace
 from window_geometry import growth_target
+from viewer_shortcuts import ViewerShortcuts
+from shortcuts import display_scales
 
 
-class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
+class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app, title='Bildblick', default_width=720, default_height=640)
         self.add_css_class('viewer')
@@ -79,11 +81,11 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         toolbar.append(self.save_button)
         toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
         self.crop_toggle = Gtk.ToggleButton(icon_name='edit-select-all-symbolic')
-        self.crop_toggle.set_tooltip_text('Ausschnitt auswählen; Eingabe übernimmt die Auswahl')
+        self.crop_toggle.set_tooltip_text('Ausschnitt auswählen; Strg+Y schneidet zu')
         self.crop_toggle.update_property([Gtk.AccessibleProperty.LABEL],['Ausschnitt auswählen'])
         self.crop_toggle.connect('toggled', self.toggle_crop)
         toolbar.append(self.crop_toggle)
-        self.crop_button = icon_button('edit-cut-symbolic','Auswahl zuschneiden (Eingabe oder Strg+Y)',self.apply_crop)
+        self.crop_button = icon_button('edit-cut-symbolic','Auswahl zuschneiden (Strg+Y)',self.apply_crop)
         toolbar.append(self.crop_button)
         self.undo_button = icon_button('edit-undo-symbolic','Rückgängig (Strg+Z)',self.undo)
         toolbar.append(self.undo_button)
@@ -113,6 +115,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         self.zoom_label = Gtk.Label(label='100 %')
         self.canvas = Gtk.DrawingArea(hexpand=True, vexpand=True)
         self.canvas.set_draw_func(self.draw)
+        self.canvas.set_focusable(True)
         self.scroll.set_child(self.canvas)
         self.status = Gtk.Label(label='Bild öffnen · PNG, JPEG, WebP, TIFF und weitere Formate', xalign=0,
                                 margin_start=8, margin_end=8, margin_top=4, margin_bottom=4)
@@ -127,12 +130,14 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         self.canvas.add_controller(drag)
         keys = Gtk.EventControllerKey()
         keys.connect('key-pressed', self.key_pressed)
+        keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
         self.add_controller(keys)
         drop = Gtk.DropTarget.new(Gio.File, Gdk.DragAction.COPY)
         drop.connect('drop', self.drop_file)
         self.canvas.add_controller(drop)
         self.setup_advanced(root,header,toolbar)
         self.setup_editor()
+        self.setup_shortcuts()
         self.refresh()
 
     def button(self, parent, label, callback, hint, start=False):
@@ -295,7 +300,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         self.scroll.set_policy(Gtk.PolicyType.NEVER if self.fit else Gtk.PolicyType.AUTOMATIC,
                                Gtk.PolicyType.NEVER if self.fit else Gtk.PolicyType.AUTOMATIC)
         self.canvas.set_content_width(1 if self.fit or not image else round(image.width*self.scale))
-        self.canvas.set_content_height(1 if self.fit or not image else round(image.height*self.scale))
+        self.canvas.set_content_height(1 if self.fit or not image else round(image.height*self.scale_y))
         if image and not self.fit and not self.growth_timer:
             self.growth_timer = GLib.idle_add(self.grow_for_image)
 
@@ -343,10 +348,13 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
                 text += f'  ·  Seite {self.model.frame_index+1} / {self.model.frame_count} (Export: aktuelle Seite)'
             if self.selection:
                 x1,y1,x2,y2 = self.selection
-                text += f'  ·  Auswahl: {x2-x1} × {y2-y1} px  ·  Eingabe zum Zuschneiden'
+                text += f'  ·  Auswahl: {x2-x1} × {y2-y1} px  ·  Strg+Y zum Zuschneiden'
             elif self.crop_toggle.get_active():
                 text += '  ·  Mit der Maus einen Ausschnitt aufziehen'
+            if getattr(self,'zoom_locked',False): text += '  ·  Zoom gesperrt'
+            if str(self.model.source_path) in getattr(self,'tags',set()): text += '  ·  Markiert'
             self.status.set_text(text)
+            if hasattr(self,'fullscreen_label'): self.fullscreen_label.set_text(self.model.path.name+'  ·  '+text)
         if hasattr(self,'zoom_label'):
             self.zoom_label.set_label(f'{self.scale*100:.0f} %')
         return False
@@ -357,21 +365,23 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         if not self.pixbuf:
             return
         iw, ih = self.model.image.size
-        if self.fit:
-            scale = min(max(1,width-8)/iw, max(1,height-8)/ih, float('inf') if self.fit_upscale else 1.0)
-            if abs(scale-self.scale) > .0001:
-                self.scale = scale
+        mode=getattr(self,'view_mode','window')
+        if self.fit or mode in ('width','height'):
+            sx,sy=display_scales((iw,ih),(self.scroll.get_width(),self.scroll.get_height()),mode,self.fit_upscale)
+            if abs(sx-self.scale)>.0001 or abs(sy-self.scale_y)>.0001:
+                self.scale,self.scale_y=sx,sy
                 GLib.idle_add(self.update_status)
-        self.origin = (max(0, (width-iw*self.scale)/2), max(0, (height-ih*self.scale)/2))
+                if not self.fit: GLib.idle_add(self.resize_canvas)
+        self.origin = (max(0, (width-iw*self.scale)/2), max(0, (height-ih*self.scale_y)/2))
         ox, oy = self.origin
         cr.save()
-        cr.rectangle(ox, oy, iw*self.scale, ih*self.scale)
+        cr.rectangle(ox, oy, iw*self.scale, ih*self.scale_y)
         cr.clip()
         # A checkerboard makes transparency visible.
         cr.set_source(self.checker)
         cr.paint()
         cr.translate(ox, oy)
-        cr.scale(self.scale, self.scale)
+        cr.scale(self.scale, self.scale_y)
         shown = self.preview_pixbuf or self.pixbuf
         cr.scale(iw/shown.get_width(),ih/shown.get_height())
         Gdk.cairo_set_source_pixbuf(cr, shown, 0, 0)
@@ -379,7 +389,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         cr.restore()
         if self.selection:
             x1,y1,x2,y2 = self.selection
-            cr.rectangle(ox+x1*self.scale, oy+y1*self.scale, (x2-x1)*self.scale, (y2-y1)*self.scale)
+            cr.rectangle(ox+x1*self.scale, oy+y1*self.scale_y, (x2-x1)*self.scale, (y2-y1)*self.scale_y)
             cr.set_source_rgba(1, 1, 1, .25)
             cr.fill_preserve()
             cr.set_source_rgb(.15, .15, .15)
@@ -387,7 +397,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
             cr.stroke()
 
     def to_image(self, x, y):
-        return ((x-self.origin[0])/self.scale, (y-self.origin[1])/self.scale)
+        return ((x-self.origin[0])/self.scale, (y-self.origin[1])/self.scale_y)
 
     def begin_drag(self, gesture, x, y):
         self.drag_start = None
@@ -464,45 +474,38 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
     def zoom(self, factor):
         if self.model.image:
             self.fit = False
+            self.view_mode = 'manual'
             self.scale = max(.02, min(8, self.scale*factor))
+            self.scale_y = self.scale
             self.refresh()
 
     def fit_image(self):
+        self.view_mode = 'window'
         self.fit = True
         self.refresh()
 
     def actual_size(self):
+        self.view_mode = 'actual'
         self.fit = False
-        self.scale = 1
+        self.scale_y = self.scale = 1
         self.refresh()
 
-    def key_pressed(self, _controller, key, _code, modifiers):
-        if self.busy:
+    def key_pressed(self, controller, key, code, modifiers):
+        if self.busy or self.dialogs:
             return False
         focus = self.get_focus()
         while focus is not None:
-            if isinstance(focus,(Gtk.Editable,Gtk.Scale,Gtk.SpinButton)):
+            if isinstance(focus,(Gtk.Editable,Gtk.TextView,Gtk.Scale,Gtk.SpinButton,Gtk.DropDown)):
+                return False
+            if isinstance(focus,(Gtk.Button,Gtk.CheckButton,Gtk.Switch)) and key in (Gdk.KEY_space,Gdk.KEY_Return,Gdk.KEY_KP_Enter):
                 return False
             focus = focus.get_parent()
-        if self.extra_key(key,modifiers):
-            return True
-        ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
-        if ctrl:
-            actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:lambda:self.save_current() if self.model.image else None, Gdk.KEY_z:self.undo, Gdk.KEY_v:self.paste_image,
-                       Gdk.KEY_c:lambda:self.copy_image() if self.model.image else None}
-        else:
-            actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:lambda:self.save_dialog() if self.model.image else None,
-                       Gdk.KEY_i:self.show_info,
-                       Gdk.KEY_d:self.clear_image, Gdk.KEY_plus:lambda:self.zoom(1.25), Gdk.KEY_equal:lambda:self.zoom(1.25),
-                       Gdk.KEY_minus:lambda:self.zoom(.8), Gdk.KEY_1:self.actual_size,
-                       Gdk.KEY_f:self.fit_image, Gdk.KEY_r:lambda:self.rotate(True),
-                       Gdk.KEY_Return:self.apply_crop,
-                       Gdk.KEY_Escape:lambda:self.crop_toggle.set_active(False)}
-        action = actions.get(Gdk.keyval_to_lower(key))
-        if action:
-            action()
-            return True
-        return False
+        # Translate number-row shortcuts without Shift using the actual keyboard layout.
+        if controller and code and modifiers & Gdk.ModifierType.CONTROL_MASK and modifiers & Gdk.ModifierType.SHIFT_MASK:
+            event=controller.get_current_event()
+            translated=self.get_display().translate_key(code,modifiers & ~Gdk.ModifierType.SHIFT_MASK,event.get_layout() if event else 0)
+            if translated[0] and Gdk.KEY_1<=translated[1]<=Gdk.KEY_9: key=translated[1]
+        return self.extra_key(key,modifiers)
 
 
 def main():

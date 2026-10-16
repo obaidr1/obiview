@@ -42,13 +42,10 @@ class AdvancedFeatures:
         self.connect('destroy', self.cleanup)
         self.menu_model, self.actions = build_menus(self)
         self.menu_bar = Gtk.PopoverMenuBar.new_from_model(self.menu_model)
-        self.get_application().set_accels_for_action('win.resize',[RESIZE_ACCELERATOR])
-        self.get_application().set_accels_for_action('win.save-as',['<Primary><Shift>s'])
-        self.get_application().set_accels_for_action('win.save-current',['<Primary>s'])
         self.previous = icon_button('go-previous-symbolic','Vorheriges Bild (Pfeil links)',lambda:self.navigate(-1))
         self.next_button = icon_button('go-next-symbolic','Nächstes Bild (Pfeil rechts)',lambda:self.navigate(1))
-        self.page_previous = icon_button('go-up-symbolic','Vorherige Seite (Bild auf)',lambda:self.change_frame(-1))
-        self.page_next = icon_button('go-down-symbolic','Nächste Seite (Bild ab)',lambda:self.change_frame(1))
+        self.page_previous = icon_button('go-up-symbolic','Vorherige Seite (Strg+Bild auf)',lambda:self.change_frame(-1))
+        self.page_next = icon_button('go-down-symbolic','Nächste Seite (Strg+Bild ab)',lambda:self.change_frame(1))
         for button in (self.previous,self.next_button,self.page_previous,self.page_next):
             toolbar.append(button)
         self.position_label = Gtk.Label(label='0 / 0',width_chars=7)
@@ -88,6 +85,7 @@ class AdvancedFeatures:
             GLib.source_remove(self.preview_timer)
             self.preview_timer = 0
         self.stop_slideshow()
+        if getattr(self,'cursor_timer',0): GLib.source_remove(self.cursor_timer); self.cursor_timer=0
         self.thumb_generation += 1
         if self.batch_cancel:
             self.batch_cancel.set()
@@ -161,10 +159,13 @@ class AdvancedFeatures:
     def adopt_model(self, model):
         self.reset_preview()
         self.model = model
-        self.fit = True
+        if not getattr(self,'zoom_locked',False):
+            if not self.full: self.view_mode='window'; self.fit=True
+        else: self.view_mode='manual'; self.fit=False; self.scale_y=self.scale
         self.selection = None
         self.crop_toggle.set_active(False)
         self.refresh(True)
+        self.canvas.grab_focus()
         if model.source_path and self.folder != model.source_path.parent:
             self.set_folder(model.source_path.parent)
 
@@ -269,7 +270,7 @@ class AdvancedFeatures:
             self.thumbnails.remove(child)
             child = self.thumbnails.get_first_child()
         query = self.search.get_text().casefold()
-        matches = [p for p in self.folder_files if query in p.name.casefold()]
+        matches = [p for p in self.folder_files if query in p.name.casefold() and (not self.tag_filter.get_active() or str(p) in self.tags)]
         self.more_thumbs.set_visible(len(matches)>self.thumb_limit)
         if not self.sidebar.get_visible():
             return
@@ -277,7 +278,7 @@ class AdvancedFeatures:
         for path in matches[:self.thumb_limit]:
             box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=3)
             picture = Gtk.Picture(width_request=160,height_request=105,can_shrink=True)
-            label = Gtk.Label(label=path.name,max_width_chars=24,ellipsize=Pango.EllipsizeMode.MIDDLE)
+            label = Gtk.Label(label=('★ ' if str(path) in self.tags else '')+path.name,max_width_chars=24,ellipsize=Pango.EllipsizeMode.MIDDLE)
             box.append(picture)
             box.append(label)
             button = Gtk.Button(tooltip_text=str(path))
@@ -321,12 +322,13 @@ class AdvancedFeatures:
             self.thumbnail_window = None
             return False
         self.thumbnail_window.connect('close-request',close)
+        keys=Gtk.EventControllerKey(); keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        keys.connect('key-pressed',self.thumbnail_key); self.thumbnail_window.add_controller(keys)
         self.thumbnail_window.present()
         self.rebuild_thumbnails()
 
     def toggle_fullscreen(self):
-        self.full = not self.full
-        self.fullscreen() if self.full else self.unfullscreen()
+        self.leave_fullscreen() if self.full else self.enter_fullscreen()
 
     def stop_slideshow(self):
         if self.slide_source:
@@ -561,56 +563,5 @@ class AdvancedFeatures:
                     lambda e:(dialog.destroy(),setattr(self,'batch_cancel',None),self.message('Stapelverarbeitung fehlgeschlagen',str(e))))
 
     def extra_key(self, key, modifiers):
-        ctrl = modifiers & Gdk.ModifierType.CONTROL_MASK
-        key = Gdk.keyval_to_lower(key)
-        shift = modifiers & Gdk.ModifierType.SHIFT_MASK
-        if ctrl and shift and key==Gdk.KEY_s:
-            if self.model.image: self.save_dialog()
-        elif ctrl and key==Gdk.KEY_a:
-            if self.model.image: self.select_all()
-        elif ctrl and key==Gdk.KEY_x:
-            if self.model.image: self.cut_selection()
-        elif ctrl and key==Gdk.KEY_f:
-            self.search_files()
-        elif ctrl and key==Gdk.KEY_t:
-            if self.model.image: self.text_dialog()
-        elif ctrl and key==Gdk.KEY_n:
-            self.new_window()
-        elif shift and not ctrl and key==Gdk.KEY_c:
-            if self.model.image: self.selection_dialog()
-        elif shift and not ctrl and key==Gdk.KEY_r:
-            self.reopen()
-        elif key==Gdk.KEY_F2:
-            if self.model.image: self.file_action('rename')
-        elif key==Gdk.KEY_F12:
-            if self.model.image: self.paint_dialog()
-        elif shift and key in (Gdk.KEY_Left,Gdk.KEY_Right,Gdk.KEY_Up,Gdk.KEY_Down) and self.selection:
-            from image_tools import selection_drag
-            delta={Gdk.KEY_Left:(-1,0),Gdk.KEY_Right:(1,0),Gdk.KEY_Up:(0,-1),Gdk.KEY_Down:(0,1)}[key]
-            self.selection=selection_drag(self.selection,(0,0),delta,self.model.image.size,'move'); self.refresh()
-        elif ctrl and key == Gdk.KEY_r:
-            self.resize_dialog()
-        elif ctrl and key == Gdk.KEY_y:
-            self.apply_crop()
-        elif ctrl and key == Gdk.KEY_z and modifiers & Gdk.ModifierType.SHIFT_MASK:
-            self.redo()
-        elif ctrl and key == Gdk.KEY_p:
-            if self.model.image:
-                self.print_image()
-        elif key == Gdk.KEY_F11:
-            self.toggle_fullscreen()
-        elif key == Gdk.KEY_F5:
-            self.toggle_slideshow()
-        elif key == Gdk.KEY_Escape:
-            self.stop_slideshow()
-            if self.full:
-                self.toggle_fullscreen()
-            else:
-                return False
-        elif key in (Gdk.KEY_Left,Gdk.KEY_Right):
-            self.navigate(-1 if key == Gdk.KEY_Left else 1)
-        elif key in (Gdk.KEY_Page_Up,Gdk.KEY_Page_Down):
-            self.change_frame(-1 if key == Gdk.KEY_Page_Up else 1)
-        else:
-            return False
-        return True
+        from shortcuts import dispatch
+        return dispatch(self,key,modifiers)
