@@ -2,7 +2,7 @@
 import os, sys, tempfile, traceback, time, base64
 from pathlib import Path
 from PIL import Image, ImageGrab
-from bildblick import Window, Gtk, Gio, GLib
+from bildblick import Window, Gtk, Gdk, Gio, GLib
 from dialog_layout import StandardDialog, module_window, dialog_size, children
 
 scratch=tempfile.TemporaryDirectory(prefix='bildblick-dialog-audit-')
@@ -15,7 +15,7 @@ failures=[]; cases=[]; index=0; current=None; phase=0; started=time.monotonic()
 def capture(name):
     output=Path('tests/screenshots'); output.mkdir(exist_ok=True)
     target=output/('audit-'+name+'.png'); ImageGrab.grab().save(target)
-    if os.environ.get('BILDBLICK_SCREENSHOT_LOG') and name in ('save_dialog','effects_dialog','paint_dialog','show_info','adjust_dialog'):
+    if os.environ.get('BILDBLICK_SCREENSHOT_LOG') and name in ('save_dialog','effects_dialog','paint_dialog','show_info','adjust_dialog','menu_0','menu_2'):
         print('SCREENSHOT audit-'+name+' '+base64.b64encode(target.read_bytes()).decode(),flush=True)
 
 def expanded(widget):
@@ -88,7 +88,10 @@ def activate(application):
     model=w.menu_bar.get_menu_model()
     def menu(i):
         popover=Gtk.PopoverMenu.new_from_model(model.get_item_link(i,'submenu'))
-        popover.set_parent(w.canvas);popover.popup();return popover
+        popover.set_parent(w.menu_bar)
+        anchor=Gdk.Rectangle(); anchor.x=8; anchor.y=0; anchor.width=1; anchor.height=w.menu_bar.get_height()
+        popover.set_pointing_to(anchor); popover.set_position(Gtk.PositionType.BOTTOM)
+        popover.set_has_arrow(False); popover.popup();return popover
     cases.extend(('menu_'+str(i),lambda i=i:menu(i)) for i in range(model.get_n_items()))
     def metadata():
         info=w.show_info(); child=info.show_metadata('exif')

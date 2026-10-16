@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.8.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.9.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -255,3 +255,11 @@ Der Zeichendialog stellt Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellip
 Die zentrale Tastaturbelegung steuert Dateiwechsel, kontextabhängiges Scrollen, 1–9-Dateisprünge, Markierungen, Fensterleisten und sechs Vollbildmodi. F1 öffnet eine durchsuchbare Hilfe aus derselben Liste. Einfache Tasten werden nicht als Bearbeitungsbefehle ausgewertet, während Textfelder oder Werkzeugdialoge bedient werden. Enter schaltet Vollbild, Strg+Y schneidet zu, F5 aktualisiert die Ansicht und F9 steuert die Diashow. Strg+R bleibt Größenänderung. Strg+S öffnet den Speicherdialog.
 
 Die lokale Designreferenz enthält alle benutzerseitigen Elementfamilien und verbindliche Muster. Ihre index.html bettet CSS, JavaScript und Symbole ein; zum Betrachten ist kein Server erforderlich. Neue Designmuster werden zuerst dort beschrieben und anschließend in der GTK-App umgesetzt.
+
+## Einheitliche Dialoggrößen in 0.9.0
+
+Alle eigenen Dialoge und Nebenfenster folgen dem Exportmuster mit 520 × 760 logischen Pixeln. Auf kleineren Bildschirmen reduziert sich die Größe einheitlich; lange Inhalte scrollen innerhalb der Oberfläche. Abschlussaktionen bleiben fest erreichbar. Die gemeinsame Größenquelle ist `design-system/tokens.json`.
+
+Bearbeitungsdialoge ordnen Vorschau und Optionen untereinander an. Bildinformationen, Metadaten, Zeichnen, Größenänderung, Export, Tastaturhilfe, Meldungen, Vorschaubilder, Histogramm und Medienmodul verwenden denselben Rahmen. Die sechs Menüs gruppieren ihre 88 Aktionen und zeigen verfügbare Kürzel rechts. Systemoberflächen für Datei-, Farb-, Schrift- und Druckerauswahl behalten ihre Linux-Gestaltung.
+
+Der [UI-Abgleich](docs/UI-AUDIT.md) dokumentiert alle betroffenen Module und die Prüfverfahren.

@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.8.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.9.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -81,14 +81,14 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.8.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.9.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.8.0-linux.tar.gz
-cd Bildblick-0.8.0
+tar -xzf Bildblick-0.9.0-linux.tar.gz
+cd Bildblick-0.9.0
 ./install.sh
 ```
 
@@ -412,7 +412,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.8.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.9.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag
@@ -434,3 +434,7 @@ Bildblick wird unter der [MIT-Lizenz](LICENSE) veröffentlicht. Das Eisvogel-Sym
 ## Verbindliche Designreferenz
 
 Die lokale [Designreferenz](design-system/index.html) zeigt alle vorhandenen Elementfamilien, ihre Zustände und vollständige Dialogmuster als offline nutzbare HTML/CSS/TypeScript-Website. [DESIGN.md](design-system/DESIGN.md) und [tokens.json](design-system/tokens.json) legen die Gestaltung für neue und überarbeitete App-Bereiche fest. Vor UI-Änderungen die projektweite [AGENTS.md](AGENTS.md) beachten. Start und Bearbeitung sind in [design-system/README.md](design-system/README.md) beschrieben.
+
+### Einheitliche Oberflächen
+
+Eigene Dialoge und Nebenfenster verwenden maximal **520 × 760 logische Pixel**. Bei geringerer Bildschirmgröße schrumpft dieser Rahmen; lange Inhalte scrollen, während die Abschlussbuttons sichtbar bleiben. Vorschau und Werkzeugoptionen stehen untereinander. Die Maße kommen aus denselben Tokens wie die [lokale Designreferenz](design-system/index.html). Der [vollständige UI-Abgleich](docs/UI-AUDIT.md) beschreibt die geprüften Module und die Ausnahmen für native Systemdialoge.
