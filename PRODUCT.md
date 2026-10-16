@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.7.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.8.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -248,3 +248,10 @@ Das Hauptfenster wächst beim manuellen Vergrößern mit dem Bild. Sobald die ve
 Die Taste **I** öffnet eine vollständige Datei- und Bildübersicht mit ursprünglichen und aktuellen Abmessungen/Farbtiefen, getrennten X-/Y-DPI, physischen Druckmaßen, abschaltbarer RGB-Farbzählung im Hintergrund, Dateigröße, aktuellem Pixel-Speicher, Ordnerposition, Datum und Ladezeit. EXIF, IPTC und Kommentare erscheinen in eigenen Leseansichten. DPI lassen sich ohne Neuberechnung der Pixel ändern und rückgängig machen. Unbekannte Quelldaten werden ausdrücklich gekennzeichnet.
 
 Der Zeichendialog stellt Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellipse als sechs direkt auswählbare, beschriftete Symbole dar. Breite, Farbe und Rücknahme bleiben direkt erreichbar. Der Pinsel trägt weich auslaufende Striche auf; Anwenden übernimmt die gesamte Zeichnung als einen Undo-Schritt.
+
+
+## Tastatur und Designreferenz in 0.8.0
+
+Die zentrale Tastaturbelegung steuert Dateiwechsel, kontextabhängiges Scrollen, 1–9-Dateisprünge, Markierungen, Fensterleisten und sechs Vollbildmodi. F1 öffnet eine durchsuchbare Hilfe aus derselben Liste. Einfache Tasten werden nicht als Bearbeitungsbefehle ausgewertet, während Textfelder oder Werkzeugdialoge bedient werden. Enter schaltet Vollbild, Strg+Y schneidet zu, F5 aktualisiert die Ansicht und F9 steuert die Diashow. Strg+R bleibt Größenänderung. Strg+S öffnet den Speicherdialog.
+
+Die lokale Designreferenz enthält alle benutzerseitigen Elementfamilien und verbindliche Muster. Ihre index.html bettet CSS, JavaScript und Symbole ein; zum Betrachten ist kein Server erforderlich. Neue Designmuster werden zuerst dort beschrieben und anschließend in der GTK-App umgesetzt.

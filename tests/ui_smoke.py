@@ -117,7 +117,7 @@ def tick(window):
             window.toggle_fullscreen()
             window.toggle_fullscreen()
         elif step == 8:
-            assert window.menu_model.get_n_items()==5
+            assert window.menu_model.get_n_items()==6
             window.extra_key(Gdk.KEY_r,Gdk.ModifierType.CONTROL_MASK)
             dialog = window.dialogs[-1]
             dialog.height.set_value(300)

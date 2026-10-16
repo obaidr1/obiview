@@ -1,8 +1,8 @@
-# Prüfstand von Bildblick 0.7.0
+# Prüfstand von Bildblick 0.8.0
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 92 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 103 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
 - Physische Größen, DPI-Export mit erneutem Einlesen in JPEG/PNG/TIFF/BMP und DPI-Undo.
@@ -68,3 +68,12 @@ Der native GTK-Test prüft neun weitere Bearbeitungsdialoge durch direkte Änder
 Sechs zusätzliche Funktionstests prüfen Originaldaten nach Bearbeitung, tatsächliche EXIF-/IPTC-Lesedaten, unabhängige X-/Y-DPI mit Export-Rundreisen und Druckmaßen, fehlende Quelldaten, exakte RGB-Zählung einschließlich sehr breiter Bilder und Abbruch, Fenstergeometrie sowie weiche Pinselränder ohne Veränderung der Quelle.
 
 Der GTK-Test öffnet die Bildinformationen über I, kontrolliert Felder, DPI-Änderung ohne neue Pixel, Farbzählung, alle drei Metadaten-Leseansichten und Rückgängig. Er prüft reales Fensterwachstum bei 100 % und weiterem Zoom, Maximierung an der Bildschirmgrenze, unveränderten Zoom und Scrollbarkeit nach Erreichen dieser Grenze. Die sechs Zeichen-Symbole, weiche Pinselstriche, Anwenden und Rückgängig werden geprüft. Screenshots der Informationsübersicht, Zeichenwerkzeuge und vergrößerten Fenster wurden visuell kontrolliert. Diese Fensterprüfung verwendet X11/Openbox; eine tatsächliche Wayland-/Mehrmonitor-/HiDPI-Prüfung bleibt offen.
+
+
+## Tastaturbelegung und Designreferenz ab 0.8.0
+
+Elf zusätzliche Funktionstests prüfen die vollständige Aktionszuordnung, genaue Modifikator-Kombinationen, kollidierende Altbelegungen, leere Dokumente, Vollbildkontext, Dateisprünge, reale Scroll-Adjustments, sechs Skalierungsarten, persistente Markierungen, Zoomsperre, Auswahlwechsel, isolierte Bildkopien und Direktdruck-Weiterleitung ohne reale Druckausgabe.
+
+Der erweiterte GTK-Test prüft Vollbildwechsel über Enter/Escape, Strecken/Breite/Höhe, Maus- und Bildtextanzeige, Leisten, Scrollen ohne Dateisprung, Zoomsperre über einen Ladevorgang, Markierungen und Filter, Tastaturhilfe, Dateinamen-Zwischenablage und Strg+S-Speicherdialog. Die Monitorüberspannung wird als GDK-Anforderung geprüft; ein tatsächliches Mehrmonitor-/Wayland-Setup bleibt ungeprüft.
+
+Die Designreferenz wurde als alleinstehende HTML-Datei in einem fremden Ordner geprüft. Ihre 13 Browserprüfungen bestehen bei 1440 px und 390 px Breite; Screenshots wurden kontrolliert. CSS und JavaScript sind eingebettet. Ein vollständiger TypeScript-Typcheck und eine Screenreader-Abnahme bleiben offen.

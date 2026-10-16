@@ -1,6 +1,6 @@
 # Menü- und Funktionsübersicht
 
-Stand: Bildblick 0.7.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die Hauptansicht startet mit 720 × 640 Pixeln und wächst beim manuellen Zoom bis zur verfügbaren Bildschirmfläche; Werkzeuge öffnen eigene Dialoge.
+Stand: Bildblick 0.8.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die Hauptansicht startet mit 720 × 640 Pixeln und wächst beim manuellen Zoom bis zur verfügbaren Bildschirmfläche; Werkzeuge öffnen eigene Dialoge.
 
 ## Datei
 
@@ -99,7 +99,7 @@ Die native CLI bietet die mit `python3 cli.py --help` aufgeführten Optionen. Ei
 
 ## Prüfung
 
-92 lokale automatisierte Tests prüfen Pixeloperationen, Metadaten, DPI-Rundreisen, Auswahlgeometrie, Druckmaße, Schrift-/Zeichenoperationen, Exporte, Controller und Decoder. Der GTK-Integrationstest prüft unter anderem Fenstergröße, Menüs, Tastenkürzel, Vorschau, physische Größenänderung, Zwischenablage, Dialoge und Druck als PDF. Reale Scanner und Drucker, distributionsabhängige Mediencodecs sowie eine vollständige Screenreader-Abnahme benötigen zusätzliche manuelle Prüfung.
+103 lokale automatisierte Tests prüfen Pixeloperationen, Metadaten, DPI-Rundreisen, Auswahlgeometrie, Druckmaße, Schrift-/Zeichenoperationen, Exporte, Controller und Decoder. Der GTK-Integrationstest prüft unter anderem Fenstergröße, Menüs, Tastenkürzel, Vorschau, physische Größenänderung, Zwischenablage, Dialoge und Druck als PDF. Reale Scanner und Drucker, distributionsabhängige Mediencodecs sowie eine vollständige Screenreader-Abnahme benötigen zusätzliche manuelle Prüfung.
 
 ## Gemeinsame Bedienung der Werkzeuge
 
