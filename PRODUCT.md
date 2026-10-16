@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.5.1 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.6.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -233,3 +233,9 @@ Die aktuelle, funktionsweise Menüübersicht steht in [docs/FEATURES.md](docs/FE
 ## Effekte mit direkter Vorschau
 
 Der separate Effekte-Dialog bietet zehn direkt anklickbare Effekte, eine große Bildvorschau und einen Originalvergleich. Jeder Effekt besitzt einen Intensitätsregler von 0 bis 100 Prozent. Zusätzliche Regler werden passend zum ausgewählten Effekt angezeigt; Einstellungen bleiben beim Wechsel erhalten. Zurücksetzen betrifft den ausgewählten Effekt. Abbrechen ändert weder Bild noch Historie; Anwenden verarbeitet die Originalauflösung und erzeugt einen rückgängig machbaren Bearbeitungsschritt. Die Vorschau nutzt höchstens 1200 × 1200 Pixel und kennzeichnet ihre verkleinerte Darstellung.
+
+## Einheitliche Werkzeugdialoge in 0.6.0
+
+Die Bearbeitungswerkzeuge teilen ein gemeinsames Bedienkonzept: Bildvorschau links, Einstellungen rechts, Originalvergleich, Zurücksetzen und ausdrückliches Anwenden oder Abbrechen. Das gilt für Helligkeit/Kontrast/Farbe, Schärfen/Weichzeichnen, freie Drehung, Rahmen, Rote Augen, Palette, Farbkanaltausch, automatischen Zuschnitt, Leinwand und Text. Neue Werkzeugvorschauen verarbeiten die Originalpixel in einem Hintergrundauftrag, bevor das Ergebnis für die Anzeige verkleinert wird. Ein Auftrag läuft pro Dialog; veraltete oder nach dem Schließen eintreffende Ergebnisse werden verworfen.
+
+Visuelle Parameter erhalten Slider. Exakte Maße, Positionen, DPI und Dateinamen behalten passende Eingabefelder. Rahmenstile, Kanalanordnungen, Zeichenwerkzeuge, Einheiten, Interpolation, Größenvorgaben, Auswahlverhältnisse, Druckmodi und Exportformate sind direkt anklickbar. Bei Rahmen- und Strichbreiten steht zusätzlich eine genaue Zahleneingabe bereit. Fehler in einer Vorschau ändern die Arbeitsdatei nicht; nach Korrektur der Eingabe kann weitergearbeitet werden.

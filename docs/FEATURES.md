@@ -1,6 +1,6 @@
 # Menü- und Funktionsübersicht
 
-Stand: Bildblick 0.5.1. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die kompakte Hauptansicht bleibt bei 720 × 640 Pixeln; Werkzeuge öffnen eigene Dialoge.
+Stand: Bildblick 0.6.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die kompakte Hauptansicht bleibt bei 720 × 640 Pixeln; Werkzeuge öffnen eigene Dialoge.
 
 ## Datei
 
@@ -65,8 +65,8 @@ Kanten und Ecken sind mit links veränderbar, der Rahmen mit rechts verschiebbar
 | Horizontal spiegeln / Vertikal spiegeln | Ganze Bildfläche spiegeln |
 | Graustufen / Negativ / Automatischer Kontrast | Direkte, rückgängig machbare Farboperationen |
 | Bildanpassungen | Vorschau mit vier Looks und 14 Reglern, darunter Gamma und RGB-Balance |
-| Helligkeit / Kontrast / Farbe als Werte | Numerische Prozentwerte für die drei Grundanpassungen |
-| Schärfen / Weichzeichnen | Schärfe und Gauß-Radius einstellen |
+| Helligkeit / Kontrast / Farbe | Breite Slider, Live-Vorschau und Originalvergleich für die drei Grundanpassungen |
+| Schärfen / Weichzeichnen | Schärfe und Gauß-Radius per Slider mit Live-Vorschau |
 | Text einfügen | Schriftfamilie, Stil, Punktgröße und Farbe; Umbruch innerhalb der Auswahl |
 | Wasserzeichen | Bild unten rechts mit halber Deckkraft und begrenzter Größe einsetzen |
 | Bildinformationen | Abmessungen, Seiten-/Framezahl und gelesene Metadaten |
@@ -100,3 +100,7 @@ Die native CLI bietet die mit `python3 cli.py --help` aufgeführten Optionen. Ei
 ## Prüfung
 
 82 lokale automatisierte Tests prüfen Pixeloperationen, Metadaten, DPI-Rundreisen, Auswahlgeometrie, Druckmaße, Schrift-/Zeichenoperationen, Exporte, Controller und Decoder. Der GTK-Integrationstest prüft unter anderem Fenstergröße, Menüs, Tastenkürzel, Vorschau, physische Größenänderung, Zwischenablage, Dialoge und Druck als PDF. Reale Scanner und Drucker, distributionsabhängige Mediencodecs sowie eine vollständige Screenreader-Abnahme benötigen zusätzliche manuelle Prüfung.
+
+## Gemeinsame Bedienung der Werkzeuge
+
+Freie Drehung, Rahmen, Rote Augen, Farbanzahl, Farbkanäle, automatischer Zuschnitt, Leinwand und Text verwenden ebenso wie Helligkeit/Kontrast und Schärfen einen eigenen Dialog mit Live-Vorschau, Originalvergleich und Zurücksetzen. Anwenden erzeugt einen Undo-Schritt, Abbrechen lässt Bild und Historie unverändert. Visuelle Stärkeparameter haben Slider; exakte Abmessungen und Positionen bleiben Zahleneingaben. Auswahloptionen stehen als Schaltflächen bereit, darunter Zeichenwerkzeuge, Interpolation, Einheiten, Größenvorgaben, Druckmodi und Exportformate.

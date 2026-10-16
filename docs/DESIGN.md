@@ -46,3 +46,9 @@ weitere Werkzeuge bleiben separate Dialoge im gemeinsamen hellen Design.
 X11-Sitzung mit Xvfb/Openbox. Screenshots dienen zur Prüfung von Proportionen, Dialogen
 und kompaktem Fenster. Die Modelltests prüfen die tatsächlichen Ausgabepixel und
 Metadaten. Die verbleibenden Grenzen sind in [VALIDATION.md](VALIDATION.md) dokumentiert.
+
+## Direkte Auswahl und Slider
+
+Werkzeugvarianten stehen als gruppierte Schaltflächen in abgerundeten Karten bereit. Die aktive Variante ist schwarz markiert. Visuelle Parameter verwenden breite Slider mit sichtbaren Werten; exakte Pixelbreiten können eine zusätzliche Zahleneingabe erhalten. Geometrische Maße und Dateinamen behalten ihre geeigneten Eingaben.
+
+Die gemeinsamen Bearbeitungsdialoge starten mit 860 × 700 Pixeln. Links stehen die Bildvorschau und ein Originalvergleich, rechts die Einstellungen mit Zurücksetzen. Die rechte Spalte scrollt, wenn ein Werkzeug mehr Optionen benötigt. Anwenden und Abbrechen bleiben am unteren Fensterrand erreichbar. Vorschauen sind vom Arbeitsbild getrennt und werden bei Änderungen zeitverzögert im Hintergrund neu berechnet.

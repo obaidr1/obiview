@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.5.1 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.6.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -81,14 +81,14 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.5.1-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.6.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.5.1-linux.tar.gz
-cd Bildblick-0.5.1
+tar -xzf Bildblick-0.6.0-linux.tar.gz
+cd Bildblick-0.6.0
 ./install.sh
 ```
 
@@ -131,6 +131,12 @@ Nach einer Aktualisierung eine laufende Instanz schließen und Bildblick erneut 
 Zur Deinstallation die oben genannten Anwendungsdateien, den Starter, Menüeintrag und das Symbol entfernen. Exportprofile können separat aufbewahrt werden. Eigene Bilddateien liegen außerhalb der Installation.
 
 ## Oberfläche und Bildanpassungen
+
+**Einheitliche Bearbeitungsdialoge:** Helligkeit/Kontrast/Farbe, Schärfen/Weichzeichnen, freie Drehung, Rahmen, Rote Augen, Farbreduktion, Farbkanaltausch, automatischer Zuschnitt, Leinwand und Text bieten eine große Live-Vorschau mit Originalvergleich, Zurücksetzen, Anwenden und Abbrechen. Stärke, Kontrast, Sättigung, Schärfe, Winkel, Toleranz und Farbanzahl werden mit Slidern eingestellt. Rahmenstile, Farbkanal-Reihenfolgen und Zeichenwerkzeuge stehen als direkte Schaltflächen bereit. Änderungen werden erst beim Anwenden als ein Undo-Schritt übernommen.
+
+Bei Rahmen- und Strichbreiten ergänzt eine genaue Zahleneingabe den Slider. Bildmaße, DPI, Positionen und Dateinamen bleiben präzise Eingabefelder. Einheiten, Interpolation, Größenvorgaben, Auswahlverhältnisse, Druckmodi und weitere Exportformate sind direkt anklickbar. PNG-Kompression und die Qualität in Export- und Stapeloptionen verwenden ebenfalls Regler.
+
+Die neuen Werkzeugvorschauen werden im Hintergrund aus den Originalpixeln berechnet und anschließend für die Anzeige verkleinert. Bei großen Bildern kann die Berechnung länger dauern. Ein Klick auf Anwenden während der Berechnung wartet auf die aktuelle, gültige Vorschau; Abbrechen bleibt möglich. Veraltete Ergebnisse werden verworfen. Der bestehende Effekte-Dialog und die Bildanpassungen nutzen weiterhin verkleinerte Arbeitsvorschauen.
 
 Bildblick verwendet eine helle, monochrome Oberfläche mit abgerundeten Karten und schwarzen Hauptaktionen. Das Hauptfenster startet mit **720 × 640 Pixeln**. Eine sichtbare Menüleiste und eine einzelne kompakte Symbolleiste stehen oberhalb der Bildfläche; die Statuszeile liegt unten. Öffnen, Speichern, Ausschnitt, Historie, Bildinformationen, Zoom, Navigation, Größenänderung und Bildanpassungen sind direkt erreichbar. Die Bildfläche enthält keine schwebenden Bedienelemente oder Bearbeitungsleiste.
 
@@ -358,7 +364,7 @@ Aktuelle Grenzen:
 | Datei/Ordner | Aufgabe |
 | --- | --- |
 | `bildblick.py` | Fenster, Zeichenfläche, Öffnen/Speichern und Eingabe |
-| `editor_ui.py`, `ui_theme.py`, `adjustments.py` | Gestaltung, Bearbeitungsleiste und Bildanpassungen |
+| `editor_ui.py`, `ui_theme.py`, `adjustments.py`, `edit_controls.py` | Gestaltung, Slider, direkte Auswahl und Bildanpassungen |
 | `advanced_ui.py`, `menus.py` | Menüaktionen, Navigation, Dialoge und Hintergrundaufträge |
 | `image_tools.py`, `tool_dialogs.py`, `file_tools_ui.py`, `paint_dialog.py` | Auswahl, Pixelwerkzeuge, DPI/Druck, Dateiaktionen, Zeichnen und optionale Systemanbindung |
 | `image_model.py` | Bildzustand, Bearbeitung, Undo/Redo und Seitenexport |
@@ -393,7 +399,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.5.1-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.6.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag

@@ -1,4 +1,4 @@
-# Prüfstand von Bildblick 0.5.1
+# Prüfstand von Bildblick 0.6.0
 
 ## Automatisch geprüft
 
@@ -57,3 +57,7 @@ weiterhin mit Exit-Code 77 statt einen Erfolg vorzutäuschen.
 ## Noch nicht bestätigt
 
 Noch ausstehend sind eine Prüfung in der konkreten Wayland-Sitzung des Nutzers, vollständige Maus-/Tastaturabläufe, Screenreader- und HiDPI-Tests sowie reale Druck-/Scanausgaben und Mediencodec-Varianten. Die Veröffentlichung ist deshalb als frühe Vorabversion vorgesehen.
+
+## Werkzeugdialoge ab 0.6.0
+
+Der native GTK-Test prüft neun weitere Bearbeitungsdialoge durch direkte Änderung ihrer Bedienelemente. Die resultierenden Vorschaubilder und angewendeten Bildpixel werden mit den erwarteten Operationen verglichen. Geprüft werden außerdem Sliderwerte, gekoppelte genaue Eingaben, direkte Variantenwahl, Originalvergleich, Zurücksetzen, unverändertes Arbeitsbild vor Anwenden und nach Abbrechen sowie genau ein Undo-Schritt. Ein zusätzlicher Test verwirft veraltete und nach dem Schließen eintreffende Ergebnisse. Eine ungültige Leinwandgröße blockiert Anwenden; eine korrigierte Eingabe stellt die Vorschau wieder her. Text und neue Zeichen-/Resize-Bedienelemente sind Teil des bestehenden GTK-Ablaufs.
