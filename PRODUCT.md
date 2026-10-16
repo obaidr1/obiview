@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.9.2 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.10.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -171,7 +171,7 @@ Tastaturbedienung ist Teil des Bedienkonzepts. Ein systematischer Accessibility-
 
 ## Qualität und Abnahme
 
-Der aktuelle automatische Prüfstand umfasst 82 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
+Der aktuelle automatische Prüfstand umfasst 110 erfolgreiche Tests auf dem Referenzsystem. Sie prüfen unter anderem echte Kodierergebnisse, Pixelzustände, Undo/Redo, Namenskollisionen, Profilpersistenz und native Decoder.
 
 Der grafische Integrationstest läuft erfolgreich in einer Fedora-44-Sitzung mit Xvfb und Openbox in GitHub Actions. Er deckt Navigation, Bildoperationen, Menüs, Strg+R, Speicherdialog, Vorschau, Übernahme und verkleinerten Export ab. Screenshots prüfen die Anordnung und ein kompaktes Fenster. Lokal bleibt der Display-Zugriff eingeschränkt; Status 77 bedeutet dort „nicht ausgeführt“.
 
@@ -265,3 +265,8 @@ Bearbeitungsdialoge ordnen Vorschau und Optionen untereinander an. Bildinformati
 Der [UI-Abgleich](docs/UI-AUDIT.md) dokumentiert alle betroffenen Module und die Prüfverfahren.
 
 Kurze Meldungen und Sicherheitsabfragen sind ab 0.9.2 inhaltshoch. Ungespeicherte Änderungen bieten Speichern, Verwerfen und Abbrechen; eine nachfolgende Aktion wartet auf erfolgreiches Speichern in voller Auflösung.
+
+
+## Klarere Bedienung in 0.10.0
+
+Auswahlzustände unterscheiden sich von Abschlussaktionen. Gemeinsame GTK-Rollenfarben, Schriftgrößen und Radien stammen aus der Designreferenz. Dateiname und Zielordner stehen im Export offen vor den Formateinstellungen. Bildinformationen gliedern sich in Datei, Abmessungen/Druck, Farben sowie Speicher/Anzeige. Regler bilden klar getrennte Gruppen; leere Suchergebnisse bieten einen Weg zurück. Der weitere Plan ist in `redesign.md` dokumentiert.

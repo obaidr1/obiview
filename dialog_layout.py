@@ -46,7 +46,14 @@ def normalize(widget):
         widget.set_propagate_natural_height(True)
         widget.set_min_content_height(-1)
         widget.set_size_request(-1, -1)
-    for child in children(widget):
+    nested = list(children(widget))
+    # Collapsed expanders keep their child unparented. Style it before the first
+    # expansion too, so advanced fields obey the same layout as visible ones.
+    if isinstance(widget, Gtk.Expander):
+        child = widget.get_child()
+        if child is not None and child not in nested:
+            nested.append(child)
+    for child in nested:
         normalize(child)
 
 

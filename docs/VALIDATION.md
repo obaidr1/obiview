@@ -1,4 +1,4 @@
-# Prüfstand von Bildblick 0.9.2
+# Prüfstand von Bildblick 0.10.0
 
 ## Automatisch geprüft
 
@@ -80,3 +80,12 @@ Die Designreferenz wurde als alleinstehende HTML-Datei in einem fremden Ordner g
 ## Einheitliche Dialoge
 
 Der vollständige Abgleich, die erfassten Module und die Systemgrenze stehen in [UI-AUDIT.md](UI-AUDIT.md). Die gerenderten Größen und Inhalte werden durch `tests/ui_dialog_audit.py` zusätzlich zum funktionalen Integrationstest geprüft.
+
+
+## Redesign, erster Durchgang (0.10.0)
+
+110 lokale Kern-/Kontrasttests und 17 Browserprüfungen (1440 × 1200 sowie 390 × 1600) bestanden. Die Farbtests prüfen Textrollen gegen vier Inhaltsflächen sowie Eingabe-/Auswahlkonturen. Das ist keine vollständige Barrierefreiheitszertifizierung.
+
+Die native Pipeline prüft zusätzlich Auswahlmarker, sichtbares Speicherziel ohne Expander, vier vollständige Informationsgruppen, rechtsbündige Zahlenfelder, vollständiges Einpassen von Vorschauen, Rückgängig ohne Zeichenstrich und die Rückkehr aus leeren Suchergebnissen. Dialoggeometrie und alle bisherigen Speicher-/Bearbeitungs-/Tastaturabläufe bleiben im Prüfumfang. Veröffentlichung und lokale Installation erfolgen erst nach erfolgreicher nativer Prüfung.
+
+Die Buch-PDF bleibt außerhalb des Pakets. Die selbst verfassten Erkenntnisse und der priorisierte Plan liegen als `knowlede.md` und `redesign.md` auch im installierten App-Verzeichnis.

@@ -104,3 +104,7 @@ input[type=number], output { text-align: right; font-variant-numeric: tabular-nu
 input[aria-invalid=true] { border-color: var(--color-error) !important; }
 
 .choice { border-color: transparent; }
+.info-groups > section { background: var(--color-card); border-radius: var(--radius-card); padding: 16px; }
+.info-groups .data-list { font-size: var(--text-body); }
+.info-groups .data-list > div { grid-template-columns: 1fr; gap: var(--field-gap); }
+.info-groups dt { font-size: var(--text-small); }

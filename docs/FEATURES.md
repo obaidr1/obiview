@@ -1,6 +1,6 @@
 # Menü- und Funktionsübersicht
 
-Stand: Bildblick 0.9.2. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die Hauptansicht startet mit 720 × 640 Pixeln und wächst beim manuellen Zoom bis zur verfügbaren Bildschirmfläche; Werkzeuge öffnen eigene Dialoge.
+Stand: Bildblick 0.10.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die Hauptansicht startet mit 720 × 640 Pixeln und wächst beim manuellen Zoom bis zur verfügbaren Bildschirmfläche; Werkzeuge öffnen eigene Dialoge.
 
 ## Datei
 

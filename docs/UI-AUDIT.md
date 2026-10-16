@@ -43,3 +43,8 @@ Linux-Datei-/Ordnerauswahl, Farb- und Schriftwahl, Drucker-/Papierauswahl sowie 
 Ab 0.9.1 prüft der GTK-Funktionstest zusätzlich die kompakte Abfrage mit Speichern/Verwerfen/Abbrechen, Escape, Exportabbruch, Fortsetzung nach erfolgreichem Speichern und den Erhalt der Änderungen nach einem Schreibfehler.
 
 0.9.2 prüft zusätzlich, dass der gesamte Text der kurzen Speicherabfrage ohne Scrollen sichtbar ist.
+
+
+## Hierarchie und Aufgabenstruktur in 0.10.0
+
+Die vollständige neue Bestandsaufnahme steht in [redesign.md](../redesign.md), mit Verweisen auf die Designprinzipien in [knowlede.md](../knowlede.md). Erste Änderungen betreffen gemeinsame Auswahl-/Feldkomponenten, Exportziel, Bildinformationen, Vorschauflächen und Leerzustände. Die Geometrie bleibt unverändert. Die neuen Browserprüfungen ergänzen die bisherige Abnahme um markierte Auswahlzustände, offen sichtbare Exportziele und gegliederte Informationen.

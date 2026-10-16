@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.9.2 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.10.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -81,14 +81,14 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.9.2-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.10.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.9.2-linux.tar.gz
-cd Bildblick-0.9.2
+tar -xzf Bildblick-0.10.0-linux.tar.gz
+cd Bildblick-0.10.0
 ./install.sh
 ```
 
@@ -147,7 +147,7 @@ Bildblick verwendet eine helle, monochrome Oberfläche mit abgerundeten Karten u
 
 **Bild → Bildanpassungen** oder das Einstellungs-Symbol öffnet einen eigenen Dialog mit Bildvorschau, Looks und Reglern. Auch Vorschaubilder öffnen sich in einem separaten Fenster. Regler zeigen zunächst eine Vorschau. **Anwenden** übernimmt sie als rückgängig machbaren Bearbeitungsschritt; **Zurücksetzen** verwirft die Vorschau. Speichern und weitere Bildoperationen übernehmen offene Anpassungen vor ihrer Ausführung. Die Vorschau ist für schnelle Rückmeldung verkleinert; beim Anwenden wird das Bild in voller Auflösung verarbeitet. Das Histogramm basiert auf dem Vorschaubild und dient zur Orientierung.
 
-Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **Extras**. Die wichtigsten Aktionen besitzen Tastenkürzel; die Tabelle unten nennt die aktuelle Zuordnung. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
+Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht**, **Extras** und **Hilfe**. Die wichtigsten Aktionen besitzen Tastenkürzel; die Tabelle unten nennt die aktuelle Zuordnung. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
 
 ## Erste Schritte
 
@@ -412,7 +412,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.9.2-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.10.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag
@@ -440,3 +440,10 @@ Die lokale [Designreferenz](design-system/index.html) zeigt alle vorhandenen Ele
 Eigene Dialoge und Nebenfenster verwenden maximal **520 × 760 logische Pixel**. Bei geringerer Bildschirmgröße schrumpft dieser Rahmen; lange Inhalte scrollen, während die Abschlussbuttons sichtbar bleiben. Vorschau und Werkzeugoptionen stehen untereinander. Die Maße kommen aus denselben Tokens wie die [lokale Designreferenz](design-system/index.html). Der [vollständige UI-Abgleich](docs/UI-AUDIT.md) beschreibt die geprüften Module und die Ausnahmen für native Systemdialoge.
 
 Kurze Meldungen und die Abfrage bei ungespeicherten Änderungen bleiben kompakt. **Speichern**, **Verwerfen** und **Abbrechen** sind getrennte Aktionen. Ein abgebrochener oder fehlgeschlagener Speichervorgang verwirft keine Änderungen.
+
+
+## Designwissen und laufendes Redesign
+
+[knowlede.md](knowlede.md) fasst die Designprinzipien und ihre Anwendung auf Bildblick zusammen. [redesign.md](redesign.md) enthält die Bestandsaufnahme aller Oberflächenfamilien, den ersten Umsetzungsdurchgang und die noch offenen Schritte. Die [lokale HTML-Referenz](design-system/index.html) ist der verbindliche Komponentenvergleich.
+
+Version 0.10.0 verbessert die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten. Hauptfenster, Shortcuts und die kompakte Speicherabfrage bleiben erhalten.

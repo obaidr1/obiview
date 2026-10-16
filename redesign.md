@@ -34,15 +34,15 @@ Geprüft wurden die sechs Menümodelle, die gemeinsamen Komponenten und alle eig
 
 ## Erste Umsetzung: klar abgegrenzter Durchgang
 
-Statuslegende: offen → umgesetzt → geprüft. Ein Häkchen bedeutet implementiert und im beschriebenen Umfang geprüft.
+Statuslegende: offen → umgesetzt → geprüft. Ein Häkchen bedeutet implementiert; der genaue Prüfstand steht im Umsetzungsergebnis.
 
-- [ ] **R01 – Gemeinsame Gestaltung:** GTK nutzt zentrale Rollen-Tokens. Auswahlzustände sind hell und zusätzlich markiert; Texte/Fokus bleiben erkennbar. Keine reine Farbcodierung der Auswahl.
-- [ ] **R02 – Feldgruppen und Regler:** `ToolDialog`, Anpassungen und Resize nutzen eindeutige Abstände. Zahlen sind rechtsbündig. Fehler bei Größenangaben erhalten eine erkennbare Meldung.
-- [ ] **R03 – Speicherziel:** Dateiname und Ordner sind im Export ohne Aufklappen sichtbar. Bestehende Formate, Profile, Größenberechnung und sichere Speicherfortsetzung funktionieren weiter.
-- [ ] **R04 – Bildinformationen:** Alle vorhandenen Werte bleiben vorhanden und sind sinnvoll gruppiert. Beide DPI-Achsen sind sichtbar beschriftet.
-- [ ] **R05 – Vorschau:** Gemeinsamer neutraler Untergrund; vollständiges Bild bleibt sichtbar. Fehlerzustand wird auch sprachlich bezeichnet.
-- [ ] **R06 – Leere Listen und Werkzeuge:** Such-/Ordner-Leerzustand hat passende Aktionen; fehlende Vorschaubilder haben einen Hinweis. Zeichnen-Rückgängig ist ohne Strich deaktiviert.
-- [ ] **R07 – Referenz und Nachweis:** HTML/CSS/TypeScript-Muster zuerst anpassen; anschließend Browser, Kernfunktionen, native Dialoggeometrie und relevante Bedienabläufe prüfen. Ergebnis und Grenzen unten festhalten.
+- [x] **R01 – Gemeinsame Gestaltung:** GTK nutzt zentrale Rollen-Tokens. Auswahlzustände sind hell und zusätzlich markiert; Texte/Fokus bleiben erkennbar. Keine reine Farbcodierung der Auswahl.
+- [x] **R02 – Feldgruppen und Regler:** `ToolDialog`, Anpassungen und Resize nutzen eindeutige Abstände. Zahlen sind rechtsbündig. Fehler bei Größenangaben erhalten eine erkennbare Meldung.
+- [x] **R03 – Speicherziel:** Dateiname und Ordner sind im Export ohne Aufklappen sichtbar. Bestehende Formate, Profile, Größenberechnung und sichere Speicherfortsetzung funktionieren weiter.
+- [x] **R04 – Bildinformationen:** Alle vorhandenen Werte bleiben vorhanden und sind sinnvoll gruppiert. Beide DPI-Achsen sind sichtbar beschriftet.
+- [x] **R05 – Vorschau:** Gemeinsamer neutraler Untergrund; vollständiges Bild bleibt sichtbar. Fehlerzustand wird auch sprachlich bezeichnet.
+- [x] **R06 – Leere Listen und Werkzeuge:** Such-/Ordner-Leerzustand hat passende Aktionen; fehlende Vorschaubilder haben einen Hinweis. Zeichnen-Rückgängig ist ohne Strich deaktiviert.
+- [x] **R07 – Referenz und Nachweis:** HTML/CSS/TypeScript-Muster zuerst anpassen; anschließend Browser, Kernfunktionen, native Dialoggeometrie und relevante Bedienabläufe prüfen. Ergebnis und Grenzen unten festhalten.
 
 ## Nächster Durchgang, bewusst noch nicht umgesetzt
 
@@ -63,4 +63,9 @@ Diese Punkte sind das Ergebnis der vollständigen Bestandsaufnahme; der Nutzer h
 
 ## Umsetzungsergebnis
 
-Wird nach der tatsächlichen Implementierung und Prüfung ergänzt.
+R01–R07 sind als erster Durchgang implementiert. Die Referenz ist auf Version 1.1, das App-Paket auf 0.10.0 vorbereitet. R08–R11 bleiben offen.
+
+- Lokal bestanden: 110 Kern-/Kontrasttests, 17 Browserprüfungen bei 1440 × 1200 und 390 × 1600, Strukturprüfung der eigenständigen HTML-Datei. Export- und Informationsmuster wurden als Browserbilder geprüft.
+- Die erste native Prüfung fand eine tatsächliche Abweichung: Felder unter geschlossenen Expandern wurden beim Vorbereiten des Dialogs nicht erreicht. Der gemeinsame Rahmen verarbeitet nun auch diese noch nicht eingehängten Kinder. Die Prüfung der Zahlenausrichtung bleibt bestehen.
+- Vor Veröffentlichung erzwingt die Pipeline erneut alle 49 Dialog-/Modul-/Menüfälle auf zwei Bildschirmgrößen und den GTK-Bedientest einschließlich sicherem Speichern. Der erfolgreiche Lauf ist am Commit bzw. Release in GitHub Actions nachvollziehbar.
+- Grenzen: keine vollständige Abnahme von Wayland, Screenreader, Scanner/Drucker und allen Skalierungsfaktoren. Die Vorschau der Buchseiten ist kein Bestandteil der Veröffentlichung.

@@ -50,7 +50,8 @@ def check(window,name):
         def visit(widget):
             if isinstance(widget,Gtk.ToggleButton) and hasattr(widget,'selection_marker'):
                 assert widget.selection_marker.get_opacity()==(1 if widget.get_active() else 0)
-            if isinstance(widget,Gtk.SpinButton): assert widget.get_alignment()==1
+            if isinstance(widget,Gtk.SpinButton):
+                assert widget.get_alignment()==1,(name,'numeric alignment',widget.get_value(),widget.get_alignment())
             if isinstance(widget,Gtk.Picture) and widget.has_css_class('preview-surface'):
                 assert widget.get_content_fit()==Gtk.ContentFit.CONTAIN
             if widget.get_visible():
