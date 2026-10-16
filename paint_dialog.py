@@ -4,6 +4,7 @@ from PIL import ImageDraw
 from gi.repository import Gtk, Gdk
 from advanced_ui import pixbuf
 from ui_theme import label, accessible
+from edit_controls import ChoiceButtons, SliderField
 
 
 def paint_strokes(image,strokes):
@@ -36,10 +37,11 @@ class PaintDialog(Gtk.Dialog):
         root=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,margin_top=16,margin_bottom=20,margin_start=20,margin_end=20)
         root.append(label('Zeichnen','dialog-title'))
         controls=Gtk.Box(spacing=10)
-        self.tool=Gtk.ComboBoxText()
+        self.tool=ChoiceButtons(columns=5)
         for ident,title in [('pen','Stift'),('line','Linie'),('arrow','Pfeil'),('rectangle','Rechteck'),('ellipse','Ellipse')]: self.tool.append(ident,title)
-        self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); controls.append(self.tool)
-        self.width=Gtk.SpinButton.new_with_range(1,500,1); self.width.set_value(4); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
+        self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); root.append(self.tool)
+        controls.append(label('Strichbreite'))
+        self.width=SliderField(1,500,1,4,'Strichbreite'); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
         rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); controls.append(self.color)
         undo=Gtk.Button(label='Letzter Strich zurück'); undo.connect('clicked',lambda *_:self.undo_stroke()); controls.append(undo)
         root.append(controls)

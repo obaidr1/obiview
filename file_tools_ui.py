@@ -51,20 +51,20 @@ class FileToolsUI:
         self.edit(lambda m:m.replace(erase_selection(m.image,box,outside)))
 
     def auto_crop_dialog(self):
-        return ToolDialog(self,'Einfarbige Ränder entfernen', [('tolerance','Farbtoleranz',10,(0,255,1))],
-            lambda v:self.edit(lambda m:m.replace(auto_crop(m.image,int(v['tolerance'])))),
-            'Entfernt transparente Ränder oder einen einfarbigen Hintergrund wie in der linken oberen Ecke.')
+        return self.preview_tool('Einfarbige Ränder entfernen', [('tolerance','Farbtoleranz',10,(0,255,1))],
+            lambda image,v:auto_crop(image,int(v['tolerance'])),
+            'Entfernt transparente Ränder oder einen einfarbigen Hintergrund wie in der linken oberen Ecke.',sliders=('tolerance',))
 
     def palette_dialog(self):
-        return ToolDialog(self,'Farben reduzieren',[
+        return self.preview_tool('Farben reduzieren',[
             ('colors','Anzahl Farben',256,(2,256,1)),('dither','Dithering',True,'bool')],
-            lambda v:self.edit(lambda m:m.replace(reduce_colors(m.image,int(v['colors']),v['dither']))),
-            'Reduziert die sichtbaren RGB-Farben; Transparenz bleibt erhalten. Die Bearbeitung arbeitet weiterhin mit RGBA.')
+            lambda image,v:reduce_colors(image,int(v['colors']),v['dither']),
+            'Reduziert die sichtbaren RGB-Farben; Transparenz bleibt erhalten. Die Bearbeitung arbeitet weiterhin mit RGBA.',sliders=('colors',))
 
     def swap_dialog(self):
-        return ToolDialog(self,'Farbkanäle tauschen',[
+        return self.preview_tool('Farbkanäle tauschen',[
             ('order','Reihenfolge','BGR',[(v,v) for v in ('RBG','GRB','GBR','BRG','BGR')])],
-            lambda v:self.edit(lambda m:m.replace(swap_channels(m.image,v['order']))))
+            lambda image,v:swap_channels(image,v['order']))
 
     def histogram_dialog(self):
         window=Gtk.Window(title='Histogramm',transient_for=self,destroy_with_parent=True,default_width=500,default_height=300)

@@ -5,6 +5,7 @@ from gi.repository import Gtk
 from resize_settings import ResizeSettings
 from image_tools import to_pixels
 from ui_theme import card, label, accessible
+from edit_controls import ChoiceButtons
 
 
 class ResizeDialog(Gtk.Dialog):
@@ -34,7 +35,7 @@ class ResizeDialog(Gtk.Dialog):
         section.append(grid)
         body.append(section)
         grid.attach(Gtk.Label(label=f'Original: {self.settings.width} × {self.settings.height} Pixel',xalign=0),0,0,2,1)
-        self.units = Gtk.ComboBoxText()
+        self.units = ChoiceButtons()
         self.units.append('pixels','Pixel')
         self.units.append('percent','Prozent')
         self.units.append('cm','Zentimeter')
@@ -61,9 +62,9 @@ class ResizeDialog(Gtk.Dialog):
             button.connect('clicked',lambda _button,p=amount:self.use_preset(p))
             presets.append(button)
         grid.attach(presets,0,5,2,1)
-        self.method = Gtk.ComboBoxText()
-        for ident,title in [('lanczos','Lanczos – hohe Qualität'),('bicubic','Bikubisch'),
-                            ('bilinear','Bilinear'),('nearest','Nächster Nachbar – Pixelgrafik')]:
+        self.method = ChoiceButtons()
+        for ident,title in [('lanczos','Lanczos'),('bicubic','Bikubisch'),
+                            ('bilinear','Bilinear'),('nearest','Pixelgrafik')]:
             self.method.append(ident,title)
         self.method.set_active_id('lanczos')
         grid.attach(Gtk.Label(label='Interpolation',xalign=0),0,6,1,1)
@@ -75,7 +76,7 @@ class ResizeDialog(Gtk.Dialog):
         self.dpi.connect('value-changed',lambda *_:self.sync_fields())
         grid.attach(Gtk.Label(label='DPI (Druckauflösung)',xalign=0),0,8,1,1)
         grid.attach(self.dpi,1,8,1,1)
-        self.resolution = Gtk.ComboBoxText()
+        self.resolution = ChoiceButtons()
         self.resolution.append('none','Auflösung wählen …')
         for w,h in ((640,480),(800,600),(1024,768),(1280,720),(1920,1080),(3840,2160)):
             self.resolution.append(f'{w}x{h}',f'{w} × {h}')

@@ -4,11 +4,13 @@ import json
 import os
 from pathlib import Path
 from PIL import Image, ImageColor
-from gi.repository import Gtk, Gdk, Gio, Pango, GObject
+from gi.repository import Gtk, Gdk, Gio, Pango, GObject, GLib
 from image_model import ImageModel
 from image_tools import (fine_rotate, red_eye, frame, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
 from ui_theme import label, card, accessible
+from edit_controls import ChoiceButtons, SliderField
+from editor_ui import preview_pixbuf
 
 
 def image_clipboard_provider(image):
@@ -19,58 +21,99 @@ def image_clipboard_provider(image):
 
 
 class ToolDialog(Gtk.Dialog):
-    def __init__(self,parent,title,fields,apply,note=''):
-        super().__init__(title=title, transient_for=parent, modal=True, default_width=490, default_height=560)
+    def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=()):
+        super().__init__(title=title, transient_for=parent, modal=True,
+                         default_width=860 if preview else 520, default_height=700 if preview else 600)
         self.set_titlebar(Gtk.Box())
-        self.widgets = {}
-        self.kinds = {}
-        self.apply = apply
-        self.alive = True
+        self.widgets, self.kinds = {}, {}
+        self.fields = fields
+        self.apply, self.preview_operation = apply, preview
+        self.alive, self.syncing = True, False
+        self.preview_timer = 0
+        self.preview_running = False
+        self.preview_generation = 0
+        self.preview_ready = False
+        self.pending_accept = False
+        self.preview_buffer = None
         self.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
-        button = self.add_button('Anwenden',Gtk.ResponseType.ACCEPT)
-        button.add_css_class('primary')
-        actions = button.get_parent()
-        for side in ('start','end','bottom'):
-            getattr(actions,'set_margin_'+side)(20)
-        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=14,
-                       margin_top=16,margin_bottom=16,margin_start=24,margin_end=24)
+        self.accept = self.add_button('Anwenden',Gtk.ResponseType.ACCEPT)
+        self.accept.add_css_class('primary')
+        actions = self.accept.get_parent()
+        for side in ('start','end','bottom'): getattr(actions,'set_margin_'+side)(20)
+        actions.set_margin_top(12)
+        body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
+                       margin_top=20,margin_start=20,margin_end=20)
         body.append(label(title,'dialog-title'))
-        if note: body.append(label(note,'muted',wrap=True))
+        if note: body.append(label(note,'muted',wrap=True,max_width_chars=90 if preview else 55))
+        content = Gtk.Box(spacing=20,vexpand=True)
+        if preview:
+            self.source = parent.model.image.copy()
+            thumb = self.source.copy(); thumb.thumbnail((1200,1200))
+            self.original_buffer = preview_pixbuf(thumb)
+            left = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,hexpand=True)
+            self.picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
+            self.picture.set_size_request(280,200)
+            accessible(self.picture,'Live-Vorschau: '+title)
+            left.append(self.picture)
+            self.compare = Gtk.ToggleButton(label='Original vergleichen')
+            self.compare.connect('toggled',self.show_preview)
+            left.append(self.compare)
+            self.preview_note = label('','small muted',wrap=True)
+            left.append(self.preview_note)
+            content.append(left)
+        controls = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12)
         section = card('Einstellungen')
-        grid = Gtk.Grid(column_spacing=16,row_spacing=12)
-        section.append(grid); body.append(section)
-        for row,(key,title,value,kind) in enumerate(fields):
+        controls.append(section)
+        for key,title,value,kind in fields:
             if isinstance(kind,list):
-                widget = Gtk.ComboBoxText()
+                widget = ChoiceButtons()
                 for ident,text in kind: widget.append(str(ident),text)
                 widget.set_active_id(str(value))
             elif isinstance(kind,tuple):
-                widget = Gtk.SpinButton.new_with_range(*kind)
-                widget.set_digits(2 if kind[2] < 1 else 0)
-                widget.set_value(value)
-                widget.set_numeric(True)
+                if key in sliders:
+                    widget = SliderField(*kind,value=value,title=title)
+                else:
+                    widget = Gtk.SpinButton.new_with_range(*kind)
+                    widget.set_digits(2 if kind[2] < 1 else 0)
+                    widget.set_value(value); widget.set_numeric(True)
             elif kind == 'bool': widget = Gtk.CheckButton(active=value)
             elif kind == 'color':
                 rgba = Gdk.RGBA(); rgba.parse(value)
                 widget = Gtk.ColorButton(rgba=rgba)
-                widget.set_use_alpha(False)
-                widget.set_title(title)
-            elif kind == 'font': widget = Gtk.FontButton(font=value, use_font=True)
+                widget.set_use_alpha(False); widget.set_title(title)
+            elif kind == 'font': widget = Gtk.FontButton(font=value,use_font=True)
             elif kind == 'text':
-                widget = Gtk.TextView(wrap_mode=Gtk.WrapMode.WORD_CHAR, height_request=100)
+                widget = Gtk.TextView(wrap_mode=Gtk.WrapMode.WORD_CHAR,height_request=100)
                 widget.get_buffer().set_text(value)
             else: widget = Gtk.Entry(text=str(value))
-            widget.set_hexpand(True)
-            accessible(widget,title)
-            grid.attach(label(title),0,row,1,1); grid.attach(widget,1,row,1,1)
+            widget.set_hexpand(True); accessible(widget,title)
+            field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
+            if kind == 'bool': widget.set_label(title)
+            else: field.append(label(title))
+            field.append(widget); section.append(field)
             self.widgets[key], self.kinds[key] = widget,kind
-        self.error = label('','muted',wrap=True); body.append(self.error)
-        scroll = Gtk.ScrolledWindow(vexpand=True)
-        scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
-        scroll.set_child(body); self.get_content_area().append(scroll)
+        self.error = label('','error',wrap=True); controls.append(self.error)
+        if preview:
+            reset = Gtk.Button(label='Zurücksetzen')
+            reset.connect('clicked',self.reset)
+            controls.append(reset)
+        self.controls_scroll = Gtk.ScrolledWindow(vexpand=True,hexpand=not bool(preview))
+        self.controls_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
+        if preview: self.controls_scroll.set_size_request(340,-1)
+        self.controls_scroll.set_child(controls); content.append(self.controls_scroll)
+        body.append(content); self.get_content_area().append(body)
         self.connect('response',self.respond)
         self.connect('close-request',lambda *_:(self.respond(self,Gtk.ResponseType.CANCEL),True)[1])
-        parent.set_scrim(True); parent.dialogs.append(self); self.present()
+        parent.set_scrim(True); parent.dialogs.append(self)
+        if preview:
+            for key,widget in self.widgets.items():
+                kind = self.kinds[key]
+                signal = ('value-changed' if isinstance(kind,tuple) else 'changed' if isinstance(kind,list)
+                          else 'toggled' if kind=='bool' else 'notify::rgba' if kind=='color'
+                          else 'notify::font' if kind=='font' else 'changed')
+                (widget.get_buffer() if kind=='text' else widget).connect(signal,self.queue_preview)
+            self.show_preview(); self.queue_preview()
+        self.present()
 
     def values(self):
         result = {}
@@ -89,17 +132,84 @@ class ToolDialog(Gtk.Dialog):
             result[key] = value
         return result
 
+    def reset(self,*_):
+        self.syncing = True
+        for key,_title,value,kind in self.fields:
+            widget = self.widgets[key]
+            if isinstance(kind,tuple): widget.set_value(value)
+            elif isinstance(kind,list): widget.set_active_id(str(value))
+            elif kind=='bool': widget.set_active(value)
+            elif kind=='color':
+                rgba=Gdk.RGBA(); rgba.parse(value); widget.set_rgba(rgba)
+            elif kind=='font': widget.set_font(value)
+            elif kind=='text': widget.get_buffer().set_text(value)
+            else: widget.set_text(str(value))
+        self.syncing = False
+        self.compare.set_active(False)
+        self.queue_preview()
+
+    def show_preview(self,*_):
+        if self.alive:
+            self.picture.set_pixbuf(self.original_buffer if self.compare.get_active()
+                                    else self.preview_buffer or self.original_buffer)
+
+    def queue_preview(self,*_):
+        if not self.alive or self.syncing: return
+        self.preview_generation += 1
+        self.preview_ready = False
+        self.error.set_text('')
+        self.accept.set_sensitive(True)
+        self.preview_note.set_text('Vorschau wird berechnet …')
+        if self.preview_timer: GLib.source_remove(self.preview_timer)
+        self.preview_timer = GLib.timeout_add(120,self.render_preview)
+
+    def render_preview(self):
+        self.preview_timer = 0
+        if not self.alive: return False
+        if self.preview_running:
+            self.preview_timer=GLib.timeout_add(120,self.render_preview); return False
+        values = self.values()
+        generation = self.preview_generation
+        self.preview_running = True
+        operation, source = self.preview_operation, self.source
+        def work():
+            image = operation(source.copy(),values)
+            size = image.size
+            image.thumbnail((1200,1200),Image.Resampling.LANCZOS)
+            return image,size
+        def done(result):
+            self.preview_running = False
+            if not self.alive or generation!=self.preview_generation: return
+            image,size = result
+            self.preview_buffer = preview_pixbuf(image)
+            self.preview_ready = True
+            self.preview_note.set_text(f'{size[0]} × {size[1]} px · Vorschau, noch nicht angewendet')
+            self.show_preview()
+            if self.pending_accept: self.respond(self,Gtk.ResponseType.ACCEPT)
+        def failed(error):
+            self.preview_running = False
+            if not self.alive or generation!=self.preview_generation: return
+            self.pending_accept = False
+            self.error.set_text(str(error)); self.preview_note.set_text(str(error))
+            self.accept.set_sensitive(False)
+        self.get_transient_for().submit(work,done,failed)
+        return False
+
     def respond(self,_dialog,response):
         if not self.alive: return
         if response == Gtk.ResponseType.ACCEPT:
+            if self.preview_operation and not self.preview_ready:
+                self.pending_accept=True
+                return
             try: self.apply(self.values())
             except Exception as error:
-                self.error.set_text(str(error)); return
+                self.error.set_text(str(error)); self.pending_accept=False; return
         self.alive = False
+        self.pending_accept = False
+        self.preview_generation += 1
+        if self.preview_timer: GLib.source_remove(self.preview_timer); self.preview_timer=0
         parent = self.get_transient_for()
-        parent.set_scrim(False)
-        parent.dialogs.remove(self)
-        self.destroy()
+        parent.set_scrim(False); parent.dialogs.remove(self); self.destroy()
 
 
 class ImageToolsUI:
@@ -115,6 +225,15 @@ class ImageToolsUI:
             self.fit_upscale = bool(values.get('fit_upscale',False))
         except (OSError,ValueError,KeyError,TypeError): pass
 
+    def preview_tool(self,title,fields,operation,note='',sliders=()):
+        if self.busy or self.model.image is None: return
+        if self.has_preview():
+            self.edit(lambda _m:None,after=lambda:self.preview_tool(title,fields,operation,note,sliders)); return
+        self.stop_slideshow()
+        return ToolDialog(self,title,fields,
+            lambda values:self.edit(lambda model:model.replace(operation(model.image,values))),
+            note,preview=operation,sliders=sliders)
+
     def preferences_dialog(self):
         def apply(v):
             self.viewer_config.parent.mkdir(parents=True,exist_ok=True)
@@ -129,11 +248,11 @@ class ImageToolsUI:
             'Diese Einstellungen werden für den nächsten Start gespeichert.')
 
     def fine_rotation_dialog(self):
-        return ToolDialog(self,'Frei drehen',[
+        return self.preview_tool('Frei drehen',[
             ('angle','Winkel (Grad)',0,(-360,360,.1)),('expand','Bildfläche erweitern',True,'bool'),
             ('color','Randfarbe','#ffffff','color')],
-            lambda v:self.edit(lambda m:m.replace(fine_rotate(m.image,**v))),
-            'Positive Winkel drehen nach rechts, negative nach links. Den Rand danach bei Bedarf zuschneiden.')
+            lambda image,v:fine_rotate(image,**v),
+            'Positive Winkel drehen nach rechts, negative nach links. Den Rand danach bei Bedarf zuschneiden.',sliders=('angle',))
 
     def effects_dialog(self):
         from effects_dialog import EffectsDialog
@@ -150,19 +269,25 @@ class ImageToolsUI:
         return EffectsDialog(self)
 
     def border_dialog(self):
-        return ToolDialog(self,'Rahmen hinzufügen',[
+        dialog = self.preview_tool('Rahmen hinzufügen',[
             ('style','Stil','plain',[('plain','Einfach'),('double','Doppelrahmen'),('bevel','Reliefrahmen')]),
             ('width','Breite außen (Pixel)',20,(0,10000,1)),('color','Außenfarbe','#ffffff','color'),
             ('inner_width','Breite innen, Doppelrahmen',2,(0,10000,1)),
             ('inner_color','Innenfarbe','#242424','color')],
-            lambda v:self.edit(lambda m:m.replace(frame(m.image,**v))))
+            lambda image,v:frame(image,**v),sliders=('width','inner_width'))
+        if dialog:
+            def changed(*_):
+                double=dialog.widgets['style'].get_active_id()=='double'
+                for key in ('inner_width','inner_color'): dialog.widgets[key].set_sensitive(double)
+            dialog.widgets['style'].connect('changed',changed); changed()
+        return dialog
 
     def canvas_dialog(self):
-        return ToolDialog(self,'Leinwand erweitern',[
+        return self.preview_tool('Leinwand erweitern',[
             ('left','Links (Pixel)',20,(-10000,10000,1)),('right','Rechts (Pixel)',20,(-10000,10000,1)),
             ('top','Oben (Pixel)',20,(-10000,10000,1)),('bottom','Unten (Pixel)',20,(-10000,10000,1)),
             ('color','Farbe','#ffffff','color')],
-            lambda v:self.edit(lambda m:m.replace(add_canvas(m.image,**v))),
+            lambda image,v:add_canvas(image,**v),
             'Jede Bildseite unabhängig ändern: positive Werte ergänzen Rand, negative schneiden ihn ab. Vorhandene Pixel werden nicht skaliert.')
 
     def red_eye_dialog(self):
@@ -170,9 +295,9 @@ class ImageToolsUI:
         if not box:
             self.message('Augenbereich auswählen','Mit der Maus zuerst einen engen Rahmen um den roten Augenbereich aufziehen.')
             return
-        return ToolDialog(self,'Rote Augen korrigieren', [('strength','Stärke (%)',100,(1,100,1))],
-            lambda v:self.edit(lambda m:m.replace(red_eye(m.image,box,**v))),
-            'Nur rot dominierte Pixel innerhalb der Auswahl werden korrigiert.')
+        return self.preview_tool('Rote Augen korrigieren', [('strength','Stärke (%)',100,(1,100,1))],
+            lambda image,v:red_eye(image,box,**v),
+            'Nur rot dominierte Pixel innerhalb der Auswahl werden korrigiert.',sliders=('strength',))
 
     def selection_dialog(self):
         image = self.model.image
@@ -224,17 +349,17 @@ class ImageToolsUI:
     def text_dialog(self):
         box = self.selection or (20 if self.model.image.width>20 else 0,20 if self.model.image.height>20 else 0,
                                  self.model.image.width,self.model.image.height)
-        def apply(v):
+        def operation(image,v):
             if not v['text'].strip(): raise ValueError('Bitte Text eingeben.')
             desc = Pango.FontDescription.from_string(v['font'])
             pixels = desc.get_size()/Pango.SCALE
             if not desc.get_size_is_absolute(): pixels *= self.model.dpi/72
             checked_size(max(1,pixels),1)
-            self.edit(lambda m:m.replace(text_image(m.image,v['text'],box,desc.get_family(),pixels,v['color'],
-                            desc.get_weight()>=Pango.Weight.BOLD,desc.get_style()!=Pango.Style.NORMAL)))
-        return ToolDialog(self,'Text einfügen',[
+            return text_image(image,v['text'],box,desc.get_family(),pixels,v['color'],
+                            desc.get_weight()>=Pango.Weight.BOLD,desc.get_style()!=Pango.Style.NORMAL)
+        return self.preview_tool('Text einfügen',[
             ('text','Text','','text'),('font','Schrift / Stil / Größe','Sans 48','font'),
-            ('color','Textfarbe','#ffffff','color')],apply,
+            ('color','Textfarbe','#ffffff','color')],operation,
             'Text wird im ausgewählten Rechteck umgebrochen und begrenzt. Ohne Auswahl beginnt er oben links mit 20 Pixel Abstand. Schriftgröße in Punkt, umgerechnet mit der Bild-DPI.')
 
     def new_document(self,image,name='Unbenannt.png'):

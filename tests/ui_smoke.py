@@ -6,9 +6,11 @@ import time
 import traceback
 import os
 import base64
-from PIL import Image, ImageDraw, ImageGrab
+from PIL import Image, ImageDraw, ImageGrab, ImageEnhance, ImageFilter
 from bildblick import Window, Gtk, Gdk, Gio, GLib
 from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
+from image_tools import fine_rotate, frame, red_eye, reduce_colors, swap_channels, auto_crop, add_canvas
+from edit_controls import SliderField, ChoiceButtons
 
 Gtk.init()
 if Gdk.Display.get_default() is None:
@@ -57,6 +59,8 @@ def tick(window):
         if time.monotonic()-started>90:
             raise TimeoutError('GUI test timed out')
         if window.busy or not window.folder_files:
+            return True
+        if any(getattr(dialog,'pending_accept',False) for dialog in window.dialogs):
             return True
         if step == 0:
             assert window.pixbuf and window.canvas.get_width()>100
@@ -418,7 +422,93 @@ def tick(window):
         elif step == 44:
             screenshot('file-menu')
             assert not window.dialogs and window.scrim_depth==0
-            print('PASS: GTK core + physical resize/DPI, selection move/resize, clipboard, frame, canvas, rotation, effects, text, gamma/RGB, preferences, print PDF, rename, palette, painting, shortcuts')
+            def rgba_result(image, result):
+                result=result.convert('RGBA'); result.putalpha(image.getchannel('A')); return result
+            window.tool_cases=[
+                ('adjust_values_dialog',{'contrast':135},lambda im:rgba_result(im,ImageEnhance.Contrast(im.convert('RGB')).enhance(1.35))),
+                ('filter_dialog',{'sharpness':125,'blur':2},lambda im:rgba_result(im,ImageEnhance.Sharpness(im.convert('RGB')).enhance(1.25).filter(ImageFilter.GaussianBlur(2)))),
+                ('fine_rotation_dialog',{'angle':22},lambda im:fine_rotate(im,22)),
+                ('border_dialog',{'style':'bevel','width':8},lambda im:frame(im,8,style='bevel')),
+                ('red_eye_dialog',{'strength':65},lambda im:red_eye(im,(0,0,*im.size),65)),
+                ('palette_dialog',{'colors':8,'dither':False},lambda im:reduce_colors(im,8,False)),
+                ('swap_dialog',{'order':'GRB'},lambda im:swap_channels(im,'GRB')),
+                ('auto_crop_dialog',{'tolerance':12},lambda im:auto_crop(im,12)),
+                ('canvas_dialog',{'left':10,'right':0,'top':5,'bottom':0},lambda im:add_canvas(im,left=10,top=5)),
+            ]
+            window.tool_index=0; window.tool_phase=0
+        elif step == 45:
+            factory,changes,expected=window.tool_cases[window.tool_index]
+            if window.tool_phase==0:
+                window.tool_before=window.model.image.copy()
+                window.tool_revision=window.model.revision
+                window.tool_history=len(window.model.history)
+                window.selection=(0,0,*window.model.image.size)
+                dialog=getattr(window,factory)()
+                for key,value in changes.items():
+                    widget=dialog.widgets[key]
+                    if isinstance(widget,ChoiceButtons):
+                        widget.buttons[value].set_active(True)
+                        assert sum(b.get_active() for b in widget.buttons.values())==1
+                    elif isinstance(widget,Gtk.CheckButton): widget.set_active(value)
+                    elif isinstance(widget,SliderField):
+                        widget.number.set_value(value+1)
+                        assert widget.scale.get_value()==widget.number.get_value()
+                        widget.scale.set_value(value)
+                        assert widget.number.get_value()==value
+                    else: widget.set_value(value)
+                if factory=='border_dialog': assert not dialog.widgets['inner_width'].get_sensitive()
+                window.tool_phase=1
+                return True
+            elif window.tool_phase==1:
+                dialog=window.dialogs[-1]
+                if not dialog.preview_ready: return True
+                assert window.model.revision==window.tool_revision
+                assert window.model.image.tobytes()==window.tool_before.tobytes()
+                result=expected(window.tool_before)
+                assert bytes(dialog.preview_buffer.get_pixels())==result.tobytes(), factory
+                dialog.compare.set_active(True); dialog.compare.set_active(False)
+                if factory in ('adjust_values_dialog','border_dialog','swap_dialog','filter_dialog'):
+                    screenshot(factory)
+                dialog.reset()
+                for key,_title,value,kind in dialog.fields:
+                    if isinstance(kind,tuple): assert dialog.widgets[key].get_value()==value
+                    elif isinstance(kind,list): assert dialog.widgets[key].get_active_id()==value
+                dialog.response(Gtk.ResponseType.CANCEL)
+                assert window.model.image.tobytes()==window.tool_before.tobytes()
+                assert not window.dialogs and window.scrim_depth==0
+                dialog=getattr(window,factory)()
+                for key,value in changes.items():
+                    widget=dialog.widgets[key]
+                    if isinstance(widget,ChoiceButtons): widget.set_active_id(value)
+                    elif isinstance(widget,Gtk.CheckButton): widget.set_active(value)
+                    else: widget.set_value(value)
+                dialog.response(Gtk.ResponseType.ACCEPT)
+                window.tool_phase=2
+                return True
+            else:
+                assert window.model.image.tobytes()==expected(window.tool_before).tobytes(), factory
+                assert len(window.model.history)==window.tool_history+1, factory
+                window.undo()
+                assert window.model.image.tobytes()==window.tool_before.tobytes(), factory
+                window.tool_index+=1; window.tool_phase=0
+                if window.tool_index<len(window.tool_cases): return True
+        elif step == 46:
+            dialog=window.paint_dialog()
+            assert isinstance(dialog.tool,ChoiceButtons) and isinstance(dialog.width,SliderField)
+            dialog.tool.buttons['arrow'].set_active(True)
+            dialog.width.scale.set_value(12)
+            assert dialog.tool.get_active_id()=='arrow' and dialog.width.get_value()==12
+            screenshot('drawing-choices')
+            dialog.response(Gtk.ResponseType.CANCEL)
+            window.resize_dialog()
+            dialog=window.dialogs[-1]
+            assert all(isinstance(w,ChoiceButtons) for w in (dialog.units,dialog.method,dialog.resolution))
+            dialog.method.buttons['nearest'].set_active(True)
+            assert dialog.method.get_active_id()=='nearest'
+        elif step == 47:
+            screenshot('resize-choices')
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            print('PASS: GTK core + direct editing choices, two-way sliders, full-image previews, original comparison, cancel/reset/apply/undo for nine editing tools, drawing and resize choices')
             window.cleanup()
             app.quit()
             return False

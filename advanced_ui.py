@@ -372,47 +372,11 @@ class AdvancedFeatures:
         self.slide_source = GLib.timeout_add(max(20,delay),tick)
 
     def form(self, title, fields, callback):
+        from tool_dialogs import ToolDialog
         self.stop_slideshow()
-        dialog = Gtk.Dialog(title=title,transient_for=self,modal=True)
-        dialog.set_titlebar(Gtk.Box())
-        dialog.add_button('Abbrechen',Gtk.ResponseType.CANCEL)
-        accept = dialog.add_button('Übernehmen',Gtk.ResponseType.ACCEPT)
-        accept.add_css_class('primary')
-        actions = accept.get_parent()
-        actions.set_margin_start(18)
-        actions.set_margin_end(18)
-        actions.set_margin_bottom(18)
-        dialog.get_content_area().append(ui_label(title,'dialog-title',margin_start=18,
-                                                   margin_end=18,margin_top=16))
-        grid = Gtk.Grid(column_spacing=12,row_spacing=10,margin_top=18,margin_bottom=18,margin_start=18,margin_end=18)
-        widgets = {}
-        for row,(key,label,initial,kind) in enumerate(fields):
-            grid.attach(Gtk.Label(label=label,xalign=0),0,row,1,1)
-            if isinstance(kind,tuple):
-                widget = Gtk.SpinButton.new_with_range(*kind)
-                widget.set_value(initial)
-            elif kind == 'bool':
-                widget = Gtk.CheckButton(active=bool(initial))
-            else:
-                widget = Gtk.Entry(text=str(initial),hexpand=True)
-            grid.attach(widget,1,row,1,1)
-            widgets[key] = (widget,kind)
-        dialog.get_content_area().append(grid)
-        def response(dlg,answer):
-            if answer == Gtk.ResponseType.ACCEPT:
-                values = {key:(widget.get_value() if isinstance(kind,tuple) else
-                              widget.get_active() if kind=='bool' else widget.get_text())
-                          for key,(widget,kind) in widgets.items()}
-                try:
-                    callback(values)
-                except Exception as error:
-                    self.message('Eingabe prüfen',str(error))
-                    return
-            dlg.destroy()
-            self.dialogs.remove(dlg)
-        dialog.connect('response',response)
-        self.dialogs.append(dialog)
-        dialog.present()
+        precise = {'width','height','x','y','size'}
+        sliders = [key for key,_label,_initial,kind in fields if isinstance(kind,tuple) and key not in precise]
+        return ToolDialog(self,title,fields,callback,sliders=sliders)
 
     def resize_dialog(self):
         if self.busy or self.model.image is None:
@@ -427,23 +391,27 @@ class AdvancedFeatures:
         dialog.present()
 
     def adjust_values_dialog(self):
-        def apply(v):
-            def operation(model):
-                # One user action, one undo step.
-                temp = ImageModel()
-                temp.image = model.image
-                for name in ('brightness','contrast','color'):
-                    if v[name] != 100:
-                        temp.effect(name,v[name]/100)
-                model.replace(temp.image)
-            self.edit(operation)
-        self.form('Farben anpassen', [('brightness','Helligkeit (%)',100,(0,300,1)),
-                  ('contrast','Kontrast (%)',100,(0,300,1)),('color','Sättigung (%)',100,(0,300,1))],apply)
+        def operation(image, values):
+            temp = ImageModel(); temp.image = image
+            for name in ('brightness','contrast','color'):
+                if values[name] != 100: temp.effect(name,values[name]/100)
+            return temp.image
+        return self.preview_tool('Helligkeit, Kontrast und Farbe',[
+            ('brightness','Helligkeit (%)',100,(0,300,1)),
+            ('contrast','Kontrast (%)',100,(0,300,1)),
+            ('color','Sättigung (%)',100,(0,300,1))],operation,
+            '100 % entspricht dem Original. Die Vorschau verändert die Arbeitsdatei erst beim Anwenden.',
+            sliders=('brightness','contrast','color'))
 
     def filter_dialog(self):
-        self.form('Schärfen / Weichzeichnen', [('sharpness','Schärfe (%)',100,(0,500,1)),
-                  ('blur','Weichzeichnen (Radius)',0,(0,30,.5))],
-                  lambda v:self.edit(lambda m:self.apply_filters(m,v)))
+        def operation(image, values):
+            temp = ImageModel(); temp.image = image
+            self.apply_filters(temp,values)
+            return temp.image
+        return self.preview_tool('Schärfen und Weichzeichnen',[
+            ('sharpness','Schärfe (%)',100,(0,500,1)),
+            ('blur','Weichzeichnen (Radius)',0,(0,30,.5))],operation,
+            sliders=('sharpness','blur'))
 
     @staticmethod
     def apply_filters(model, values):

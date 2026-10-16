@@ -64,7 +64,7 @@ def build_menus(window):
             ('invert','Negativ',lambda:window.edit(lambda m:m.effect('invert')),True),
             ('autocontrast','Automatischer Kontrast',lambda:window.edit(lambda m:m.effect('autocontrast')),True),
             ('adjust','Bildanpassungen …',window.adjust_dialog,True),
-            ('adjust-values','Helligkeit / Kontrast / Farbe als Werte …',window.adjust_values_dialog,True),
+            ('adjust-values','Helligkeit / Kontrast / Farbe …',window.adjust_values_dialog,True),
             ('filter','Schärfen / Weichzeichnen …',window.filter_dialog,True),
             ('text','Text einfügen …',window.text_dialog,True),
             ('watermark','Wasserzeichen …',window.watermark_dialog,True),

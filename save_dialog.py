@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 from image_export import write_image
 from editor_ui import preview_pixbuf
 from ui_theme import card, label, accessible
+from edit_controls import ChoiceButtons, SliderField
 from resize_settings import ResizeSettings
 from save_options import ALIASES, FORMAT_CHOICES, SaveSettings, SaveProfiles, filename_for_format
 
@@ -86,7 +87,7 @@ class SaveAsDialog(Gtk.Dialog):
             self.format_tiles[fmt] = tile
             row.append(tile)
         formats.append(row)
-        self.format = Gtk.ComboBoxText(hexpand=True)
+        self.format = ChoiceButtons(hexpand=True)
         accessible(self.format,'Ausgabeformat, einschließlich weiterer Formate')
         for fmt, (_, title) in FORMAT_CHOICES.items():
             self.format.append(fmt, title)
@@ -202,7 +203,7 @@ class SaveAsDialog(Gtk.Dialog):
         gif.append(self.note('Maximal 256 Farben; Teiltransparenz wird auf Weiß reduziert.'))
         png = self.page('PNG','PNG-Optionen')
         png.append(label('Kompression: 0 = schnell, 9 = kleiner','small muted'))
-        self.compression = Gtk.SpinButton.new_with_range(0,9,1)
+        self.compression = SliderField(0,9,1,title='PNG-Kompression')
         accessible(self.compression,'PNG-Kompression')
         png.append(self.compression)
         webp = self.page('WEBP','WebP-Optionen')
