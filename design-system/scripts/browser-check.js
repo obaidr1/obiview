@@ -19,6 +19,18 @@
   check('Export modal isolates IDs and range synchronization',()=>{const trigger=q('#export [data-open=export]');trigger.focus();trigger.click();assert(q('#demo-dialog').open);const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);assert(new Set(ids).size===ids.length);input('#modal-export-quality','40');assert(q('output[for=modal-export-quality]').value==='40');assert(q('#export-quality').value==='85');click('#demo-dialog [data-close-dialog]');assert(!q('#demo-dialog').open);assert(document.activeElement===trigger);});
   check('Resize dialog preserves ratio and blocks invalid input',()=>{click('#export [data-open=resize]');input('#modal-width','900');assert(q('#modal-height').value==='600');input('#modal-width','0');assert(q('#demo-dialog [data-demo-submit]').disabled);input('#modal-width','1200');assert(!q('#demo-dialog [data-demo-submit]').disabled);click('#demo-dialog [data-close-dialog]');});
   check('Information and confirmation dialogs open and close',()=>{click('#export [data-open=info]');assert(q('#demo-dialog .data-list'));click('#demo-dialog [data-close-dialog]');click('#feedback [data-open=confirm]');assert(document.activeElement.hasAttribute('data-close-dialog'));click('#demo-dialog [data-demo-submit]');assert(!q('#demo-dialog').open);});
+  check('Every modal shares the export footprint and visible footer',()=>{
+    for(const kind of ['export','resize','info','confirm']) {
+      q(`[data-open=${kind}]`).click(); const d=q('#demo-dialog');
+      const rect=d.getBoundingClientRect();
+      assert(Math.abs(rect.width-Math.min(520,innerWidth-32))<2,kind+' width '+rect.width);
+      assert(Math.abs(rect.height-Math.min(760,innerHeight-32))<2,kind+' height '+rect.height);
+      const body=q('#modal-content .modal-body'); body.scrollTop=body.scrollHeight;
+      const footer=q('#modal-content > .dialog-footer').getBoundingClientRect();
+      assert(footer.bottom<=rect.bottom && footer.top>=rect.top,kind+' footer');
+      click('#demo-dialog [data-close-dialog]');
+    }
+  });
   check('No horizontal document overflow at current viewport',()=>{assert(document.documentElement.scrollWidth<=innerWidth+1,`${document.documentElement.scrollWidth}px exceeds ${innerWidth}px`);});
   const failures = results.filter(r=>!r.ok);
   window.BILDBLICK_CHECK = {passed:results.length-failures.length,total:results.length,failures};

@@ -55,7 +55,9 @@ def tick(w):
             current=factory()
             if current is None: current=w.dialogs[-1]
             expanded(current); phase=1; return True
-        check(current,name); capture(name)
+        try: check(current,name)
+        except AssertionError: failures.append(traceback.format_exc())
+        capture(name)
         if isinstance(current,StandardDialog): current.response(Gtk.ResponseType.CANCEL)
         else: current.close()
         index+=1;phase=0

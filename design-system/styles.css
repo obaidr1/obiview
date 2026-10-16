@@ -67,3 +67,9 @@ dialog { max-width: min(520px,calc(100vw - 32px)); width: 520px; padding: 24px; 
 .editor-shell .demo-title { flex-wrap: wrap; gap: 8px; }
 dialog { max-width: min(var(--dialog-width),calc(100vw - var(--dialog-screen-margin))); }
 dialog .dialog-footer, dialog > .close-dialog { position: sticky; bottom: 0; background: var(--color-surface); padding-block: 12px; }
+
+dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
+#modal-title { flex: none; }
+#modal-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.modal-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+#modal-content > .dialog-footer { position: static; flex: none; margin-top: 12px; padding: 0; }

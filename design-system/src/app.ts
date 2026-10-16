@@ -181,6 +181,8 @@
     } else {
       content.innerHTML = '<p>Deine Änderungen wurden noch nicht angewendet. Möchtest du sie verwerfen?</p><p class="small muted">Bestätigungsbeispiel. Es werden keine Dateien verändert.</p>';
     }
+    const scrollBody = document.createElement('div'); scrollBody.className = 'modal-body';
+    scrollBody.append(...Array.from(content.childNodes)); content.append(scrollBody);
     const footer = document.createElement('div'); footer.className = 'dialog-footer';
     footer.innerHTML = `<button type="button" class="btn secondary" data-close-dialog>${kind === 'info' ? 'Schließen' : 'Abbrechen'}</button>`;
     if (kind !== 'info') footer.innerHTML += `<button type="button" class="btn primary" data-demo-submit>${kind === 'confirm' ? 'Verwerfen' : kind === 'export' ? 'Bild speichern' : 'Größe ändern'}</button>`;

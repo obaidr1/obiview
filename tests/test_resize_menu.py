@@ -31,7 +31,7 @@ class ResizeMenuTests(unittest.TestCase):
         menu,actions = build_menus(window)
         names = [menu.get_item_attribute_value(i,'label',None).unpack() for i in range(menu.get_n_items())]
         self.assertEqual(names,['Datei','Bearbeiten','Bild','Ansicht','Extras','Hilfe'])
-        image_menu = menu.get_item_link(2,'submenu')
+        image_menu = menu.get_item_link(2,'submenu').get_item_link(0,'section')
         self.assertEqual(image_menu.get_item_attribute_value(0,'action',None).unpack(),'win.resize')
         self.assertEqual(image_menu.get_item_attribute_value(0,'accel',None).unpack(),RESIZE_ACCELERATOR)
         window.group.activate_action('resize',None)
