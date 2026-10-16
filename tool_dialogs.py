@@ -484,7 +484,7 @@ class ImageToolsUI:
         setup.set_orientation(Gtk.PageOrientation.LANDSCAPE if orientation=='landscape' else Gtk.PageOrientation.PORTRAIT)
         operation.set_default_page_setup(setup)
         buffer = self.pixbuf
-        size,dpi = self.model.image.size,self.model.dpi
+        size,dpi = self.model.image.size,self.model.dpi_pair
         def draw_page(_op,context,_page):
             cr = context.get_cairo_context()
             x,y,w,h = print_layout(size,(context.get_width(),context.get_height()),dpi=dpi,**values)

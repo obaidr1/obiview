@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.6.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.7.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -81,14 +81,14 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.6.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.7.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.6.0-linux.tar.gz
-cd Bildblick-0.6.0
+tar -xzf Bildblick-0.7.0-linux.tar.gz
+cd Bildblick-0.7.0
 ./install.sh
 ```
 
@@ -159,6 +159,14 @@ Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht** und **
 
 Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, wenn ungespeicherte Änderungen vorhanden sind. Speichern erfolgt erst durch eine ausdrückliche Speicheraktion.
 
+## Bildinformationen
+
+**I** oder **Bild → Bildinformationen** öffnet die Datei- und Bildübersicht: Dateiname, Verzeichnis, voller Pfad, Format, getrennte X-/Y-DPI, ursprüngliche und aktuelle Abmessungen mit Megapixeln und Seitenverhältnis, Druckmaße in cm und Zoll, ursprüngliche und aktuelle Farbtiefe, gezählte RGB-Farben, Dateigröße, Speicherbedarf der aktuellen Pixel, Ordnerposition, Änderungsdatum, Ladezeit und Seite/Frame.
+
+Die Farbzählung läuft im Hintergrund und lässt sich abschalten; unterschiedliche Alpha-Werte werden nicht als zusätzliche RGB-Farben gezählt. Der angegebene Pixel-Speicher umfasst weder den gesamten Prozess noch die Undo-Historie. Fehlende Quelldaten werden als nicht verfügbar gekennzeichnet; bei extern gerasterten Formaten wird keine ursprüngliche Farbtiefe erfunden.
+
+**Ändern** übernimmt X-/Y-DPI ohne Änderung der Pixelzahl, mit Rückgängig. Fehlt eine gültige Auflösung, wird die angenommene Vorgabe 96 DPI gekennzeichnet. EXIF, IPTC und Kommentare haben eigene Leseansichten. Das ist kein vollständiger Metadateneditor; insbesondere ist eine vollständige IPTC-Erhaltung beim Export nicht zugesichert.
+
 ## Tastenkürzel
 
 | Kürzel | Aktion |
@@ -167,6 +175,7 @@ Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, w
 | `S`, `Strg+Umschalt+S` | Speichern unter |
 | `Strg+S` | Aktuelle Datei speichern; Ersetzen wird bestätigt |
 | `Strg+R` | Größe ändern |
+| `I` | Bildinformationen |
 | `Strg+Z` / `Strg+Umschalt+Z` | Rückgängig / Wiederholen |
 | `Strg+Y`, `Enter` | Auswahl zuschneiden |
 | `Strg+C` / `Strg+V` | Auswahl oder ganzes Bild kopieren / Bild als neues Dokument einfügen |
@@ -217,13 +226,13 @@ Ein Rechteck lässt sich direkt mit der linken Maustaste aufziehen. Ziehen an Ka
 
 **Rahmen hinzufügen** bietet einfache, doppelte und plastische Rahmen mit Breiten und Farbauswahl. **Leinwand erweitern** stellt jede Seite getrennt ein: positive Werte fügen Fläche hinzu, negative schneiden Rand ab. **Bilder zusammenfügen** setzt mehrere Bilder horizontal oder vertikal mit Abstand zusammen; es ist keine perspektivische Panoramaverschmelzung.
 
-**Text einfügen** verwendet die gewählte Schriftfamilie, Schriftstil, Punktgröße und Farbe. Text wird innerhalb der Auswahl umgebrochen und begrenzt. Ohne Auswahl beginnt er mit 20 Pixel Abstand oben links. Die Umrechnung von Punkt in Pixel berücksichtigt die Bild-DPI. **Bearbeiten → Zeichnen** öffnet einen eigenen Dialog für Stift, Linie, Pfeil, Rechteck und Ellipse. Einzelne Striche können dort zurückgenommen werden; Anwenden erzeugt einen gemeinsamen Undo-Schritt.
+**Text einfügen** verwendet die gewählte Schriftfamilie, Schriftstil, Punktgröße und Farbe. Text wird innerhalb der Auswahl umgebrochen und begrenzt. Ohne Auswahl beginnt er mit 20 Pixel Abstand oben links. Die Umrechnung von Punkt in Pixel berücksichtigt die Bild-DPI. **Bearbeiten → Zeichnen** öffnet einen eigenen Dialog für Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellipse. Alle sechs Werkzeuge haben eigene Symbole und Textbeschriftungen. Einzelne Striche können dort zurückgenommen werden; Anwenden erzeugt einen gemeinsamen Undo-Schritt.
 
 ## Dateien, Ansicht und Druck
 
 Das Datei-Menü enthält **Erneut öffnen**, **Öffnen mit**, **Dateien suchen**, **Letzte Ordner**, **Umbenennen**, **Kopieren**, **Verschieben** und **In den Papierkorb**. Dateiaktionen verwenden gespeicherte Dateien; offene Änderungen müssen zuerst gespeichert oder rückgängig gemacht werden. Kopieren, Verschieben und Umbenennen überschreiben kein vorhandenes Ziel. Löschen fragt nach und verwendet ausschließlich den System-Papierkorb.
 
-Unter **Extras → Ansicht einstellen** sind die Hintergrundfarbe und das Vergrößern kleiner Bilder beim Einpassen konfigurierbar. Einstellungen werden lokal gespeichert. Das Hauptfenster startet weiterhin mit 720 × 640 Pixeln.
+Unter **Extras → Ansicht einstellen** sind die Hintergrundfarbe und das Vergrößern kleiner Bilder beim Einpassen konfigurierbar. Einstellungen werden lokal gespeichert. Das Hauptfenster startet mit 720 × 640 Pixeln. Bei manuellem Zoom oder 100-%-Ansicht wächst es mit dem Bild bis zur verfügbaren Bildschirmfläche und maximiert sich an dieser Grenze. Weiteres Zoomen verwendet Scrollleisten; Verkleinern schrumpft das Fenster nicht automatisch.
 
 **Drucken** öffnet zuerst die Bildanordnung: Hoch-/Querformat, bestmögliches Einpassen, eigene Größe in cm mit gekoppeltem Verhältnis oder getrennte Skalierung in Prozent. Zentrieren und Abstände vom linken/oberen druckbaren Seitenrand sind wählbar. Danach folgt der native Druckdialog für Drucker, Papier und Geräteeigenschaften. Übergröße wird am druckbaren Seitenrand abgeschnitten. Die PDF-Ausgabe wird automatisch geprüft; ein realer Drucker ist noch nicht abgenommen.
 
@@ -382,7 +391,7 @@ Aktuelle Grenzen:
 /usr/bin/python3 -m unittest discover -s tests -v
 ```
 
-Auf dem Referenzsystem bestehen **86 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
+Auf dem Referenzsystem bestehen **92 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
 
 ### Grafischer Integrationstest
 
@@ -399,7 +408,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.6.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.7.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag

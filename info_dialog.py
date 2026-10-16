@@ -8,11 +8,15 @@ from ui_theme import label, card, accessible
 class ImageInfoDialog(Gtk.Dialog):
     def __init__(self,parent):
         super().__init__(title='Bildinformationen',transient_for=parent,modal=True,
-                         default_width=780,default_height=780)
+                         default_width=780,default_height=740)
         self.parent=parent; self.alive=True; self.cancel_count=threading.Event()
         self.children=[]; self.values={}; self.count_generation=0
         self.set_titlebar(Gtk.Box())
-        self.add_button('Schließen',Gtk.ResponseType.CLOSE).add_css_class('primary')
+        close_button=self.add_button('Schließen',Gtk.ResponseType.CLOSE)
+        close_button.add_css_class('primary')
+        actions=close_button.get_parent()
+        for side in ('start','end','bottom'): getattr(actions,'set_margin_'+side)(20)
+        actions.set_margin_top(12)
         body=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
                      margin_start=20,margin_end=20,margin_top=16,margin_bottom=16)
         body.append(label('Bildinformationen','dialog-title'))
@@ -33,7 +37,7 @@ class ImageInfoDialog(Gtk.Dialog):
                 self.dpi_x=Gtk.SpinButton.new_with_range(1,9600,1)
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
-                    spin.set_digits(2); accessible(spin,title)
+                    spin.set_digits(2); spin.set_width_chars(7); accessible(spin,title)
                 widget.append(self.dpi_x); widget.append(label('×')); widget.append(self.dpi_y)
                 self.dpi_button=Gtk.Button(label='Ändern')
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)

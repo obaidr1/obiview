@@ -1,8 +1,8 @@
-# Prüfstand von Bildblick 0.6.0
+# Prüfstand von Bildblick 0.7.0
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 86 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 92 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
 - Physische Größen, DPI-Export mit erneutem Einlesen in JPEG/PNG/TIFF/BMP und DPI-Undo.
@@ -61,3 +61,10 @@ Noch ausstehend sind eine Prüfung in der konkreten Wayland-Sitzung des Nutzers,
 ## Werkzeugdialoge ab 0.6.0
 
 Der native GTK-Test prüft neun weitere Bearbeitungsdialoge durch direkte Änderung ihrer Bedienelemente. Die resultierenden Vorschaubilder und angewendeten Bildpixel werden mit den erwarteten Operationen verglichen. Geprüft werden außerdem Sliderwerte, gekoppelte genaue Eingaben, direkte Variantenwahl, Originalvergleich, Zurücksetzen, unverändertes Arbeitsbild vor Anwenden und nach Abbrechen sowie genau ein Undo-Schritt. Ein zusätzlicher Test verwirft veraltete und nach dem Schließen eintreffende Ergebnisse. Eine ungültige Leinwandgröße blockiert Anwenden; eine korrigierte Eingabe stellt die Vorschau wieder her. Text und neue Zeichen-/Resize-Bedienelemente sind Teil des bestehenden GTK-Ablaufs.
+
+
+## Bildinformationen, Fensterwachstum und Symbole ab 0.7.0
+
+Sechs zusätzliche Funktionstests prüfen Originaldaten nach Bearbeitung, tatsächliche EXIF-/IPTC-Lesedaten, unabhängige X-/Y-DPI mit Export-Rundreisen und Druckmaßen, fehlende Quelldaten, exakte RGB-Zählung einschließlich sehr breiter Bilder und Abbruch, Fenstergeometrie sowie weiche Pinselränder ohne Veränderung der Quelle.
+
+Der GTK-Test öffnet die Bildinformationen über I, kontrolliert Felder, DPI-Änderung ohne neue Pixel, Farbzählung, alle drei Metadaten-Leseansichten und Rückgängig. Er prüft reales Fensterwachstum bei 100 % und weiterem Zoom, Maximierung an der Bildschirmgrenze, unveränderten Zoom und Scrollbarkeit nach Erreichen dieser Grenze. Die sechs Zeichen-Symbole, weiche Pinselstriche, Anwenden und Rückgängig werden geprüft. Screenshots der Informationsübersicht, Zeichenwerkzeuge und vergrößerten Fenster wurden visuell kontrolliert. Diese Fensterprüfung verwendet X11/Openbox; eine tatsächliche Wayland-/Mehrmonitor-/HiDPI-Prüfung bleibt offen.

@@ -117,10 +117,11 @@ def count_rgb_colors(image,cancel=None):
     """Exact RGB colors (alpha excluded), using a 2 MiB bitset and small tiles."""
     seen=bytearray(1<<21); count=0
     for y in range(0,image.height,32):
-        if cancel and cancel.is_set(): return None
-        data=image.crop((0,y,image.width,min(y+32,image.height))).convert('RGB').tobytes()
-        for r,g,b in struct.iter_unpack('BBB',data):
-            value=(r<<16)|(g<<8)|b; index=value>>3; bit=1<<(value&7)
-            if not seen[index]&bit:
-                seen[index]|=bit; count+=1
+        for x in range(0,image.width,4096):
+            if cancel and cancel.is_set(): return None
+            data=image.crop((x,y,min(x+4096,image.width),min(y+32,image.height))).convert('RGB').tobytes()
+            for r,g,b in struct.iter_unpack('BBB',data):
+                value=(r<<16)|(g<<8)|b; index=value>>3; bit=1<<(value&7)
+                if not seen[index]&bit:
+                    seen[index]|=bit; count+=1
     return count

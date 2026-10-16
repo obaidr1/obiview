@@ -201,7 +201,10 @@ def print_layout(size, page, mode='fit', width_cm=10, height_cm=10, locked=True,
         w,h = width_cm*72/2.54,height_cm*72/2.54
         if locked: h = w*size[1]/size[0]
     elif mode == 'scale':
-        w,h = size[0]*72/dpi*scale_x/100,size[1]*72/dpi*scale_y/100
+        xdpi,ydpi = dpi if isinstance(dpi,(tuple,list)) else (dpi,dpi)
+        if not all(math.isfinite(v) and v>0 for v in (xdpi,ydpi)):
+            raise ValueError('Ungültige Druckauflösung')
+        w,h = size[0]*72/xdpi*scale_x/100,size[1]*72/ydpi*scale_y/100
     else:
         raise ValueError('Unbekannter Druckmodus')
     if min(w,h) <= 0 or not all(math.isfinite(n) for n in (w,h,pw,ph,x_cm,y_cm)):

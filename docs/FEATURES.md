@@ -1,6 +1,6 @@
 # Menü- und Funktionsübersicht
 
-Stand: Bildblick 0.6.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die kompakte Hauptansicht bleibt bei 720 × 640 Pixeln; Werkzeuge öffnen eigene Dialoge.
+Stand: Bildblick 0.7.0. Alle hier als verfügbar bezeichneten Menüeinträge rufen implementierte Funktionen auf. Optionale Integrationen benötigen das jeweils genannte Linux-Systemmodul. Die Hauptansicht startet mit 720 × 640 Pixeln und wächst beim manuellen Zoom bis zur verfügbaren Bildschirmfläche; Werkzeuge öffnen eigene Dialoge.
 
 ## Datei
 
@@ -32,7 +32,7 @@ Dateisuche ist ein Namensfilter im aktuellen Ordner, keine rekursive Volltext- o
 | Menüaktion | Verhalten |
 | --- | --- |
 | Rückgängig / Wiederholen | Pixelzustände und zugehörige DPI wiederherstellen |
-| Zeichnen | Stift, Linie, Pfeil, Rechteck, Ellipse; Breite, Farbe, letzter Strich zurück |
+| Zeichnen | Sechs beschriftete Symbole: Stift, weicher Pinsel, Linie, Pfeil, Rechteck, Ellipse; Breite, Farbe, letzter Strich zurück |
 | Bild einfügen | Bild aus der Zwischenablage als neues, ungespeichertes Dokument |
 | Auswahl / Bild kopieren | Rechteck kopieren, ohne Auswahl das ganze Bild |
 | Zwischenablage leeren | Aktuellen Inhalt der System-Zwischenablage leeren |
@@ -69,7 +69,7 @@ Kanten und Ecken sind mit links veränderbar, der Rahmen mit rechts verschiebbar
 | Schärfen / Weichzeichnen | Schärfe und Gauß-Radius per Slider mit Live-Vorschau |
 | Text einfügen | Schriftfamilie, Stil, Punktgröße und Farbe; Umbruch innerhalb der Auswahl |
 | Wasserzeichen | Bild unten rechts mit halber Deckkraft und begrenzter Größe einsetzen |
-| Bildinformationen | Abmessungen, Seiten-/Framezahl und gelesene Metadaten |
+| Bildinformationen | I: Pfade, Format, X-/Y-DPI ändern, Original-/aktuelle Größe und Farben, Druckmaße, RGB-Farbzählung, Datei-/Pixel-Speicher, Ordnerposition, Datum, Ladezeit, Seitenzahl; EXIF/IPTC/Kommentar lesen |
 
 Die Bearbeitung verwendet 8-Bit-RGBA. „Farben reduzieren“ erzeugt daher keine fortlaufend editierbare indizierte Palette. Schriftgrößen in Punkt werden über die Bild-DPI in Pixel umgerechnet. Eine reine DPI-Änderung verbessert keine Bilddetails. JPEG-Neukodierung ist keine verlustfreie JPEG-Transformation.
 
@@ -99,7 +99,7 @@ Die native CLI bietet die mit `python3 cli.py --help` aufgeführten Optionen. Ei
 
 ## Prüfung
 
-82 lokale automatisierte Tests prüfen Pixeloperationen, Metadaten, DPI-Rundreisen, Auswahlgeometrie, Druckmaße, Schrift-/Zeichenoperationen, Exporte, Controller und Decoder. Der GTK-Integrationstest prüft unter anderem Fenstergröße, Menüs, Tastenkürzel, Vorschau, physische Größenänderung, Zwischenablage, Dialoge und Druck als PDF. Reale Scanner und Drucker, distributionsabhängige Mediencodecs sowie eine vollständige Screenreader-Abnahme benötigen zusätzliche manuelle Prüfung.
+92 lokale automatisierte Tests prüfen Pixeloperationen, Metadaten, DPI-Rundreisen, Auswahlgeometrie, Druckmaße, Schrift-/Zeichenoperationen, Exporte, Controller und Decoder. Der GTK-Integrationstest prüft unter anderem Fenstergröße, Menüs, Tastenkürzel, Vorschau, physische Größenänderung, Zwischenablage, Dialoge und Druck als PDF. Reale Scanner und Drucker, distributionsabhängige Mediencodecs sowie eine vollständige Screenreader-Abnahme benötigen zusätzliche manuelle Prüfung.
 
 ## Gemeinsame Bedienung der Werkzeuge
 

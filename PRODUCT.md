@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.6.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.7.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -239,3 +239,12 @@ Der separate Effekte-Dialog bietet zehn direkt anklickbare Effekte, eine große 
 Die Bearbeitungswerkzeuge teilen ein gemeinsames Bedienkonzept: Bildvorschau links, Einstellungen rechts, Originalvergleich, Zurücksetzen und ausdrückliches Anwenden oder Abbrechen. Das gilt für Helligkeit/Kontrast/Farbe, Schärfen/Weichzeichnen, freie Drehung, Rahmen, Rote Augen, Palette, Farbkanaltausch, automatischen Zuschnitt, Leinwand und Text. Neue Werkzeugvorschauen verarbeiten die Originalpixel in einem Hintergrundauftrag, bevor das Ergebnis für die Anzeige verkleinert wird. Ein Auftrag läuft pro Dialog; veraltete oder nach dem Schließen eintreffende Ergebnisse werden verworfen.
 
 Visuelle Parameter erhalten Slider. Exakte Maße, Positionen, DPI und Dateinamen behalten passende Eingabefelder. Rahmenstile, Kanalanordnungen, Zeichenwerkzeuge, Einheiten, Interpolation, Größenvorgaben, Auswahlverhältnisse, Druckmodi und Exportformate sind direkt anklickbar. Bei Rahmen- und Strichbreiten steht zusätzlich eine genaue Zahleneingabe bereit. Fehler in einer Vorschau ändern die Arbeitsdatei nicht; nach Korrektur der Eingabe kann weitergearbeitet werden.
+
+
+## Bildübersicht und Zeichenwerkzeuge in 0.7.0
+
+Das Hauptfenster wächst beim manuellen Vergrößern mit dem Bild. Sobald die verfügbare Bildschirmfläche erreicht ist, wird es maximiert; weiteres Zoomen bleibt möglich und verschiebt den sichtbaren Ausschnitt über Scrollleisten. Die Startgröße bleibt 720 × 640 Pixel. Verkleinern reduziert die Fenstergröße nicht automatisch.
+
+Die Taste **I** öffnet eine vollständige Datei- und Bildübersicht mit ursprünglichen und aktuellen Abmessungen/Farbtiefen, getrennten X-/Y-DPI, physischen Druckmaßen, abschaltbarer RGB-Farbzählung im Hintergrund, Dateigröße, aktuellem Pixel-Speicher, Ordnerposition, Datum und Ladezeit. EXIF, IPTC und Kommentare erscheinen in eigenen Leseansichten. DPI lassen sich ohne Neuberechnung der Pixel ändern und rückgängig machen. Unbekannte Quelldaten werden ausdrücklich gekennzeichnet.
+
+Der Zeichendialog stellt Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellipse als sechs direkt auswählbare, beschriftete Symbole dar. Breite, Farbe und Rücknahme bleiben direkt erreichbar. Der Pinsel trägt weich auslaufende Striche auf; Anwenden übernimmt die gesamte Zeichnung als einen Undo-Schritt.

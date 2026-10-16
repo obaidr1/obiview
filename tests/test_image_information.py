@@ -7,6 +7,7 @@ from image_model import ImageModel
 from image_info import info_values, count_rgb_colors, color_description
 from paint_dialog import paint_strokes
 from window_geometry import growth_target
+from image_tools import print_layout
 
 
 class InformationTests(unittest.TestCase):
@@ -32,6 +33,8 @@ class InformationTests(unittest.TestCase):
             pixels=model.image.tobytes(); model.set_dpi(300,600)
             self.assertEqual(model.image.tobytes(),pixels)
             self.assertEqual(model.dpi_pair,(300,600))
+            layout=print_layout((300,600),(500,500),mode='scale',dpi=model.dpi_pair)
+            self.assertEqual(layout[2:],(72,72))
             for ext in ('jpg','png','tif','bmp'):
                 target=Path(folder)/('out.'+ext); model.save(target)
                 with Image.open(target) as result:
@@ -54,6 +57,8 @@ class InformationTests(unittest.TestCase):
         image=Image.new('RGBA',(4,1))
         image.putdata([(255,0,0,255),(255,0,0,0),(0,0,0,255),(0,255,0,64)])
         self.assertEqual(count_rgb_colors(image),3)
+        wide=Image.new('RGB',(20000,1),'red'); wide.putpixel((19999,0),(0,0,255))
+        self.assertEqual(count_rgb_colors(wide),2)
         event=threading.Event(); event.set()
         self.assertIsNone(count_rgb_colors(image,event))
         self.assertIn('16 777 216',color_description('RGBA',32))
