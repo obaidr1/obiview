@@ -1,8 +1,8 @@
-# Prüfstand von Bildblick 0.9.0
+# Prüfstand von Bildblick 0.9.1
 
 ## Automatisch geprüft
 
-Auf Fedora 44 bestehen 103 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
+Auf Fedora 44 bestehen 108 Tests mit `/usr/bin/python3 -m unittest discover -s tests -v`.
 
 - Pixelbearbeitung, Größenänderung, Zuschnitt, Undo und Redo.
 - Physische Größen, DPI-Export mit erneutem Einlesen in JPEG/PNG/TIFF/BMP und DPI-Undo.

@@ -31,7 +31,9 @@ def check(window,name):
         return
     expected=dialog_size(window.get_transient_for())
     actual=(window.get_surface().get_width(),window.get_surface().get_height())
-    assert actual==expected,(name,'geometry',actual,expected)
+    if getattr(window,'compact',False):
+        assert actual[0]==expected[0] and 0<actual[1]<=expected[1],(name,'compact geometry',actual)
+    else: assert actual==expected,(name,'geometry',actual,expected)
     if isinstance(window,StandardDialog):
         # Check expanded content too: no horizontal clipping inside the body.
         width=window.body.get_width()

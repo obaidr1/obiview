@@ -703,7 +703,43 @@ def tick(window):
             assert window.dialogs
         elif step == 69:
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
-            print('PASS: GTK editing, information, window growth, drawing symbols and full shortcut integration (fullscreen modes, pan, tags, clipboard, zoom lock, help and save dialog)')
+            window.model.rotate(); window.refresh()
+            window.guard_actions=[]
+            window.guard(lambda:window.guard_actions.append('continued'))
+        elif step == 70:
+            dialog=window.dialogs[-1]
+            assert [b.get_label() for b in dialog.action_buttons]==['Abbrechen','Verwerfen','Speichern']
+            assert dialog.get_surface().get_width()==520 and dialog.get_surface().get_height()<320
+            screenshot('compact-unsaved')
+            dialog._key(None,Gdk.KEY_Escape,0,Gdk.ModifierType(0))
+            assert window.model.dirty and not window.guard_actions
+            window.guard(lambda:window.guard_actions.append('discarded'))
+            window.dialogs[-1].response(Gtk.ResponseType.REJECT)
+            assert window.guard_actions==['discarded']
+            window.guard(lambda:window.guard_actions.append('saved'))
+            window.dialogs[-1].response(Gtk.ResponseType.ACCEPT)
+        elif step == 71:
+            assert window.dialogs[-1].get_title()=='Bild exportieren'
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            assert window.model.dirty and window.guard_actions==['discarded']
+            window.guard(lambda:window.guard_actions.append('saved'))
+            window.dialogs[-1].response(Gtk.ResponseType.ACCEPT)
+            dialog=window.dialogs[-1]; dialog.folder.set_text(temporary.name)
+            dialog.name.set_text('guard-saved.png'); dialog.format.set_active_id('PNG')
+            dialog.resolution_tiles['full'].set_active(True)
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 72:
+            assert (Path(temporary.name)/'guard-saved.png').is_file()
+            assert not window.model.dirty and window.guard_actions==['discarded','saved']
+            window.model.rotate(); window.refresh()
+            occupied=Path(temporary.name)/'occupied.png'; occupied.mkdir()
+            window.request_save(occupied,after=lambda:window.guard_actions.append('incorrect'))
+            window.dialogs[-1].response(Gtk.ResponseType.ACCEPT)
+        elif step == 73:
+            assert window.model.dirty and window.guard_actions==['discarded','saved']
+            assert window.dialogs[-1].get_title()=='Bearbeitung fehlgeschlagen'
+            window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
+            print('PASS: GTK editing and shortcuts; compact save/discard/cancel prompt, cancelled export, successful save continuation and failed save protection')
             window.cleanup()
             app.quit()
             return False

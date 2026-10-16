@@ -18,7 +18,7 @@ Bei widersprüchlichen Beispielen zuerst den Widerspruch in der Referenz auflös
 - Das Hauptfenster startet bei 720 × 640 logischen Pixeln. Menüleiste, kompakte Symbolleiste, Bildfläche und Statuszeile bilden seine Struktur.
 - Beim manuellen Vergrößern wächst es bis zur verfügbaren Bildschirmfläche. Weitere Vergrößerung verwendet Scrollleisten. Verkleinern schrumpft das Fenster nicht automatisch.
 - Werkzeuge öffnen eigene Dialoge. Keine permanente umfangreiche Bearbeitungsseitenleiste im Hauptfenster.
-- Alle eigenen Dialoge und Nebenfenster verwenden 520 × 760 logische Pixel, einschließlich Export, Bearbeitung, Informationen und Hilfen. 520 px ist die gemeinsame Maximalbreite aus dem Exportmuster. Auf kleineren Bildschirmen werden beide Maße auf die verfügbare Fläche abzüglich 32 px begrenzt. Die Hauptansicht bleibt davon ausgenommen.
+- Alle eigenen Dialoge und Nebenfenster verwenden 520 × 760 logische Pixel, einschließlich Export, Bearbeitung, Informationen und Hilfen. 520 px ist die gemeinsame Maximalbreite aus dem Exportmuster. Auf kleineren Bildschirmen werden beide Maße auf die verfügbare Fläche abzüglich 32 px begrenzt. Die Hauptansicht bleibt davon ausgenommen. Kurze Meldungen und Sicherheitsabfragen sind eine ausdrückliche Ausnahme: gleiche Maximalbreite, aber nur so hoch wie ihr Inhalt.
 - Vorschauen stehen über Optionen und Reglern. Lange Inhalte scrollen vertikal; die Aktionsleiste bleibt außerhalb des Scrollbereichs sichtbar. Keine horizontale Verbreiterung durch Pfade, Listen oder Auswahlgruppen.
 - Große Beispielüberschriften und die Navigationsseitenleiste dieser Dokumentationswebsite sind keine neuen Bestandteile der App.
 
@@ -109,3 +109,7 @@ Datei-, Farb-, Schrift-, Druck- und Portaloberflächen dürfen ihrer Linux-Umgeb
 F1 öffnet die durchsuchbare Tastaturhilfe als eigenen Dialog aus Titel, Suchfeld, scrollbarer zweispaltiger Liste und Schließen. Sie verwendet denselben Shortcut-Katalog wie die Eingabeverarbeitung. Die Website zeigt das Muster im Bereich Navigation.
 
 Der optionale Bildtext im Vollbild liegt auf einer schwarzen Fläche mit 65 % Deckkraft, weißem 12-px-Text und 12-px-Radius. N blendet ihn aus. Markierungen müssen auch mit Text erkennbar sein. Im Vollbild verschwinden die App-Leisten; nach dem Verlassen gelten wieder ihre vorherigen Sichtbarkeiten.
+
+## Ungespeicherte Änderungen
+
+Die kompakte Abfrage bietet „Abbrechen“, „Verwerfen“ und „Speichern“. Abbrechen und Escape lassen das Bild offen; Verwerfen führt die angeforderte Aktion aus. Speichern öffnet den Exportdialog und führt die Aktion erst nach erfolgreichem Speichern in voller Auflösung aus. Abbruch, Fehler oder eine lediglich verkleinerte Exportkopie schließen das Arbeitsbild nicht. Speichern ist die schwarze Hauptaktion; Abbrechen erhält den Anfangsfokus.

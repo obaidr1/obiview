@@ -4,7 +4,7 @@ Referenz: `design-system/index.html`, `DESIGN.md` und `tokens.json`.
 
 ## Gemeinsamer Rahmen
 
-Eigene Dialoge und Nebenfenster verwenden **520 × 760 logische Pixel**. Die Maximalbreite entspricht dem Exportdialog der HTML-Vorlage. Auf einem kleineren Bildschirm begrenzt der gemeinsame Rahmen beide Maße auf die Bildschirmfläche abzüglich 32 Pixel. Die Fenster können nicht über diese gemeinsame Größe hinaus aufgezogen werden. Die Hauptansicht behält ihre eigene Startgröße und das Wachstum beim Zoomen.
+Werkzeugdialoge und Nebenfenster verwenden **520 × 760 logische Pixel**. Kurze Meldungen und Sicherheitsabfragen verwenden dieselbe Maximalbreite, passen ihre Höhe aber an den Inhalt an. Die Maximalbreite entspricht dem Exportdialog der HTML-Vorlage. Auf einem kleineren Bildschirm begrenzt der gemeinsame Rahmen beide Maße auf die Bildschirmfläche abzüglich 32 Pixel. Die Fenster können nicht über diese gemeinsame Größe hinaus aufgezogen werden. Die Hauptansicht behält ihre eigene Startgröße und das Wachstum beim Zoomen.
 
 `dialog_layout.StandardDialog` und `module_window` lesen die Größen direkt aus den Designtokens. Eine nachträgliche Breitenänderung an einem einzelnen Fachdialog ist damit nicht mehr vorgesehen. Körper und feste Abschlussleiste sind getrennt; lange Inhalte scrollen vertikal. Vorschauen und Einstellungen stehen untereinander. Lange Pfade und Informationswerte umbrechen, Dateinamen in der Exportzusammenfassung werden gekürzt dargestellt.
 
@@ -32,10 +32,12 @@ Eigene Dialoge und Nebenfenster verwenden **520 × 760 logische Pixel**. Die Max
 
 `tests/ui_dialog_audit.py` öffnet 49 Fälle: 33 Dialog-/Modulvarianten, zehn zusätzliche Exportformatzustände einschließlich eigener Größe und sechs Menü-Popover. Geprüft werden die tatsächlichen Fensterflächen, horizontales Überlaufen der gerenderten Kinder, aufgeklappte Zusatzoptionen und die Position der Abschlussbuttons. Der Test läuft bei 1440 × 1050 und 1024 × 640; bei letzterer Größe beträgt die gemeinsame Dialoghöhe 608 Pixel.
 
-Der bestehende GTK-Integrationstest prüft weiterhin Bildoperationen, Vorschau, Abbrechen/Übernahme, Rückgängig, Druckausgabe und Tastaturbedienung. 103 Unit-Tests sichern die Bild- und Dateifunktionen. Die HTML-Referenz besitzt 14 Browserprüfungen einschließlich gleicher Modalgrößen und erreichbarer Fußleiste. Sie wird bei 1440 × 1050 und 390 × 1400 geprüft.
+Der bestehende GTK-Integrationstest prüft weiterhin Bildoperationen, Vorschau, Abbrechen/Übernahme, Rückgängig, Druckausgabe und Tastaturbedienung. 108 Unit-Tests sichern die Bild- und Dateifunktionen. Die HTML-Referenz besitzt 14 Browserprüfungen einschließlich gleicher Modalgrößen und erreichbarer Fußleiste. Sie wird bei 1440 × 1050 und 390 × 1400 geprüft.
 
 Die GTK-Geometrie wird unter Fedora 44, X11, Xvfb und Openbox überprüft. Die Screenshots verwenden ausschließlich erzeugte Testbilder. Das ist kein vollständiger Test aller realen Codecs, Drucker, Scanner, Screenreader, Skalierungsfaktoren oder der konkreten Wayland-Sitzung.
 
 ## Bewusste Systemgrenze
 
 Linux-Datei-/Ordnerauswahl, Farb- und Schriftwahl, Drucker-/Papierauswahl sowie Portale werden vom System dargestellt. Ihre Fenstermaße und Gestaltung werden nicht von Bildblick erzwungen. Das entspricht der ausdrücklich dokumentierten Systemgrenze der Designvorlage. Die App-eigenen Auslöser und vorbereitenden Dialoge folgen dem gemeinsamen Design.
+
+Ab 0.9.1 prüft der GTK-Funktionstest zusätzlich die kompakte Abfrage mit Speichern/Verwerfen/Abbrechen, Escape, Exportabbruch, Fortsetzung nach erfolgreichem Speichern und den Erhalt der Änderungen nach einem Schreibfehler.

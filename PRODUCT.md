@@ -4,7 +4,7 @@
 
 Bildblick ist eine native Linux-Anwendung für das Ansehen, einfache Bearbeiten und gezielte Exportieren von Bildern. Sie verbindet eine direkt bedienbare Bildfläche mit nachvollziehbaren Speicheroptionen und einer kleinen Automatisierungsschicht für wiederkehrende Aufgaben.
 
-Die aktuelle Version 0.9.0 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
+Die aktuelle Version 0.9.1 richtet sich an Menschen, die Bilder auf dem eigenen Rechner bearbeiten möchten. Der Schwerpunkt liegt auf alltäglichen Abläufen: eine Datei öffnen, prüfen, drehen oder zuschneiden, die Ausgabegröße festlegen und das Ergebnis im gewünschten Format speichern.
 
 Die Anwendung ist in einer frühen Entwicklungsphase. Dieses Dokument beschreibt sowohl den verfügbaren Umfang als auch die noch ausstehende Produktarbeit. Geplante Funktionen sind keine Zusage, dass sie bereits implementiert sind.
 
@@ -263,3 +263,5 @@ Alle eigenen Dialoge und Nebenfenster folgen dem Exportmuster mit 520 × 760 log
 Bearbeitungsdialoge ordnen Vorschau und Optionen untereinander an. Bildinformationen, Metadaten, Zeichnen, Größenänderung, Export, Tastaturhilfe, Meldungen, Vorschaubilder, Histogramm und Medienmodul verwenden denselben Rahmen. Die sechs Menüs gruppieren ihre 88 Aktionen und zeigen verfügbare Kürzel rechts. Systemoberflächen für Datei-, Farb-, Schrift- und Druckerauswahl behalten ihre Linux-Gestaltung.
 
 Der [UI-Abgleich](docs/UI-AUDIT.md) dokumentiert alle betroffenen Module und die Prüfverfahren.
+
+Kurze Meldungen und Sicherheitsabfragen sind ab 0.9.1 inhaltshoch. Ungespeicherte Änderungen bieten Speichern, Verwerfen und Abbrechen; eine nachfolgende Aktion wartet auf erfolgreiches Speichern in voller Auflösung.

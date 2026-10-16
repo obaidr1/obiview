@@ -156,7 +156,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
 
     def message(self, title, text, callback=None):
         self.set_scrim(True)
-        dialog = StandardDialog(title=title, transient_for=self, modal=True)
+        dialog = StandardDialog(title=title, transient_for=self, modal=True, compact=True)
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
         body.append(label(title, 'dialog-title', wrap=True))
         body.append(label(text, selectable=True, wrap=True))
@@ -182,8 +182,21 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
             return
         self.stop_slideshow()
         if self.model.dirty or self.has_preview():
-            self.message('Ungespeicherte Änderungen verwerfen?',
-                         'Abbrechen, um zurückzukehren und das Bild zuerst zu speichern.', action)
+            dialog = StandardDialog(title='Änderungen speichern?', transient_for=self, modal=True, compact=True)
+            dialog.get_content_area().append(label('Änderungen speichern?', 'dialog-title', wrap=True))
+            dialog.get_content_area().append(label('Das Bild enthält ungespeicherte Änderungen. Vor dem Fortfahren speichern?', wrap=True))
+            cancel = dialog.add_button('Abbrechen', Gtk.ResponseType.CANCEL)
+            dialog.add_button('Verwerfen', Gtk.ResponseType.REJECT)
+            dialog.add_button('Speichern', Gtk.ResponseType.ACCEPT)
+            self.set_scrim(True); self.dialogs.append(dialog)
+            def response(dlg, answer):
+                if dlg not in self.dialogs: return
+                self.dialogs.remove(dlg); self.set_scrim(False); dlg.destroy()
+                if answer == Gtk.ResponseType.REJECT: action()
+                elif answer == Gtk.ResponseType.ACCEPT: self.save_dialog(after=action)
+            dialog.connect('response', response)
+            dialog.connect('close-request', lambda *_: (dialog.response(Gtk.ResponseType.CANCEL), True)[1])
+            dialog.present(); cancel.grab_focus()
         else:
             action()
 
@@ -205,21 +218,23 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
             self.stop_slideshow()
             self.file_dialog(False)
 
-    def save_dialog(self):
+    def save_dialog(self, after=None):
         if self.has_preview() and not self.busy:
-            self.edit(lambda _m:None,after=self.save_dialog)
+            self.edit(lambda _m:None,after=lambda:self.save_dialog(after=after))
             return
         if self.model.image and not self.busy:
             self.stop_slideshow()
             for dialog in self.dialogs:
                 if isinstance(dialog, SaveAsDialog):
+                    if after is not None: dialog.save_continuation = after
                     dialog.present()
                     return
             def save(path, settings):
                 self.save_settings = replace(settings,output_width=0,output_height=0)
                 self.export_quality = settings.quality
-                self.request_save(path, settings=settings)
+                self.request_save(path, settings=settings, after=dialog.save_continuation)
             dialog = SaveAsDialog(self, self.save_settings, save)
+            dialog.save_continuation = after
             self.dialogs.append(dialog)
             dialog.present()
 
@@ -246,7 +261,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         self.dialogs.append(chooser)
         chooser.show()
 
-    def request_save(self, path, settings=None):
+    def request_save(self, path, settings=None, after=None):
         if self.busy:
             return
         path = Path(path)
@@ -255,8 +270,13 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         settings = settings if settings is not None else self.save_settings
         def save(overwrite=False):
             resized = settings.output_width and (settings.output_width,settings.output_height) != self.model.image.size
-            self.edit(lambda m:(copy(m) if resized else m).save(path,overwrite=overwrite,settings=settings),
-                      after=lambda:self.status.set_text(f'Exportiert: {path}' if resized else f'Gespeichert: {path}'))
+            def saved():
+                self.status.set_text(f'Exportiert: {path}' if resized else f'Gespeichert: {path}')
+                if after:
+                    if resized:
+                        self.message('Exportkopie gespeichert', 'Die verkleinerte Kopie wurde gespeichert. Das Arbeitsbild bleibt geöffnet; vor dem Fortfahren bitte in voller Auflösung speichern oder Änderungen ausdrücklich verwerfen.')
+                    else: after()
+            self.edit(lambda m:(copy(m) if resized else m).save(path,overwrite=overwrite,settings=settings), after=saved)
         if self.model.multiframe and path.resolve() == self.model.source_path.resolve():
             self.message('Mehrseiten-Original bleibt erhalten',
                          'Speichern exportiert die aktuelle Seite. Bitte einen anderen Dateinamen wählen.')

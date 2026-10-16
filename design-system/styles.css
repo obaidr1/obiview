@@ -76,3 +76,9 @@ dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
 
 .grid > *, .dialog-example { min-width: 0; }
 .dialog-shell { width: min(var(--dialog-width),100%); min-width: 0; }
+
+/* Short messages and unsaved-change prompts use content height. */
+dialog.compact-dialog { height: fit-content; }
+.compact-dialog #modal-content, .compact-dialog .modal-body { flex: 0 1 auto; }
+
+.compact-dialog .dialog-footer { flex-wrap: wrap; }

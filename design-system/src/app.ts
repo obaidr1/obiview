@@ -158,7 +158,8 @@
   function openDialog(kind: string): void {
     const dialog = one<HTMLDialogElement>('#demo-dialog');
     const content = one('#modal-content'); content.replaceChildren();
-    const titles: Record<string,string> = {export: 'Bild exportieren', resize: 'Größe ändern', info: 'Bildinformationen', confirm: 'Änderungen verwerfen?'};
+    dialog.classList.toggle('compact-dialog', kind === 'confirm');
+    const titles: Record<string,string> = {export: 'Bild exportieren', resize: 'Größe ändern', info: 'Bildinformationen', confirm: 'Änderungen speichern?'};
     one('#modal-title').textContent = titles[kind] || 'Beispieldialog';
     if (kind === 'export') {
       const clone = one('#export-example').cloneNode(true) as HTMLElement;
@@ -179,13 +180,14 @@
       const source = one('#data .data-list').cloneNode(true); content.append(source);
       const note = document.createElement('p'); note.className = 'small muted spaced'; note.textContent = 'Beispielwerte. Die native App zeigt zusätzlich vollständige Pfade, Original-/aktuelle Farben, Datei-/Pixel-Speicher, Ordnerposition, Datum, Ladezeit sowie EXIF/IPTC/Kommentar.'; content.append(note);
     } else {
-      content.innerHTML = '<p>Deine Änderungen wurden noch nicht angewendet. Möchtest du sie verwerfen?</p><p class="small muted">Bestätigungsbeispiel. Es werden keine Dateien verändert.</p>';
+      content.innerHTML = '<p>Das Bild enthält ungespeicherte Änderungen. Vor dem Fortfahren speichern?</p><p class="small muted">Bestätigungsbeispiel. Es werden keine Dateien verändert.</p>';
     }
     const scrollBody = document.createElement('div'); scrollBody.className = 'modal-body';
     scrollBody.append(...Array.from(content.childNodes)); content.append(scrollBody);
     const footer = document.createElement('div'); footer.className = 'dialog-footer';
     footer.innerHTML = `<button type="button" class="btn secondary" data-close-dialog>${kind === 'info' ? 'Schließen' : 'Abbrechen'}</button>`;
-    if (kind !== 'info') footer.innerHTML += `<button type="button" class="btn primary" data-demo-submit>${kind === 'confirm' ? 'Verwerfen' : kind === 'export' ? 'Bild speichern' : 'Größe ändern'}</button>`;
+    if (kind === 'confirm') footer.innerHTML += '<button type="button" class="btn secondary" data-demo-submit>Verwerfen</button>';
+    if (kind !== 'info') footer.innerHTML += `<button type="button" class="btn primary" data-demo-submit>${kind === 'confirm' ? 'Speichern' : kind === 'export' ? 'Bild speichern' : 'Größe ändern'}</button>`;
     content.append(footer);
     content.oninput = () => {
       const submit = content.querySelector<HTMLButtonElement>('[data-demo-submit]');

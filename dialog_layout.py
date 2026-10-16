@@ -51,12 +51,13 @@ def normalize(widget):
 
 class StandardDialog(Gtk.Dialog):
     """Fixed maximum width, screen-limited height, scrolling body, fixed footer."""
-    def __init__(self, **kwargs):
+    def __init__(self, compact=False, **kwargs):
         kwargs.pop('default_width', None)
         kwargs.pop('default_height', None)
         parent = kwargs.get('transient_for')
         width, height = dialog_size(parent)
-        super().__init__(**kwargs, default_width=width, default_height=height, resizable=False)
+        self.compact = compact
+        super().__init__(**kwargs, default_width=width, default_height=1 if compact else height, resizable=False)
         self.add_css_class('dialog')
         self.set_titlebar(Gtk.Box())
         self.body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12,
@@ -64,6 +65,9 @@ class StandardDialog(Gtk.Dialog):
         self.body_scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=True)
         self.body_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.body_scroll.set_child(self.body)
+        if compact:
+            self.body_scroll.set_propagate_natural_height(True)
+            self.body_scroll.set_max_content_height(max(100, height-120))
         super().get_content_area().append(self.body_scroll)
         self.action_buttons = []
         self.prepared = False

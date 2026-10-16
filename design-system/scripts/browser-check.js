@@ -24,7 +24,8 @@
       q(`[data-open=${kind}]`).click(); const d=q('#demo-dialog');
       const rect=d.getBoundingClientRect();
       assert(Math.abs(rect.width-Math.min(520,innerWidth-32))<2,kind+' width '+rect.width);
-      assert(Math.abs(rect.height-Math.min(760,innerHeight-32))<2,kind+' height '+rect.height);
+      if(kind==='confirm') { assert(rect.height<380, 'Confirmation must stay compact'); assert([...d.querySelectorAll('.dialog-footer button')].map(b=>b.textContent.trim()).join(',')==='Abbrechen,Verwerfen,Speichern'); }
+      else assert(Math.abs(rect.height-Math.min(760,innerHeight-32))<2,kind+' height '+rect.height);
       const body=q('#modal-content .modal-body'); body.scrollTop=body.scrollHeight;
       const footer=q('#modal-content > .dialog-footer').getBoundingClientRect();
       assert(footer.bottom<=rect.bottom && footer.top>=rect.top,kind+' footer');
