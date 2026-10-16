@@ -19,6 +19,7 @@ from PIL import ImageColor
 from ui_theme import install_theme, label, icon_button
 from copy import copy
 from dataclasses import replace
+from window_geometry import growth_target
 
 
 class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.ApplicationWindow):
@@ -35,6 +36,9 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         self.drag_start = None
         self.origin = (0, 0)
         self.dialogs = []
+        self.growth_timer = 0
+        self.window_bounds = None
+        self.connect('realize',self.watch_window_bounds)
         self.allow_close = False
         tile = cairo.ImageSurface(cairo.FORMAT_RGB24, 32, 32)
         ctx = cairo.Context(tile)
@@ -87,7 +91,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
         toolbar.append(self.redo_button)
         toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
         for icon,title,callback in [
-            ('dialog-information-symbolic','Bildinformationen',self.show_info),
+            ('dialog-information-symbolic','Bildinformationen (I)',self.show_info),
             ('zoom-in-symbolic','Vergrößern (+)',lambda:self.zoom(1.25)),
             ('zoom-out-symbolic','Verkleinern (−)',lambda:self.zoom(.8)),
             ('zoom-fit-best-symbolic','Einpassen (F)',self.fit_image),
@@ -292,6 +296,44 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
                                Gtk.PolicyType.NEVER if self.fit else Gtk.PolicyType.AUTOMATIC)
         self.canvas.set_content_width(1 if self.fit or not image else round(image.width*self.scale))
         self.canvas.set_content_height(1 if self.fit or not image else round(image.height*self.scale))
+        if image and not self.fit and not self.growth_timer:
+            self.growth_timer = GLib.idle_add(self.grow_for_image)
+
+    def watch_window_bounds(self,*_):
+        def capture(_surface,size):
+            bounds = tuple(size.get_bounds())
+            if min(bounds)>0: self.window_bounds = bounds
+        self.get_surface().connect('compute-size',capture)
+
+    def available_window_size(self):
+        surface = self.get_surface()
+        monitor = self.get_display().get_monitor_at_surface(surface) if surface else None
+        if not monitor: return self.window_bounds
+        geometry = monitor.get_geometry()
+        try:
+            gi.require_version('GdkX11','4.0')
+            from gi.repository import GdkX11
+            if isinstance(monitor,GdkX11.X11Monitor):
+                area = monitor.get_workarea()
+                return area.width,area.height
+        except (ImportError,ValueError): pass
+        if self.window_bounds:
+            return min(geometry.width,self.window_bounds[0]),min(geometry.height,self.window_bounds[1])
+        # Older Wayland compositors may omit bounds; maximize before touching panels.
+        return geometry.width,max(1,geometry.height-64)
+
+    def grow_for_image(self):
+        self.growth_timer = 0
+        if self.closed or self.fit or self.model.image is None or not self.get_mapped(): return False
+        if self.is_maximized() or self.is_fullscreen(): return False
+        available = self.available_window_size()
+        if not available: return False
+        current = tuple(self.get_default_size())
+        viewport = self.scroll.get_width(),self.scroll.get_height()
+        target = growth_target(self.model.image.size,self.scale,current,viewport,available)
+        if target == 'maximize': self.maximize()
+        elif target: self.set_default_size(*target)
+        return False
 
     def update_status(self):
         image = self.model.image
@@ -450,6 +492,7 @@ class Window(FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatures, Gtk.Applicat
                        Gdk.KEY_c:lambda:self.copy_image() if self.model.image else None}
         else:
             actions = {Gdk.KEY_o:self.open_dialog, Gdk.KEY_s:lambda:self.save_dialog() if self.model.image else None,
+                       Gdk.KEY_i:self.show_info,
                        Gdk.KEY_d:self.clear_image, Gdk.KEY_plus:lambda:self.zoom(1.25), Gdk.KEY_equal:lambda:self.zoom(1.25),
                        Gdk.KEY_minus:lambda:self.zoom(.8), Gdk.KEY_1:self.actual_size,
                        Gdk.KEY_f:self.fit_image, Gdk.KEY_r:lambda:self.rotate(True),

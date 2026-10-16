@@ -8,6 +8,8 @@ from save_options import SaveSettings
 from image_export import write_image
 import io
 import re
+import time
+from image_info import dpi_pair, source_details
 
 
 FORMATS = {'.png': 'PNG', '.jpg': 'JPEG', '.jpeg': 'JPEG',
@@ -77,6 +79,17 @@ class ImageModel:
         self.metadata = {}
         self.xmp = b''
         self.comment = b''
+        self.source_info = {}
+        self.load_ms = None
+
+    @property
+    def dpi_pair(self):
+        return dpi_pair(self.image) if self.image else (96.,96.)
+
+    def set_dpi(self,x,y):
+        if not all(math.isfinite(v) and 1<=v<=9600 for v in (x,y)):
+            raise ValueError('DPI muss zwischen 1 und 9600 liegen.')
+        image=self.image.copy(); image.info['dpi']=(x,y); self.replace(image)
 
     @property
     def dpi(self):
@@ -92,6 +105,7 @@ class ImageModel:
         return self.revision != self.saved_revision
 
     def load(self, path, frame=0):
+        started=time.perf_counter()
         path = Path(path).absolute()
         exif_bytes = b''
         xmp = comment = b''
@@ -103,11 +117,12 @@ class ImageModel:
                 source.seek(frame)
                 if source.width*source.height > 80_000_000 or count > 10_000:
                     raise ValueError('Datei überschreitet die Grenze von 80 Megapixeln oder 10.000 Einzelbildern.')
+                details=source_details(source,path)
                 icc = source.info.get('icc_profile') if source.mode in ('RGB', 'RGBA') else None
                 duration = max(20, int(source.info.get('duration', 100) or 100))
                 oriented = ImageOps.exif_transpose(source)
                 xmp = oriented.info.get('xmp', b'')
-                comment = source.info.get('comment', b'')
+                comment = source.info.get('comment',source.info.get('Comment',source.info.get('Description',b'')))
                 if isinstance(xmp, str):
                     xmp = xmp.encode('utf-8')
                 if isinstance(comment, str):
@@ -126,11 +141,14 @@ class ImageModel:
             from native_codecs import decode
             image, count, metadata = decode(path, frame=frame)
             duration, icc = 100, None
+            details={'size':image.size,'format':metadata.get('Format',path.suffix.lstrip('.').upper()),'rasterized':True}
         self.image, self.path, self.source_path = image, path, path
         self.frame_count, self.frame_index = count, frame
         self.multiframe, self.icc = count > 1, icc
         self.exif, self.metadata, self.duration = exif_bytes, metadata, duration
         self.xmp, self.comment = xmp, comment
+        self.source_info=details
+        self.load_ms=(time.perf_counter()-started)*1000
         self.history.clear()
         self.future.clear()
         self.revision = self.saved_revision = 0
@@ -138,7 +156,7 @@ class ImageModel:
 
     def replace(self, image):
         if 'dpi' not in image.info:
-            image.info['dpi'] = (self.dpi,self.dpi)
+            image.info['dpi'] = self.dpi_pair
         self.history.append((self.image, self.revision))
         self.history = self.history[-20:]
         while len(self.history) > 1 and sum(i.width*i.height*4 for i,_ in self.history) > 128*1024*1024:

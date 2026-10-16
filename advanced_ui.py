@@ -81,6 +81,8 @@ class AdvancedFeatures:
 
     def cleanup(self, *_):
         self.closed = True
+        if getattr(self,'growth_timer',0):
+            GLib.source_remove(self.growth_timer); self.growth_timer=0
         self.preview_generation = getattr(self,'preview_generation',0)+1
         if getattr(self,'preview_timer',0):
             GLib.source_remove(self.preview_timer)
@@ -454,18 +456,12 @@ class AdvancedFeatures:
                   ('metadata','EXIF / ICC übernehmen (soweit Format unterstützt)',self.keep_metadata,'bool')],apply)
 
     def show_info(self):
+        from info_dialog import ImageInfoDialog
+        if self.busy or self.model.image is None: return
         self.stop_slideshow()
-        model = self.model
-        text = f'{model.source_path}\n{model.image.width} × {model.image.height} Pixel\nSeite {model.frame_index+1} / {model.frame_count}\n\n'
-        text += '\n'.join(f'{key}: {value}' for key,value in model.metadata.items())
-        dialog = Gtk.Window(title='Bildinformationen',transient_for=self,modal=True,default_width=650,default_height=480)
-        scroll = Gtk.ScrolledWindow()
-        view = Gtk.TextView(editable=False,wrap_mode=Gtk.WrapMode.WORD_CHAR,monospace=True,
-                            left_margin=16,right_margin=16,top_margin=16,bottom_margin=16)
-        view.get_buffer().set_text(text)
-        scroll.set_child(view)
-        dialog.set_child(scroll)
-        dialog.present()
+        for dialog in self.dialogs:
+            if isinstance(dialog,ImageInfoDialog): dialog.present(); return dialog
+        return ImageInfoDialog(self)
 
     def export_pages(self):
         self.stop_slideshow()

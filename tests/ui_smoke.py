@@ -11,6 +11,7 @@ from bildblick import Window, Gtk, Gdk, Gio, GLib
 from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
 from image_tools import fine_rotate, frame, red_eye, reduce_colors, swap_channels, auto_crop, add_canvas
 from edit_controls import SliderField, ChoiceButtons
+from paint_dialog import paint_strokes
 
 Gtk.init()
 if Gdk.Display.get_default() is None:
@@ -79,6 +80,8 @@ def tick(window):
             window.redo()
             assert window.model.image.size==(600,960)
             window.undo()
+            window.unmaximize()
+            window.set_default_size(720,640)
             window.fit_image()
         elif step == 2:
             window.crop_toggle.set_active(True)
@@ -546,7 +549,78 @@ def tick(window):
             assert dialog.accept.get_sensitive() and not dialog.error.get_text()
             dialog.response(Gtk.ResponseType.CANCEL)
             assert window.model.image.tobytes()==window.tool_before.tobytes()
-            print('PASS: GTK core + direct editing choices, two-way sliders, full-image previews, original comparison, cancel/reset/apply/undo for nine editing tools, drawing and resize choices')
+            window.unmaximize(); window.set_default_size(720,640)
+            window.request_load(sample)
+        elif step == 50:
+            window.set_focus(None)
+            assert window.key_pressed(None,Gdk.KEY_i,0,Gdk.ModifierType(0))
+            dialog=window.dialogs[-1]
+            assert window.show_info() is dialog
+            assert '960 × 600' in dialog.values['original_size'].get_text()
+            assert dialog.values['filename'].get_text()=='sample.png'
+            assert 'Millisekunden' in dialog.values['load_time'].get_text()
+            window.info_pixels=window.model.image.tobytes()
+            dialog.dpi_x.set_value(300); dialog.dpi_y.set_value(600)
+            dialog.dpi_button.emit('clicked')
+        elif step == 51:
+            dialog=window.dialogs[-1]
+            assert window.model.dpi_pair==(300,600)
+            assert window.model.image.tobytes()==window.info_pixels
+            assert '8.13 × 2.54 cm' in dialog.values['print_size'].get_text()
+            if 'Berechnung' in dialog.count_label.get_text(): return True
+            assert int(dialog.count_label.get_text().replace(' ',''))>2
+            screenshot('image-information')
+            for kind in ('exif','iptc','comment'):
+                child=dialog.show_metadata(kind)
+                buffer=child.text_view.get_buffer()
+                assert buffer.get_text(*buffer.get_bounds(),False)
+                child.response(Gtk.ResponseType.CLOSE)
+            dialog.count_active.set_active(False)
+            assert dialog.count_label.get_text()=='Deaktiviert'
+            dialog.count_active.set_active(True)
+            dialog.response(Gtk.ResponseType.CLOSE)
+            assert not window.dialogs and window.scrim_depth==0
+            window.undo()
+            window.actual_size()
+        elif step == 52:
+            assert not window.is_maximized()
+            window.grown_size=tuple(window.get_default_size())
+            assert window.grown_size[0]>720 and window.grown_size[1]>640,window.grown_size
+            assert window.scroll.get_width()>=960 and window.scroll.get_height()>=600
+            window.zoom(1.25)
+        elif step == 53:
+            size=tuple(window.get_default_size())
+            assert size[0]>window.grown_size[0] and size[1]>window.grown_size[1],size
+            assert window.scale==1.25
+            screenshot('zoom-grown')
+            window.zoom(2)
+        elif step == 54:
+            if not window.is_maximized(): return True
+            limit=window.available_window_size(); surface=window.get_surface()
+            assert surface.get_width()<=limit[0] and surface.get_height()<=limit[1]
+            assert window.scale==2.5 and not window.fit
+            assert window.scroll.get_hadjustment().get_upper()>window.scroll.get_hadjustment().get_page_size()
+            screenshot('zoom-screen-limit')
+            window.zoom(.5)
+        elif step == 55:
+            assert window.is_maximized() and window.scale==1.25
+            window.fit_image(); window.unmaximize(); window.set_default_size(720,640)
+        elif step == 56:
+            dialog=window.paint_dialog()
+            assert set(dialog.tool_icons)=={'pen','brush','line','arrow','rectangle','ellipse'}
+            dialog.tool.buttons['brush'].set_active(True)
+            dialog.width.set_value(20)
+        elif step == 57:
+            dialog=window.dialogs[-1]
+            screenshot('drawing-symbols')
+            dialog.begin(None,200,200); dialog.update(None,60,15); dialog.end(None,120,30)
+            window.paint_expected=paint_strokes(window.model.image,dialog.strokes).tobytes()
+            dialog.response(Gtk.ResponseType.ACCEPT)
+        elif step == 58:
+            assert window.model.image.tobytes()==window.paint_expected
+            window.undo()
+            assert window.model.image.tobytes()==window.info_pixels
+            print('PASS: GTK editing + I information fields/metadata/DPI/count, grow with zoom to monitor limit, symbolic drawing tools and soft brush')
             window.cleanup()
             app.quit()
             return False

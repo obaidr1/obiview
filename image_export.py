@@ -17,7 +17,7 @@ def write_image(model, filename, fmt, settings):
     rgba = image
     opts = {}
     if fmt in ('JPEG','PNG','TIFF','BMP','PDF'):
-        opts['dpi'] = (model.dpi,model.dpi)
+        opts['dpi'] = model.dpi_pair
     if fmt in ('JPEG', 'BMP', 'PDF', 'PPM'):
         image = flattened(image)
     else:
@@ -28,7 +28,7 @@ def write_image(model, filename, fmt, settings):
         opts['icc_profile'] = model.icc
     if settings.keep_exif and model.exif and fmt in ('JPEG', 'PNG', 'WEBP'):
         exif = Image.Exif(); exif.load(model.exif)
-        exif[282] = model.dpi; exif[283] = model.dpi; exif[296] = 2
+        exif[282],exif[283] = model.dpi_pair; exif[296] = 2
         opts['exif'] = exif.tobytes()
     if settings.keep_xmp and model.xmp and fmt in ('JPEG', 'WEBP'):
         opts['xmp'] = model.xmp

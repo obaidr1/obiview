@@ -68,7 +68,7 @@ def build_menus(window):
             ('filter','Schärfen / Weichzeichnen …',window.filter_dialog,True),
             ('text','Text einfügen …',window.text_dialog,True),
             ('watermark','Wasserzeichen …',window.watermark_dialog,True),
-            ('info','Bildinformationen',window.show_info,True)]),
+            ('info','Bildinformationen (I)',window.show_info,True)]),
         ('Ansicht', [
             ('zoom-in','Vergrößern',lambda:window.zoom(1.25),True),
             ('zoom-out','Verkleinern',lambda:window.zoom(.8),True),
@@ -95,6 +95,8 @@ def build_menus(window):
                 item.set_attribute_value('accel',GLib.Variant('s',RESIZE_ACCELERATOR))
             elif name == 'save-as':
                 item.set_attribute_value('accel',GLib.Variant('s','<Primary><Shift>s'))
+            elif name == 'info':
+                item.set_attribute_value('accel',GLib.Variant('s','i'))
             submenu.append_item(item)
         menu.append_submenu(title,submenu)
     return menu, actions
