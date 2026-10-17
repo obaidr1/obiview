@@ -13,9 +13,9 @@ AppDir:
   apt:
     arch: amd64
     sources:
-      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ noble main universe'
+      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ jammy main universe'
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
-      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ noble-updates main universe'
+      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ jammy-updates main universe'
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
     include:
       - coreutils
@@ -35,7 +35,7 @@ AppDir:
     arch: [x86_64]
     env:
       PYTHONHOME: '${APPDIR}/usr'
-      PYTHONPATH: '${APPDIR}/usr/lib/python3/dist-packages:${APPDIR}/usr/lib/python3.12/site-packages:${APPDIR}/usr/share/bildblick'
+      PYTHONPATH: '${APPDIR}/usr/lib/python3/dist-packages:${APPDIR}/usr/lib/python3.10/site-packages:${APPDIR}/usr/share/bildblick'
       GI_TYPELIB_PATH: '${APPDIR}/usr/lib/x86_64-linux-gnu/girepository-1.0'
       GTK_DATA_PREFIX: '${APPDIR}/usr'
       XDG_DATA_DIRS: '${APPDIR}/usr/share:/usr/local/share:/usr/share'
@@ -51,10 +51,10 @@ AppImage:
   file_name: Bildblick-0.11.2-x86_64.AppImage
 
 script:
-  - mkdir -p "$TARGET_APPDIR/usr/share/bildblick/design-system" "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps" "$TARGET_APPDIR/usr/share/applications" "$TARGET_APPDIR/usr/lib/python3.12/site-packages"
-  - install -m 755 "$SOURCE_DIR"/AppRun "$TARGET_APPDIR/AppRun"
+  - mkdir -p "$TARGET_APPDIR/usr/share/bildblick/design-system" "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps" "$TARGET_APPDIR/usr/share/applications" "$TARGET_APPDIR/usr/lib/python3.10/site-packages"
   - cp "$SOURCE_DIR"/../../*.py "$TARGET_APPDIR/usr/share/bildblick/"
   - cp "$SOURCE_DIR"/../../design-system/tokens.json "$TARGET_APPDIR/usr/share/bildblick/design-system/tokens.json"
   - cp "$SOURCE_DIR"/../../assets/local.bildblick.Viewer.svg "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg"
   - sed 's/^Exec=.*/Exec=AppRun %f/; s/^Icon=.*/Icon=io.github.obaidr1.obiview/' "$SOURCE_DIR"/../../bildblick.desktop > "$TARGET_APPDIR/usr/share/applications/io.github.obaidr1.obiview.desktop"
-  - python3 -m pip install --no-deps --target "$TARGET_APPDIR/usr/lib/python3.12/site-packages" Pillow==12.2.0
+  - python3 -m pip download --only-binary=:all: --no-deps --python-version 3.10 --implementation cp --abi cp310 --platform manylinux_2_28_x86_64 --platform manylinux_2_27_x86_64 --dest "$BUILD_DIR/pillow-wheel" Pillow==12.2.0
+  - python3 -c 'import os,pathlib,zipfile; wheel = next((pathlib.Path(os.environ["BUILD_DIR"])/"pillow-wheel").glob("Pillow*.whl")); zipfile.ZipFile(wheel).extractall(pathlib.Path(os.environ["TARGET_APPDIR"])/"usr/lib/python3.10/site-packages")'

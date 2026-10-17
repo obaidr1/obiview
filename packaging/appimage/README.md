@@ -1,6 +1,6 @@
 # AppImage package
 
-The AppImage is built from Ubuntu 24.04 runtime packages with appimage-builder. It includes the Python/GTK runtime, Pillow, application code, and design tokens. Device drivers and hardware-specific integrations remain provided by the host system.
+The AppImage is built from Ubuntu 22.04 runtime packages with appimage-builder. It includes the Python/GTK runtime, Pillow, application code, and design tokens. Device drivers and hardware-specific integrations remain provided by the host system.
 
 Build on an Ubuntu 24.04 x86-64 machine with `python3-venv`, `python3-pip`, and `libfuse2t64` available:
 

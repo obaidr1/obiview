@@ -104,7 +104,7 @@ chmod +x Bildblick-0.11.2-x86_64.AppImage
 ./Bildblick-0.11.2-x86_64.AppImage
 ```
 
-The AppImage includes an Ubuntu 24.04 based GTK/Python runtime. Some systems may need the FUSE 2 compatibility library. The x86-64 Flatpak remains available for users who prefer software-center installation and sandboxed file access.
+The AppImage includes an Ubuntu 22.04 based GTK/Python runtime. Some systems may need the FUSE 2 compatibility library. The x86-64 Flatpak remains available for users who prefer software-center installation and sandboxed file access.
 
 #### Manual system install
 
