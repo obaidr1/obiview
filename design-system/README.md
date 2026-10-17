@@ -61,4 +61,4 @@ Geprüft am 16. Oktober 2026: beide Größen mit 14/14 erfolgreichen Prüfungen.
 
 ## Gemeinsame Dialogmaße
 
-Alle eigenen App-Dialoge und Nebenfenster verwenden die Tokens `dialog-width` (520 px), `dialog-height` (760 px) und `dialog-screen-margin` (32 px). Vorschau und Optionen stehen untereinander; die Abschlussleiste bleibt beim Scrollen sichtbar. Die native Umsetzung liest dieselben Größen in `dialog_layout.py`. Der vollständige Abgleich steht in `../docs/UI-AUDIT.md`.
+Die Dialogbreite folgt der Zahl der Bedienelemente (480 px Grundbreite plus 24 px pro Element ab dem fünften, maximal 960 px). Die Höhe wird aus der natürlichen Inhaltshöhe gemessen; Bildschirmgrenzen haben Vorrang. Vorschau, Optionen und Abschlussaktion sollen ohne vertikales Scrollen sichtbar sein. Formel und Messprotokoll stehen in `../docs/DIALOG-SIZING.md` und der native Rahmen setzt sie in `dialog_layout.py` um.

@@ -21,6 +21,7 @@ class ImageInfoDialog(StandardDialog):
                      margin_start=20,margin_end=20,margin_top=16,margin_bottom=16)
         body.append(label('Bildinformationen','dialog-title'))
         self.info_sections = {}
+        section_grid=Gtk.Grid(column_spacing=12,row_spacing=12,hexpand=True)
         fields=[('filename','Dateiname'),('directory','Verzeichnis'),('path','Voller Pfad'),
                 ('format','Format / Komprimierung'),('dpi','Auflösung (DPI)'),
                 ('original_size','Originalgröße'),('current_size','Aktuelle Größe'),
@@ -33,7 +34,10 @@ class ImageInfoDialog(StandardDialog):
         for key,title in fields:
             if key in starts:
                 section=card(starts[key]); section.set_spacing(16)
-                self.info_sections[starts[key]]=section; body.append(section)
+                position=len(self.info_sections)
+                section.set_hexpand(True); section.set_valign(Gtk.Align.START)
+                self.info_sections[starts[key]]=section
+                section_grid.attach(section,position%2,position//2,1,1)
             field=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
             field.append(label(title,'small muted'))
             if key=='dpi':
@@ -59,6 +63,7 @@ class ImageInfoDialog(StandardDialog):
                 widget=label('','info-value',selectable=True,wrap=True,max_width_chars=36,hexpand=True)
                 self.values[key]=widget
             field.append(widget); section.append(field)
+        body.append(section_grid)
         self.note=label('DPI ändert die Druckgröße, nicht die Bildpixel. RGB-Farben werden ohne Alphakanal gezählt.','small muted',wrap=True)
         body.append(self.note)
         buttons=Gtk.Box(spacing=8,homogeneous=True)

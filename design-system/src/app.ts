@@ -190,6 +190,14 @@
     if (kind === 'confirm') footer.innerHTML += '<button type="button" class="btn secondary" data-demo-submit>Verwerfen</button>';
     if (kind !== 'info') footer.innerHTML += `<button type="button" class="btn primary" data-demo-submit>${kind === 'confirm' ? 'Speichern' : kind === 'export' ? 'Bild speichern' : 'Größe ändern'}</button>`;
     content.append(footer);
+    const controls = content.querySelectorAll('.modal-body button,.modal-body input,.modal-body select,.modal-body textarea,.modal-body [role="switch"],.modal-body label,.modal-body p,.modal-body .data-list > div,.modal-body .info-groups > section');
+    const tokens = getComputedStyle(document.documentElement);
+    const base = parseFloat(tokens.getPropertyValue('--dialog-width-base')) || 480;
+    const step = parseFloat(tokens.getPropertyValue('--dialog-width-per-element')) || 24;
+    const maximum = parseFloat(tokens.getPropertyValue('--dialog-width-maximum')) || 960;
+    const targetWidth = Math.min(maximum, base + Math.max(0, controls.length - 4) * step);
+    dialog.style.width = `min(${targetWidth}px, calc(100vw - 32px))`;
+    dialog.style.height = kind === 'confirm' ? 'fit-content' : 'auto';
     content.oninput = () => {
       const submit = content.querySelector<HTMLButtonElement>('[data-demo-submit]');
       if (submit) submit.disabled = all<HTMLInputElement>('input[type=number]',content).some(input => !input.closest('[hidden]') && (!input.value || !input.validity.valid));

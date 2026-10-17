@@ -5,21 +5,59 @@ from gi.repository import Gtk, Gdk, Pango
 from ui_theme import label
 
 _TOKENS = json.loads((Path(__file__).parent / 'design-system' / 'tokens.json').read_text())
-DIALOG_WIDTH = int(_TOKENS['dialog-width'].removesuffix('px'))
-DIALOG_HEIGHT = int(_TOKENS['dialog-height'].removesuffix('px'))
+MIN_DIALOG_WIDTH = int(_TOKENS['dialog-width-base'].removesuffix('px'))
+DIALOG_WIDTH_STEP = int(_TOKENS['dialog-width-per-element'].removesuffix('px'))
+MAX_DIALOG_WIDTH = int(_TOKENS['dialog-width-maximum'].removesuffix('px'))
 SCREEN_MARGIN = int(_TOKENS['dialog-screen-margin'].removesuffix('px'))
 
 
-def dialog_size(parent):
-    display = parent.get_display()
-    surface = parent.get_surface()
+def _screen_limits(parent):
+    display = parent.get_display() if parent else Gdk.Display.get_default()
+    surface = parent.get_surface() if parent else None
     monitor = display.get_monitor_at_surface(surface) if surface else None
     if monitor is None:
-        monitor = display.get_monitors().get_item(0)
+        monitors = display.get_monitors() if display else None
+        monitor = monitors.get_item(0) if monitors and monitors.get_n_items() else None
     if monitor:
         geometry = monitor.get_geometry()
-        return min(DIALOG_WIDTH, geometry.width-SCREEN_MARGIN), min(DIALOG_HEIGHT, geometry.height-SCREEN_MARGIN)
-    return DIALOG_WIDTH, DIALOG_HEIGHT
+        return max(1, geometry.width-SCREEN_MARGIN), max(1, geometry.height-SCREEN_MARGIN)
+    return MAX_DIALOG_WIDTH, 900
+
+
+def dialog_size(parent, element_count=0):
+    """Return the content-count width target and the physical screen ceiling."""
+    max_width, max_height = _screen_limits(parent)
+    target = min(MAX_DIALOG_WIDTH,
+                 MIN_DIALOG_WIDTH + max(0, element_count-4)*DIALOG_WIDTH_STEP)
+    return min(target, max_width), max_height
+
+
+def control_count(widget):
+    """Count visible controls and semantic display items; ignore widget internals."""
+    control_types = (Gtk.Button, Gtk.CheckButton, Gtk.Entry, Gtk.Scale,
+                     Gtk.DropDown, Gtk.Switch, Gtk.TextView, Gtk.ColorButton)
+    def visit(node):
+        if isinstance(node, control_types):
+            return 1
+        total = 1 if isinstance(node, (Gtk.Label, Gtk.Picture)) else 0
+        nested = list(children(node))
+        if isinstance(node, Gtk.Expander):
+            child = node.get_child()
+            if child is not None and child not in nested:
+                nested.append(child)
+        return total + sum(visit(child) for child in nested)
+    return visit(widget)
+
+
+def _natural_size(body, parent, element_count):
+    width, screen_height = dialog_size(parent, element_count)
+    minimum_width, natural_width = body.measure(Gtk.Orientation.HORIZONTAL, -1)[0:2]
+    width = min(max(width, natural_width), _screen_limits(parent)[0])
+    body_width = max(240, width)
+    natural_height = body.measure(Gtk.Orientation.VERTICAL, body_width)[1]
+    # Include the title, shell padding and persistent action row around the body.
+    height = natural_height + 112
+    return width, min(max(1, height), screen_height), natural_height
 
 
 def children(widget):
@@ -58,14 +96,14 @@ def normalize(widget):
 
 
 class StandardDialog(Gtk.Dialog):
-    """Fixed maximum width, screen-limited height, scrolling body, fixed footer."""
+    """Content-sized shell with a screen-limited body and persistent action row."""
     def __init__(self, compact=False, **kwargs):
         kwargs.pop('default_width', None)
         kwargs.pop('default_height', None)
         parent = kwargs.get('transient_for')
         width, height = dialog_size(parent)
         self.compact = compact
-        super().__init__(**kwargs, default_width=width, default_height=1 if compact else height, resizable=False)
+        super().__init__(**kwargs, default_width=width, default_height=1 if compact else height, resizable=True)
         self.add_css_class('dialog')
         self.set_titlebar(Gtk.Box())
         self.body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12,
@@ -126,9 +164,16 @@ class StandardDialog(Gtk.Dialog):
         if self.compact:
             # GtkScrolledWindow may shrink below its propagated natural height.
             # Reserve the wrapped body's actual height, capped for long messages.
-            width, height = dialog_size(self.get_transient_for())
-            natural = self.body.measure(Gtk.Orientation.VERTICAL, width-10)[1]
-            self.body_scroll.set_min_content_height(min(natural, max(100, height-120)))
+            width, height, natural = _natural_size(
+                self.body, self.get_transient_for(), control_count(self.body))
+            _screen_width, screen_height = _screen_limits(self.get_transient_for())
+            body_limit = max(100, screen_height-120)
+            self.body_scroll.set_min_content_height(min(natural, body_limit))
+            self.body_scroll.set_max_content_height(body_limit)
+        else:
+            width, height, _natural = _natural_size(
+                self.body, self.get_transient_for(), control_count(self.body))
+        self.set_default_size(width, height)
         super().present()
 
 
@@ -137,7 +182,7 @@ class ModuleWindow(Gtk.Window):
     def __init__(self, parent, title):
         width,height=dialog_size(parent)
         super().__init__(title=title, transient_for=parent, destroy_with_parent=True,
-                         default_width=width, default_height=height, resizable=False)
+                         default_width=width, default_height=height, resizable=True)
         self.add_css_class('dialog'); self.set_titlebar(Gtk.Box())
         root=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,
                      margin_start=24,margin_end=24,margin_top=24,margin_bottom=24)
@@ -151,6 +196,12 @@ class ModuleWindow(Gtk.Window):
         keys=Gtk.EventControllerKey()
         keys.connect('key-pressed',lambda _c,key,_code,_mods:(self.close(),True)[1] if key==Gdk.KEY_Escape else False)
         self.add_controller(keys)
+
+    def present(self):
+        width, height, _natural = _natural_size(
+            self.module_content, self.get_transient_for(), control_count(self.module_content))
+        self.set_default_size(width, height)
+        super().present()
 
     def set_child(self, child):
         previous=self.module_content.get_first_child()

@@ -19,14 +19,15 @@
   check('Export modal isolates IDs and range synchronization',()=>{const trigger=q('#export [data-open=export]');trigger.focus();trigger.click();assert(q('#demo-dialog').open);const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);assert(new Set(ids).size===ids.length);input('#modal-export-quality','40');assert(q('output[for=modal-export-quality]').value==='40');assert(q('#export-quality').value==='85');click('#demo-dialog [data-close-dialog]');assert(!q('#demo-dialog').open);assert(document.activeElement===trigger);});
   check('Resize dialog preserves ratio and blocks invalid input',()=>{click('#export [data-open=resize]');input('#modal-width','900');assert(q('#modal-height').value==='600');input('#modal-width','0');assert(q('#demo-dialog [data-demo-submit]').disabled);input('#modal-width','1200');assert(!q('#demo-dialog [data-demo-submit]').disabled);click('#demo-dialog [data-close-dialog]');});
   check('Information and confirmation dialogs open and close',()=>{click('#export [data-open=info]');assert(q('#demo-dialog .data-list'));click('#demo-dialog [data-close-dialog]');click('#feedback [data-open=confirm]');assert(document.activeElement.hasAttribute('data-close-dialog'));click('#demo-dialog [data-demo-submit]');assert(!q('#demo-dialog').open);});
-  check('Every modal shares the export footprint and visible footer',()=>{
+  check('Every modal follows control-count sizing and keeps its footer visible',()=>{
     for(const kind of ['export','resize','info','confirm']) {
       q(`[data-open=${kind}]`).click(); const d=q('#demo-dialog');
       const rect=d.getBoundingClientRect();
-      assert(Math.abs(rect.width-Math.min(520,innerWidth-32))<2,kind+' width '+rect.width);
+      const count=q('#modal-content .modal-body').querySelectorAll('button,input,select,textarea,[role="switch"],label,p,.data-list > div,.info-groups > section').length;
+      const target=Math.min(960,480+Math.max(0,count-4)*24);
+      assert(Math.abs(rect.width-Math.min(target,innerWidth-32))<2,kind+' width '+rect.width+' / '+target);
       if(kind==='confirm') { assert(rect.height<380, 'Confirmation must stay compact'); assert([...d.querySelectorAll('.dialog-footer button')].map(b=>b.textContent.trim()).join(',')==='Abbrechen,Verwerfen,Speichern'); }
-      else assert(Math.abs(rect.height-Math.min(760,innerHeight-32))<2,kind+' height '+rect.height);
-      const body=q('#modal-content .modal-body'); body.scrollTop=body.scrollHeight;
+      else { const body=q('#modal-content .modal-body'); assert(body.scrollHeight<=body.clientHeight+1,kind+' content unexpectedly scrolls: '+body.scrollHeight+'/'+body.clientHeight+'; dialog '+rect.width+'x'+rect.height); }
       const footer=q('#modal-content > .dialog-footer').getBoundingClientRect();
       assert(footer.bottom<=rect.bottom && footer.top>=rect.top,kind+' footer');
       click('#demo-dialog [data-close-dialog]');

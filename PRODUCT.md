@@ -258,7 +258,7 @@ Die lokale Designreferenz enthält alle benutzerseitigen Elementfamilien und ver
 
 ## Einheitliche Dialoggrößen in 0.9.0
 
-Alle eigenen Dialoge und Nebenfenster folgen dem Exportmuster mit 520 × 760 logischen Pixeln. Auf kleineren Bildschirmen reduziert sich die Größe einheitlich; lange Inhalte scrollen innerhalb der Oberfläche. Abschlussaktionen bleiben fest erreichbar. Die gemeinsame Größenquelle ist `design-system/tokens.json`.
+Dialoge erhalten eine aus der Bedienelementzahl abgeleitete Breite und eine Höhe nach ihrem natürlichen Inhalt. Die Bildschirmfläche begrenzt beide Maße. Vertikales Scrollen kommt nur zum Einsatz, wenn der Inhalt nicht in den verfügbaren Bildschirm passt. Formel: `docs/DIALOG-SIZING.md`; Tokens: `design-system/tokens.json`.
 
 Bearbeitungsdialoge ordnen Vorschau und Optionen untereinander an. Bildinformationen, Metadaten, Zeichnen, Größenänderung, Export, Tastaturhilfe, Meldungen, Vorschaubilder, Histogramm und Medienmodul verwenden denselben Rahmen. Die sechs Menüs gruppieren ihre 88 Aktionen und zeigen verfügbare Kürzel rechts. Systemoberflächen für Datei-, Farb-, Schrift- und Druckerauswahl behalten ihre Linux-Gestaltung.
 

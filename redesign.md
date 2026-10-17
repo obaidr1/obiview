@@ -4,7 +4,7 @@ Stand: 16. Oktober 2026. Ausgangspunkt: Version 0.9.2. Grundlage: [knowlede.md](
 
 ## Rahmen und Vorgehen
 
-Der vorhandene helle Stil, die kompakte Desktopstruktur, alle Funktionen und Tastenkürzel bleiben erhalten. Werkzeugdialoge: maximal 520 × 760 logische Pixel, begrenzt durch den Bildschirm. Meldungen und die Speicherabfrage: inhaltshoch, drei getrennte Speicherentscheidungen. Kein automatisches Beschneiden oder Verfärben von Nutzerbildern für die Gestaltung.
+Die frühere gemeinsame Dialoggröße 520 × 760 ist aufgehoben. `docs/DIALOG-SIZING.md` definiert die neue Regel: Die Breite richtet sich nach der Zahl der Bedienelemente; die Höhe nach dem natürlichen Layout; der Bildschirm begrenzt beides. Jede Dialogfamilie wird geöffnet und auf Umbruch, Scrollbedarf, Footer und erreichbare Inhalte geprüft. Kurze Meldungen bleiben inhaltshoch.
 
 Geprüft wurden die sechs Menümodelle, die gemeinsamen Komponenten und alle eigenen Dialog-/Modulfamilien anhand ihres Quellcodes. Ergänzend wurden vorhandene native Prüfbilder von Export, Bildinformationen und Bildanpassungen mit der HTML-Referenz verglichen. Das ersetzt keine Geräteprüfung von Scanner, Drucker oder Desktop-Portalen. Nach Änderungen folgen neue native Tests und Screenshots.
 
@@ -31,6 +31,10 @@ Geprüft wurden die sechs Menümodelle, die gemeinsamen Komponenten und alle eig
 | Histogramm | RGB-Kurven unterscheiden sich überwiegend durch Farbe. | Im nächsten Durchgang benannte Kanalwahl/Legende, damit die Zuordnung nicht allein von Farbe abhängt. |
 | Medien, native Datei-/Farb-/Schrift-/Druckdialoge | Teilweise vom System bzw. von Codecs bereitgestellt. | Eigenen Rahmen konsistent halten; Systemoberflächen respektieren. Hardware-/Desktopprüfung bleibt ausdrücklich getrennt. |
 | Fehler, Bestätigungen, ungespeicherte Änderungen | Kompakter Rahmen und sicherer Ablauf sind seit 0.9.2 geprüft. | Erhalten. Keine erneute Mindesthöhe von 760 px. |
+
+## Größenumstellung · 17. Oktober 2026
+
+Das neue Größen- und Prüfprotokoll steht in [docs/DIALOG-SIZING.md](docs/DIALOG-SIZING.md). Der gemeinsame GTK-Rahmen zählt Bedienelemente, misst das natürliche Inhaltslayout, wächst in der Breite mit komplexen Formularen und bleibt bis zur Bildschirmgrenze ohne festes Größenraster. Vorschau und Regler in Werkzeug- und Effektdialogen stehen nebeneinander, damit der zusätzliche Platz die vertikale Höhe senkt. `tests/ui_dialog_audit.py` erfasst alle Dialoge und Popover einschließlich ihrer Maße und ihres Scrollbedarfs. Die reale GTK-Audit-Ausführung ist noch ausstehend; diese Session hat keinen nutzbaren GTK-Display-/D-Bus-Socket.
 
 ## Erste Umsetzung: klar abgegrenzter Durchgang
 

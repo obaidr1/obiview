@@ -42,7 +42,7 @@ Stand: 16. Oktober 2026. Grundlage: *Refactoring UI* von Adam Wathan und Steve S
 
 **Buch, S. 76–99:** Maximalbreiten und inhaltliche Größen sind oft sinnvoller als prozentuale Raster. Große Elemente und kleine Bedienelemente skalieren nicht identisch.
 
-**Für Bildblick:** Die vereinbarte Maximalbreite von 520 logischen Pixeln bleibt. Bearbeitungsdialoge behalten den gemeinsamen 760-px-Rahmen, begrenzt durch den Bildschirm. Kurze Bestätigungen und Meldungen bleiben inhaltshoch. Das Buch ist kein Anlass, diese ausdrückliche Produktentscheidung aufzuheben. Freier Platz in einem Werkzeug ist weniger schädlich als künstlich gestreckte Buttons. Lange Inhalte scrollen bei fest erreichbaren Aktionen.
+**Aktualisierte Produktregel (17. Oktober 2026):** Die frühere gemeinsame Maximalbreite von 520 px und der feste 760-px-Rahmen sind aufgehoben. Die Breite wächst mit der Anzahl der Bedienelemente, die Höhe folgt der gemessenen natürlichen Inhaltshöhe, beides begrenzt durch den Bildschirm. Siehe `docs/DIALOG-SIZING.md`. Freier Platz in einem Werkzeug ist weniger schädlich als künstlich gestreckte Buttons; unnötiges Scrollen wird durch passende Gruppierung und Anordnung vermieden.
 
 ## 8. Lesbarkeit systematisch sichern
 

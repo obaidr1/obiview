@@ -3,7 +3,7 @@ import os, sys, tempfile, traceback, time, base64
 from pathlib import Path
 from PIL import Image, ImageGrab
 from bildblick import Window, Gtk, Gdk, Gio, GLib
-from dialog_layout import StandardDialog, module_window, dialog_size, children
+from dialog_layout import StandardDialog, module_window, dialog_size, control_count, children
 
 scratch=tempfile.TemporaryDirectory(prefix='bildblick-dialog-audit-')
 os.environ['XDG_CONFIG_HOME']=scratch.name
@@ -24,20 +24,26 @@ def expanded(widget):
 
 def check(window,name):
     if isinstance(window,Gtk.PopoverMenu):
-        assert 0<window.get_width()<=520,(name,'menu width',window.get_width())
+        assert 0<window.get_width()<=960,(name,'menu width',window.get_width())
         monitor=window.get_display().get_monitor_at_surface(window.get_native().get_surface())
         assert window.get_height()<=monitor.get_geometry().height,(name,'menu height',window.get_height())
         print('PASS MENU',name,window.get_width(),window.get_height(),flush=True)
         return
-    expected=dialog_size(window.get_transient_for())
+    elements=control_count(window.body) if isinstance(window,StandardDialog) else control_count(window.module_content)
+    expected=dialog_size(window.get_transient_for(),elements)
     actual=(window.get_surface().get_width(),window.get_surface().get_height())
-    if getattr(window,'compact',False):
-        assert actual[0]==expected[0] and 0<actual[1]<=expected[1],(name,'compact geometry',actual)
-    else: assert actual==expected,(name,'geometry',actual,expected)
+    parent=window.get_transient_for()
+    display=window.get_display()
+    surface=parent.get_surface() if parent else None
+    monitor=display.get_monitor_at_surface(surface) if surface else None
+    monitor=monitor or display.get_monitors().get_item(0)
+    bounds=monitor.get_geometry()
+    assert 0<actual[0]<=bounds.width-32 and 0<actual[1]<=bounds.height-32,(name,'screen bounds',actual,bounds.width,bounds.height)
     if isinstance(window,StandardDialog):
         # Check expanded content too: no horizontal clipping inside the body.
         width=window.body.get_width()
-        assert width<=expected[0]-48,(name,'body width',width)
+        allowed_width=min(960,bounds.width-32)
+        assert width<=allowed_width-48,(name,'body width',width,allowed_width)
         if name=='save_dialog':
             assert window.destination_section.get_visible()
             for entry in (window.name,window.folder):
@@ -60,9 +66,14 @@ def check(window,name):
         visit(window.body)
         for button in window.action_buttons:
             ok,rect=button.compute_bounds(window)
-            assert ok and rect.get_y()>=0 and rect.get_y()+rect.get_height()<=expected[1],(name,'footer clipped')
+            assert ok and rect.get_y()>=0 and rect.get_y()+rect.get_height()<=actual[1],(name,'footer clipped')
         scroll=window.body_scroll.get_vadjustment()
+        needs_scroll=scroll.get_upper()>scroll.get_page_size()+1
+        body_natural=window.body.measure(Gtk.Orientation.VERTICAL,max(240,window.body.get_width()))[1]
+        print(f'AUDIT {name}: controls={elements}, width-target={expected[0]}, actual={actual[0]}x{actual[1]}, body-natural={body_natural}, scroll-needed={needs_scroll}',flush=True)
         scroll.set_value(max(0,scroll.get_upper()-scroll.get_page_size()))
+    else:
+        print(f'AUDIT {name}: controls={elements}, width-target={expected[0]}, actual={actual[0]}x{actual[1]}',flush=True)
     print('PASS DIALOG',name,actual,flush=True)
 
 def tick(w):

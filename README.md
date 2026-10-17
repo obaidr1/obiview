@@ -437,7 +437,7 @@ Die lokale [Designreferenz](design-system/index.html) zeigt alle vorhandenen Ele
 
 ### Einheitliche Oberflächen
 
-Eigene Dialoge und Nebenfenster verwenden maximal **520 × 760 logische Pixel**. Bei geringerer Bildschirmgröße schrumpft dieser Rahmen; lange Inhalte scrollen, während die Abschlussbuttons sichtbar bleiben. Vorschau und Werkzeugoptionen stehen untereinander. Die Maße kommen aus denselben Tokens wie die [lokale Designreferenz](design-system/index.html). Der [vollständige UI-Abgleich](docs/UI-AUDIT.md) beschreibt die geprüften Module und die Ausnahmen für native Systemdialoge.
+Dialoge erhalten eine Breite nach Zahl ihrer Bedienelemente und eine Höhe nach dem natürlichen Inhalt. Die Bildschirmfläche begrenzt die Maße; Dialoge sollen ihre Elemente ohne Scrollen zeigen, solange der Platz reicht. Die [Größenregel](docs/DIALOG-SIZING.md) und der [UI-Abgleich](docs/UI-AUDIT.md) beschreiben Formel, Inventar und Ausnahmen für native Systemdialoge.
 
 Kurze Meldungen und die Abfrage bei ungespeicherten Änderungen bleiben kompakt. **Speichern**, **Verwerfen** und **Abbrechen** sind getrennte Aktionen. Ein abgebrochener oder fehlgeschlagener Speichervorgang verwirft keine Änderungen.
 

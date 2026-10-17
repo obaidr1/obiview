@@ -4,9 +4,9 @@ Referenz: `design-system/index.html`, `DESIGN.md` und `tokens.json`.
 
 ## Gemeinsamer Rahmen
 
-Werkzeugdialoge und Nebenfenster verwenden **520 × 760 logische Pixel**. Kurze Meldungen und Sicherheitsabfragen verwenden dieselbe Maximalbreite, passen ihre Höhe aber an den Inhalt an. Die Maximalbreite entspricht dem Exportdialog der HTML-Vorlage. Auf einem kleineren Bildschirm begrenzt der gemeinsame Rahmen beide Maße auf die Bildschirmfläche abzüglich 32 Pixel. Die Fenster können nicht über diese gemeinsame Größe hinaus aufgezogen werden. Die Hauptansicht behält ihre eigene Startgröße und das Wachstum beim Zoomen.
+Die frühere gemeinsame Dialoggröße von 520 × 760 px ist aufgehoben. `docs/DIALOG-SIZING.md` legt die neue Formel fest: Anzahl der Bedienelemente empfiehlt die Breite, die natürliche GTK-Messung bestimmt die Höhe, und die verfügbare Bildschirmfläche setzt die Obergrenze. Die Fenster bleiben größenveränderbar. Die Aktionsleiste bleibt fest; vertikales Scrollen ist nur bei Inhalten zulässig, die auch in der maximalen Bildschirmfläche nicht passen. Die Hauptansicht behält ihre eigene Startgröße und das Wachstum beim Zoomen.
 
-`dialog_layout.StandardDialog` und `module_window` lesen die Größen direkt aus den Designtokens. Eine nachträgliche Breitenänderung an einem einzelnen Fachdialog ist damit nicht mehr vorgesehen. Körper und feste Abschlussleiste sind getrennt; lange Inhalte scrollen vertikal. Vorschauen und Einstellungen stehen untereinander. Lange Pfade und Informationswerte umbrechen, Dateinamen in der Exportzusammenfassung werden gekürzt dargestellt.
+`dialog_layout.StandardDialog` und `module_window` zählen Bedienelemente und messen den tatsächlichen Inhalt. Lange Pfade und Informationswerte umbrechen; sie dürfen die Dialogbreite nicht künstlich vergrößern.
 
 ## Inventar und Korrekturen
 
@@ -23,14 +23,14 @@ Werkzeugdialoge und Nebenfenster verwenden **520 × 760 logische Pixel**. Kurze 
 | Datei-/Arbeitsabläufe | Umbenennen, Öffnen mit, letzte Ordner, Zusammenfügen, Exportoptionen, Stapeloptionen und Meldungen verwenden den gemeinsamen Rahmen. Wasserzeichen und Dateiauswahl verwenden Systemdialoge. |
 | Einstellungen / Drucken | Ansichtsoptionen, Diashow-Intervall und eigene Druckeinstellungen verwenden den gemeinsamen Rahmen. |
 | Hilfe | Durchsuchbare Tastaturhilfe und Über-Meldung mit gleicher Größe und festen Abschlussaktionen. |
-| Nebenfenster | Vorschaubilder/Suche, Histogramm und Medienwiedergabe mit 520 × 760 und eigener Schließen-Aktion. |
+| Nebenfenster | Vorschaubilder/Suche, Histogramm und Medienwiedergabe mit inhaltsabhängiger Größe und eigener Schließen-Aktion. |
 | Stapelfortschritt | Gleicher Rahmen, sichtbare Abbruchaktion und abgedunkeltes Elternfenster. |
 | Menüs | Alle sechs Hauptmenüs mit 88 Aktionen: sinnvolle Abschnittstrenner, Kürzel rechts, doppelte Kürzel aus den Beschriftungen entfernt. |
 | Gemeinsame Komponenten | Helle Flächen, 24-px-Dialogradius, 24-px-Außenabstand, Karten, direkte Auswahl, Slider, Fokus, deaktivierte Zustände und schwarze Hauptaktion aus dem bestehenden Designsystem. |
 
 ## Prüfung
 
-`tests/ui_dialog_audit.py` öffnet 49 Fälle: 33 Dialog-/Modulvarianten, zehn zusätzliche Exportformatzustände einschließlich eigener Größe und sechs Menü-Popover. Geprüft werden die tatsächlichen Fensterflächen, horizontales Überlaufen der gerenderten Kinder, aufgeklappte Zusatzoptionen und die Position der Abschlussbuttons. Der Test läuft bei 1440 × 1050 und 1024 × 640; bei letzterer Größe beträgt die gemeinsame Dialoghöhe 608 Pixel.
+`tests/ui_dialog_audit.py` öffnet 49 Fälle: 33 Dialog-/Modulvarianten, zehn zusätzliche Exportformatzustände einschließlich eigener Größe und sechs Menü-Popover. Es erfasst pro Dialog Bedienelementzahl, Breitenempfehlung, reale Maße und verbliebenen vertikalen Scrollbedarf. Zusätzlich werden tatsächliche Fenstergrenzen, horizontales Überlaufen, aufgeklappte Zusatzoptionen und die Position der Abschlussbuttons geprüft. Zielgrößen: 1440 × 1050 und 1024 × 640; die reale GTK-Prüfung für die neue Regel steht aus.
 
 Der bestehende GTK-Integrationstest prüft weiterhin Bildoperationen, Vorschau, Abbrechen/Übernahme, Rückgängig, Druckausgabe und Tastaturbedienung. 108 Unit-Tests sichern die Bild- und Dateifunktionen. Die HTML-Referenz besitzt 14 Browserprüfungen einschließlich gleicher Modalgrößen und erreichbarer Fußleiste. Sie wird bei 1440 × 1050 und 390 × 1400 geprüft.
 

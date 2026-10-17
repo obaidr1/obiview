@@ -57,25 +57,31 @@ dialog { max-width: min(520px,calc(100vw - 32px)); width: 520px; padding: 24px; 
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
 @media print { .sidebar,.topline,.hero-links,#toast,dialog { display: none; }main { margin: 0; padding: 0; max-width: none; }.specimen { break-inside: avoid; }.hero-window { transform: none; }body { font-size: 11px; }.card { border: 1px solid #ddd; }.print-only { display: block; } }
 
+/* Dialog examples size themselves by their visible control count. */
+.edit-example { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; }
+.edit-example > .preview-area { flex: 1; min-width: 220px; }
+.edit-example > .stack { width: min(380px,48%); flex: none; }
+@media (max-width:700px) { .edit-example { flex-direction: column; }.edit-example > .preview-area,.edit-example > .stack { width: 100%; min-width: 0; } }
+
 /* Shared native-dialog contract: logical/CSS pixels, border-box. */
-.dialog-shell, dialog { width: var(--dialog-width); max-width: 100%; height: var(--dialog-height); max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
+.dialog-shell, dialog { width: min(var(--dialog-width-complex),100%); max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); min-height: 0; max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
 .dialog-shell { display: flex; flex-direction: column; overflow: hidden; }
 .dialog-shell > h3, .dialog-shell > .demo-title, .dialog-shell > .dialog-footer { flex: none; }
 .dialog-shell > #export-example, .dialog-shell > .edit-example { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 .edit-example { display: flex; flex-direction: column; gap: 16px; }
 .editor-shell .preview-area .art { height: 160px; width: 100%; }
 .editor-shell .demo-title { flex-wrap: wrap; gap: 8px; }
-dialog { max-width: min(var(--dialog-width),calc(100vw - var(--dialog-screen-margin))); }
+dialog { max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); }
 dialog .dialog-footer, dialog > .close-dialog { position: sticky; bottom: 0; background: var(--color-surface); padding-block: 12px; }
 
 dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
 #modal-title { flex: none; }
-#modal-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.modal-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+#modal-content { display: flex; flex-direction: column; flex: 0 1 auto; min-height: 0; }
+.modal-body { flex: 0 1 auto; min-height: 0; max-height: calc(100dvh - 230px); overflow-y: auto; overflow-x: hidden; }
 #modal-content > .dialog-footer { position: static; flex: none; margin-top: 12px; padding: 0; }
 
 .grid > *, .dialog-example { min-width: 0; }
-.dialog-shell { width: min(var(--dialog-width),100%); min-width: 0; }
+.dialog-shell { width: min(var(--dialog-width-complex),100%); min-width: 0; }
 
 /* Short messages and unsaved-change prompts use content height. */
 dialog.compact-dialog { height: fit-content; }
@@ -97,7 +103,7 @@ input[type=number], output { text-align: right; font-variant-numeric: tabular-nu
 .task-fields { display: grid; gap: var(--field-group-gap); }
 .preview-well { background: var(--color-preview); }
 .preview-area .art { object-fit: contain; }
-.info-groups { display: grid; gap: var(--section-gap); }
+.info-groups { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--section-gap); }
 .info-groups h4 { margin: 0 0 8px; }
 .info-groups .data-list > div { border: 0; padding-block: 8px; }
 .format-choices .choice[aria-checked=true] { background: var(--color-selected); border-color: var(--color-selected-border); }
@@ -107,4 +113,16 @@ input[aria-invalid=true] { border-color: var(--color-error) !important; }
 .info-groups > section { background: var(--color-card); border-radius: var(--radius-card); padding: 16px; }
 .info-groups .data-list { font-size: var(--text-body); }
 .info-groups .data-list > div { grid-template-columns: 1fr; gap: var(--field-gap); }
+
+/* Dense form modules use horizontal space to keep controls visible together. */
+.edit-example { flex-direction: row; }
+#export-example > .stack, #modal-export > .stack { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: 12px; }
+#export-example .task-fields, #modal-export .task-fields { grid-column: 1 / -1; }
+@media (max-width:700px) {
+  .edit-example { flex-direction: column; }
+  .edit-example > .preview-area,.edit-example > .stack { width: 100%; min-width: 0; }
+  #export-example > .stack, #modal-export > .stack { grid-template-columns: 1fr; }
+  #export-example .task-fields, #modal-export .task-fields { grid-column: auto; }
+  .info-groups { grid-template-columns: 1fr; }
+}
 .info-groups dt { font-size: var(--text-small); }

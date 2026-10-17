@@ -12,6 +12,7 @@ from image_tools import EFFECTS, EFFECT_PARAMETERS, mixed_effect
 from image_tools import fine_rotate, frame, red_eye, reduce_colors, swap_channels, auto_crop, add_canvas
 from edit_controls import SliderField, ChoiceButtons
 from paint_dialog import paint_strokes
+from dialog_layout import control_count, dialog_size
 
 Gtk.init()
 if Gdk.Display.get_default() is None:
@@ -303,8 +304,12 @@ def tick(window):
                 dialog.compare.set_active(True)
                 assert dialog.picture.get_paintable().get_width()==window.effect_before.width
                 dialog.compare.set_active(False)
-                assert dialog.get_surface().get_width()==520 and dialog.get_surface().get_height()==760, (dialog.get_surface().get_width(),dialog.get_surface().get_height())
+                size=(dialog.get_surface().get_width(),dialog.get_surface().get_height())
+                target=dialog_size(window,control_count(dialog.body))
+                assert size[0]>=target[0] and size[1]<=target[1], (size,target)
                 assert dialog.body_scroll.get_height()>100, 'Scrollable effects body remains usable'
+                scroll=dialog.body_scroll.get_vadjustment()
+                assert scroll.get_upper()<=scroll.get_page_size()+1, 'Effects fit without vertical scrolling on the audit display'
                 screenshot('effects')
                 # Hold one completed worker to exercise stale and post-close delivery.
                 submit=window.submit
@@ -715,7 +720,7 @@ def tick(window):
         elif step == 70:
             dialog=window.dialogs[-1]
             assert [b.get_label() for b in dialog.action_buttons]==['Abbrechen','Verwerfen','Speichern']
-            assert dialog.get_surface().get_width()==520 and dialog.get_surface().get_height()<320
+            assert dialog.get_surface().get_width()<=960 and dialog.get_surface().get_height()<320
             scroll=dialog.body_scroll.get_vadjustment()
             assert scroll.get_upper()<=scroll.get_page_size()+1, 'Short confirmation text is clipped'
             screenshot('compact-unsaved')

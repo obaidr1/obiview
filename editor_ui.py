@@ -103,8 +103,9 @@ class EditorUI:
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,
                        margin_start=20,margin_end=20,margin_top=16)
         body.append(label('Bildanpassungen','dialog-title'))
-        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,vexpand=True)
+        content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,spacing=20,vexpand=True)
         preview = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=12,hexpand=True)
+        preview.set_size_request(240,-1)
         self.adjust_picture = Gtk.Picture(hexpand=True,vexpand=True,can_shrink=True)
         self.adjust_picture.set_size_request(-1,160); self.adjust_picture.set_vexpand(False)
         accessible(self.adjust_picture,'Vorschau der Bildanpassungen')
