@@ -1,12 +1,13 @@
 """One geometry and scroll/action layout for every app-owned secondary surface."""
 import json
+import math
 from pathlib import Path
 from gi.repository import Gtk, Gdk, Pango
 from ui_theme import label
 
 _TOKENS = json.loads((Path(__file__).parent / 'design-system' / 'tokens.json').read_text())
 MIN_DIALOG_WIDTH = int(_TOKENS['dialog-width-base'].removesuffix('px'))
-DIALOG_WIDTH_STEP = int(_TOKENS['dialog-width-per-element'].removesuffix('px'))
+DIALOG_WIDTH_CURVE = int(_TOKENS['dialog-width-per-complexity'].removesuffix('px'))
 SCREEN_MARGIN = int(_TOKENS['dialog-screen-margin'].removesuffix('px'))
 
 
@@ -26,7 +27,9 @@ def _screen_limits(parent):
 def dialog_size(parent, element_count=0):
     """Return the content-count width target and the physical screen ceiling."""
     max_width, max_height = _screen_limits(parent)
-    target = MIN_DIALOG_WIDTH + max(0, element_count-4)*DIALOG_WIDTH_STEP
+    # Width grows with complexity, while the square-root curve avoids making
+    # long forms span the whole display just because they contain many labels.
+    target = MIN_DIALOG_WIDTH + math.sqrt(max(0, element_count-4))*DIALOG_WIDTH_CURVE
     return min(target, max_width), max_height
 
 

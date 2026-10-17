@@ -8,7 +8,6 @@ from ui_theme import card, label, accessible, icon_button, selection_content, pr
 
 def preview_pixbuf(image):
     image = image.convert('RGBA')
-    image.thumbnail((480,360),Image.Resampling.LANCZOS)
     return GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes.new(image.tobytes()),
         GdkPixbuf.Colorspace.RGB, True, 8, image.width, image.height, image.width*4)
 
@@ -24,7 +23,7 @@ class EditorUI:
         self.look = 'Original'
         self.adjust_sliders = {}
         self.histogram_values = None
-        self.inspector = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, width_request=272)
+        self.inspector = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, width_request=430)
         self.inspector.add_css_class('inspector')
         looks = card('Looks')
         row = Gtk.Box(spacing=2, homogeneous=True)
@@ -48,12 +47,13 @@ class EditorUI:
                             ('Effekte',('grain','vignette','sharpness'))]:
             section = card(title)
             section.set_spacing(16)
+            grid = Gtk.Grid(column_spacing=16,row_spacing=8,hexpand=True)
             if title == 'Licht':
                 self.histogram = Gtk.DrawingArea(content_height=36)
                 accessible(self.histogram,'RGB-Histogramm des Bildes')
                 self.histogram.set_draw_func(self.draw_histogram)
-                section.append(self.histogram)
-            for key in keys:
+                grid.attach(self.histogram,0,0,2,1)
+            for index,key in enumerate(keys):
                 field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
                 line = Gtk.Box()
                 line.append(label(CONTROLS[key], hexpand=True))
@@ -66,8 +66,9 @@ class EditorUI:
                 accessible(slider, CONTROLS[key])
                 slider.connect('value-changed',self.adjustment_changed,value)
                 field.append(slider)
-                section.append(field)
+                grid.attach(field,index%2,(index//2)+(1 if title=='Licht' else 0),1,1)
                 self.adjust_sliders[key] = slider
+            section.append(grid)
             self.inspector.append(section)
         self.preview_note = label('Anpassungen als Vorschau', 'small muted', wrap=True)
 
@@ -77,7 +78,7 @@ class EditorUI:
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
         self.inspector_scroll.set_hexpand(False)
         self.inspector_scroll.set_child(self.inspector)
-        self.inspector_scroll.set_size_request(304,-1)
+        self.inspector_scroll.set_size_request(430,-1)
         self.inspector_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
         self.inspector_panel.append(self.inspector_scroll)
         self.inspector_panel.append(self.preview_note)

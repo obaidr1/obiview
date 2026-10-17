@@ -194,8 +194,8 @@
     const controls = content.querySelectorAll('.modal-body button,.modal-body input,.modal-body select,.modal-body textarea,.modal-body [role="switch"],.modal-body label,.modal-body p,.modal-body .data-list > div,.modal-body .info-groups > section');
     const tokens = getComputedStyle(document.documentElement);
     const base = parseFloat(tokens.getPropertyValue('--dialog-width-base')) || 480;
-    const step = parseFloat(tokens.getPropertyValue('--dialog-width-per-element')) || 24;
-    const targetWidth = base + Math.max(0, controls.length - 4) * step;
+    const curve = parseFloat(tokens.getPropertyValue('--dialog-width-per-complexity')) || 64;
+    const targetWidth = base + Math.sqrt(Math.max(0, controls.length - 4)) * curve;
     dialog.style.width = `min(${targetWidth}px, calc(100vw - 32px))`;
     dialog.style.height = kind === 'confirm' ? 'fit-content' : 'auto';
     content.oninput = () => {

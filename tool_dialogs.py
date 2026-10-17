@@ -67,7 +67,10 @@ class ToolDialog(StandardDialog):
         section = card('Einstellungen')
         section.set_spacing(16)
         controls.append(section)
-        for key,title,value,kind in fields:
+        field_grid = Gtk.Grid(column_spacing=16,row_spacing=10,hexpand=True)
+        section.append(field_grid)
+        columns = 1 if preview else 2
+        for index,(key,title,value,kind) in enumerate(fields):
             if isinstance(kind,list):
                 widget = ChoiceButtons()
                 for ident,text in kind: widget.append(str(ident),text)
@@ -93,7 +96,12 @@ class ToolDialog(StandardDialog):
             field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
             if kind == 'bool': widget.set_label(title)
             else: field.append(label(title))
-            field.append(widget); section.append(field)
+            field.append(widget)
+            column=index%columns; row=index//columns
+            if kind=='text' and columns>1:
+                field_grid.attach(field,0,row+(1 if column else 0),columns,1)
+            else:
+                field_grid.attach(field,column,row,1,1)
             self.widgets[key], self.kinds[key] = widget,kind
         self.error = label('','error',wrap=True); controls.append(self.error)
         if preview:
