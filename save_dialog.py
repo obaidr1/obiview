@@ -31,7 +31,6 @@ class SaveAsDialog(StandardDialog):
         self.initializing = True
         self.size_state = ResizeSettings(*parent.model.image.size)
         self.size_syncing = False
-        self.format_tiles = {}
         self.add_button('Abbrechen', Gtk.ResponseType.CANCEL)
         self.save_button = self.add_button('Bild speichern', Gtk.ResponseType.ACCEPT)
         self.save_button.add_css_class('primary')
@@ -71,57 +70,44 @@ class SaveAsDialog(StandardDialog):
         layout = Gtk.Grid(column_spacing=16,row_spacing=12,hexpand=True)
         body.append(layout)
         formats = card('Format')
-        row = Gtk.Box(spacing=8,homogeneous=True)
-        group = None
-        for fmt,title,subtitle in [('JPEG','JPG','Für Fotos'),('PNG','PNG','Verlustfrei'),('WEBP','WebP','Kleine Dateien')]:
-            tile = Gtk.CheckButton()
-            tile.add_css_class('choice')
-            if group:
-                tile.set_group(group)
-            else:
-                group = tile
-            content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=6)
-            content.append(label(title))
-            content.append(label(subtitle,'small muted',wrap=True))
-            tile.set_child(content)
-            accessible(tile,title+' – '+subtitle)
-            tile.connect('toggled',self.choose_format,fmt)
-            self.format_tiles[fmt] = tile
-            row.append(tile)
-        formats.append(row)
-        self.format = ChoiceButtons(hexpand=True)
-        accessible(self.format,'Ausgabeformat, einschließlich weiterer Formate')
+        self.format = ChoiceButtons(columns=5,hexpand=True)
+        self.format.add_css_class('segmented-choice')
+        accessible(self.format,'Ausgabeformat')
         for fmt, (_, title) in FORMAT_CHOICES.items():
             self.format.append(fmt, title)
         fmt = ALIASES.get(path.suffix.lower(), 'PNG')
         self.format.set_active_id(fmt)
-        more = Gtk.Expander(label='Weitere Formate')
-        more.set_child(self.format)
-        formats.append(more)
-        layout.attach(formats,0,0,1,1)
+        formats.append(self.format)
+        layout.attach(formats,0,0,2,1)
         self.name = Gtk.Entry(text=path.stem+'-bearbeitet'+FORMAT_CHOICES[fmt][0],hexpand=True,activates_default=True)
         name_label.set_text(self.name.get_text())
         self.name.connect('changed',lambda entry:name_label.set_text(entry.get_text()))
         self.folder = Gtk.Entry(text=str(path.parent),hexpand=True,activates_default=True)
-        self.quality_row = card('Qualität')
+        self.quality_row = card()
+        quality_heading = Gtk.Box(spacing=8)
+        quality_heading.append(label('Qualität','section-title',hexpand=True))
+        self.quality_value = label('95 %','numeric-value')
+        quality_heading.append(self.quality_value)
+        self.quality_row.append(quality_heading)
         self.quality = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL,1,100,1)
-        self.quality.set_draw_value(True)
+        self.quality.set_draw_value(False)
         self.quality.set_digits(0)
         self.quality.set_value_pos(Gtk.PositionType.RIGHT)
         accessible(self.quality,'Exportqualität')
+        self.quality.connect('value-changed',lambda scale:self.quality_value.set_text(f'{round(scale.get_value())} %'))
         self.quality_row.append(self.quality)
         captions = Gtk.Box()
         captions.append(label('Kleinere Datei','small muted',hexpand=True))
         captions.append(label('Beste Qualität','small muted'))
         self.quality_row.append(captions)
-        layout.attach(self.quality_row,1,0,1,1)
+        layout.attach(self.quality_row,0,1,1,1)
         resolution = card('Auflösung')
         row = Gtk.Box(spacing=8,homogeneous=True)
         self.resolution_tiles = {}
         group = None
         for key,title,subtitle in [('half','50 %',f'{max(1,round(width/2))} × {max(1,round(height/2))}'),
                                    ('full','100 %',f'{width} × {height}'),('custom','Eigene','Pixelmaße')]:
-            tile = Gtk.CheckButton()
+            tile = Gtk.ToggleButton()
             tile.add_css_class('choice')
             if group:
                 tile.set_group(group)
@@ -136,20 +122,34 @@ class SaveAsDialog(StandardDialog):
             self.resolution_tiles[key] = tile
             row.append(tile)
         resolution.append(row)
-        self.custom_size = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
+        self.custom_size = Gtk.Box(spacing=8)
+        self.custom_size.add_css_class('export-dimensions')
         for axis,title in [('width','Breite'),('height','Höhe')]:
             field = Gtk.SpinButton.new_with_range(1,80_000_000,1)
             field.set_hexpand(True)
+            field.set_increments(1,10)
+            field.set_tooltip_text('Pfeiltasten: 1 px; Bild auf/ab: 10 px.')
             accessible(field,title+' in Pixel')
             field.connect('value-changed',self.dimension_changed,axis)
             setattr(self,'output_'+axis,field)
             column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
+            column.set_hexpand(True)
             column.append(label(title,'small muted'))
-            column.append(field)
+            measurement = Gtk.Box(spacing=6,hexpand=True)
+            measurement.append(field)
+            measurement.append(label('px','small muted unit-suffix'))
+            column.append(measurement)
             self.custom_size.append(column)
+            if axis=='width':
+                link=Gtk.Image.new_from_icon_name('insert-link-symbolic')
+                link.add_css_class('ratio-link-indicator')
+                link.set_valign(Gtk.Align.CENTER)
+                link.set_tooltip_text('Seitenverhältnis bleibt erhalten')
+                accessible(link,'Breite und Höhe sind proportional verknüpft')
+                self.custom_size.insert_child_after(link,column)
         resolution.append(self.custom_size)
         resolution.append(label('Seitenverhältnis bleibt erhalten.','small muted'))
-        layout.attach(resolution,0,1,1,1)
+        layout.attach(resolution,0,2,1,1)
         metadata = card()
         row = Gtk.Box(spacing=12)
         column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4,hexpand=True)
@@ -161,7 +161,7 @@ class SaveAsDialog(StandardDialog):
         self.remove_metadata.connect('notify::active',self.metadata_changed)
         row.append(self.remove_metadata)
         metadata.append(row)
-        layout.attach(metadata,1,1,1,1)
+        layout.attach(metadata,1,2,1,1)
         destination_card = card('Speicherziel')
         destination_card.set_spacing(16)
         self.destination_section = destination_card
@@ -180,7 +180,7 @@ class SaveAsDialog(StandardDialog):
         destination_card.append(folder_field)
         self.folder.set_tooltip_text(self.folder.get_text())
         self.folder.connect('changed',lambda entry:entry.set_tooltip_text(entry.get_text()))
-        layout.attach(destination_card,0,2,2,1)
+        layout.attach(destination_card,0,3,2,1)
         advanced = Gtk.Expander(label='Erweiterte Optionen & Profile')
         options = Gtk.Grid(column_spacing=16,row_spacing=12,margin_top=12,hexpand=True)
         advanced.set_child(options)
@@ -196,7 +196,10 @@ class SaveAsDialog(StandardDialog):
         self.target = Gtk.SpinButton.new_with_range(1,1_000_000,1)
         accessible(self.target,'Maximale JPEG-Dateigröße in KiB')
         self.target.set_value(65)
-        jpeg.append(self.target)
+        target_row = Gtk.Box(spacing=6)
+        target_row.append(self.target)
+        target_row.append(label('KiB','small muted unit-suffix'))
+        jpeg.append(target_row)
         gif = self.page('GIF','GIF-Optionen')
         self.check(gif,'gif_interlace','Interlaced speichern')
         self.check(gif,'gif_transparency','Transparenz beibehalten')
@@ -248,10 +251,6 @@ class SaveAsDialog(StandardDialog):
         self.initializing = False
         self.update_options()
         self.schedule_size()
-
-    def choose_format(self, widget, fmt):
-        if widget.get_active() and not self.initializing:
-            self.format.set_active_id(fmt)
 
     def resolution_changed(self, widget, key):
         if not widget.get_active() or not hasattr(self,'custom_size'):
@@ -355,6 +354,7 @@ class SaveAsDialog(StandardDialog):
         for key, check in self.checks.items():
             check.set_active(getattr(settings, key))
         self.quality.set_value(settings.quality)
+        self.quality_value.set_text(f'{settings.quality} %')
         self.compression.set_value(settings.png_compression)
         self.limit.set_active(settings.target_kib > 0)
         self.target.set_value(settings.target_kib or 65)
@@ -390,8 +390,6 @@ class SaveAsDialog(StandardDialog):
 
     def update_options(self):
         fmt = self.format.get_active_id()
-        for key,tile in self.format_tiles.items():
-            tile.set_active(key == fmt)
         self.stack.set_visible_child_name(fmt if fmt in ('JPEG', 'PNG', 'GIF', 'WEBP') else 'other')
         self.quality_row.set_visible(fmt in ('JPEG', 'WEBP'))
         for key, formats in {'keep_exif': ('JPEG', 'PNG', 'WEBP'),

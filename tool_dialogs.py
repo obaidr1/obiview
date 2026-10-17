@@ -2,6 +2,7 @@
 import io
 import json
 import os
+import re
 from pathlib import Path
 from PIL import Image, ImageColor
 from gi.repository import Gtk, Gdk, Gio, Pango, GObject, GLib
@@ -9,9 +10,21 @@ from dialog_layout import StandardDialog
 from image_model import ImageModel
 from image_tools import (fine_rotate, red_eye, frame, text_image,
                          to_pixels, checked_size, print_layout, panorama, add_canvas)
-from ui_theme import label, card, accessible, preview_surface
+from ui_theme import label, card, accessible, preview_surface, ratio_link_state
 from edit_controls import ChoiceButtons, SliderField
 from editor_ui import preview_pixbuf
+
+
+def _unit_from_title(title):
+    text = title.casefold()
+    if '%' in title or 'prozent' in text: return '%'
+    if 'pixel' in text or re.search(r'\bpx\b', text): return 'px'
+    if re.search(r'\bcm\b|zentimeter', text): return 'cm'
+    if 'zoll' in text or re.search(r'\binch\b', text): return 'in'
+    if 'grad' in text or 'winkel' in text: return '°'
+    if 'dpi' in text: return 'DPI'
+    if 'sekunde' in text: return 's'
+    return ''
 
 
 def image_clipboard_provider(image):
@@ -22,7 +35,7 @@ def image_clipboard_provider(image):
 
 
 class ToolDialog(StandardDialog):
-    def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=()):
+    def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=(),linked_pair=None):
         super().__init__(title=title, transient_for=parent, modal=True)
         self.set_titlebar(Gtk.Box())
         self.widgets, self.kinds = {}, {}
@@ -70,18 +83,37 @@ class ToolDialog(StandardDialog):
         field_grid = Gtk.Grid(column_spacing=16,row_spacing=10,hexpand=True)
         section.append(field_grid)
         columns = 1 if preview else 2
-        for index,(key,title,value,kind) in enumerate(fields):
-            if isinstance(kind,list):
+        rendered_fields = {}
+        pair_keys = set(linked_pair or ())
+        for key,title,value,kind in fields:
+            visual_widget = None
+            if linked_pair and key == linked_pair[2]:
+                widget = Gtk.ToggleButton(child=Gtk.Image.new_from_icon_name('insert-link-symbolic'),active=value)
+                widget.add_css_class('ratio-link')
+                ratio_link_state(widget)
+                widget.connect('toggled',ratio_link_state)
+            elif isinstance(kind,list):
                 widget = ChoiceButtons()
                 for ident,text in kind: widget.append(str(ident),text)
                 widget.set_active_id(str(value))
             elif isinstance(kind,tuple):
                 if key in sliders:
-                    widget = SliderField(*kind,value=value,title=title,exact=key in ('width','inner_width'))
+                    widget = SliderField(*kind,value=value,title=title,exact=key in ('width','inner_width'),
+                                         unit=_unit_from_title(title))
                 else:
                     widget = Gtk.SpinButton.new_with_range(*kind)
                     widget.set_digits(2 if kind[2] < 1 else 0)
                     widget.set_value(value); widget.set_numeric(True)
+                    unit = _unit_from_title(title)
+                    widget.set_increments(kind[2],kind[2]*10)
+                    shown_step=f'{kind[2]:g}' + (f' {unit}' if unit else '')
+                    page_step=f'{kind[2]*10:g}' + (f' {unit}' if unit else '')
+                    widget.set_tooltip_text(f'Pfeiltasten: {shown_step}; Bild auf/ab: {page_step}.')
+                    if unit:
+                        value_box = Gtk.Box(spacing=4, hexpand=True)
+                        value_box.append(widget)
+                        value_box.append(label(unit,'small muted unit-suffix'))
+                        visual_widget = value_box
             elif kind == 'bool': widget = Gtk.CheckButton(active=value)
             elif kind == 'color':
                 rgba = Gdk.RGBA(); rgba.parse(value)
@@ -93,16 +125,46 @@ class ToolDialog(StandardDialog):
                 widget.get_buffer().set_text(value)
             else: widget = Gtk.Entry(text=str(value))
             widget.set_hexpand(True); accessible(widget,title)
-            field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
-            if kind == 'bool': widget.set_label(title)
-            else: field.append(label(title))
-            field.append(widget)
-            column=index%columns; row=index//columns
-            if kind=='text' and columns>1:
-                field_grid.attach(field,0,row+(1 if column else 0),columns,1)
+            if linked_pair and key == linked_pair[2]:
+                accessible(widget,'Seitenverhältnis beibehalten')
+                field = None
             else:
-                field_grid.attach(field,column,row,1,1)
+                field = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
+                if kind == 'bool': widget.set_label(title)
+                else: field.append(label(title))
+                field.append(visual_widget or widget)
+            rendered_fields[key] = field
             self.widgets[key], self.kinds[key] = widget,kind
+
+        layout_items=[]
+        for key,_title,_value,_kind in fields:
+            if linked_pair and key==linked_pair[0]:
+                layout_items.append(('linked',linked_pair))
+            elif linked_pair and key in pair_keys:
+                continue
+            else:
+                layout_items.append(('field',key))
+        row=column=0
+        for item,key in layout_items:
+            if item=='linked':
+                if column: row+=1; column=0
+                left,right,lock=key
+                group=Gtk.Box(spacing=8,hexpand=True)
+                group.append(rendered_fields[left])
+                group.append(self.widgets[lock])
+                group.append(rendered_fields[right])
+                field_grid.attach(group,0,row,columns,1)
+                row+=1; column=0
+                continue
+            field=rendered_fields[key]
+            kind=self.kinds[key]
+            span=columns if kind=='text' and columns>1 else 1
+            if span==columns and column:
+                row+=1; column=0
+            field_grid.attach(field,column,row,span,1)
+            column+=span
+            if column>=columns:
+                row+=1; column=0
         self.error = label('','error',wrap=True); controls.append(self.error)
         if preview:
             reset = Gtk.Button(label='Zurücksetzen')
@@ -462,7 +524,8 @@ class ImageToolsUI:
             ('scale_x','Breite (%)',100,(.1,1000,.1)),('scale_y','Höhe (%)',100,(.1,1000,.1)),
             ('centered','Auf Seite zentrieren',True,'bool'),('x_cm','Abstand links (cm)',0,(0,200,.1)),
             ('y_cm','Abstand oben (cm)',0,(0,200,.1))],self.run_print,
-            'Danach folgen Druckerauswahl, Papier und Druckereigenschaften. Prozentwerte beziehen sich auf die Bild-DPI. Übergröße wird an den druckbaren Seitenrändern abgeschnitten.')
+            'Danach folgen Druckerauswahl, Papier und Druckereigenschaften. Prozentwerte beziehen sich auf die Bild-DPI. Übergröße wird an den druckbaren Seitenrändern abgeschnitten.',
+            linked_pair=('width_cm','height_cm','locked'))
 
         syncing = [False]
         def dimensions_changed(widget,axis):

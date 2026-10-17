@@ -546,7 +546,8 @@ def tick(window):
             dialog.response(Gtk.ResponseType.CANCEL)
             window.resize_dialog()
             dialog=window.dialogs[-1]
-            assert all(isinstance(w,ChoiceButtons) for w in (dialog.units,dialog.method,dialog.resolution))
+            assert isinstance(dialog.units,ChoiceButtons) and isinstance(dialog.method,ChoiceButtons)
+            assert isinstance(dialog.preset,Gtk.DropDown)
             dialog.method.buttons['nearest'].set_active(True)
             assert dialog.method.get_active_id()=='nearest'
         elif step == 47:

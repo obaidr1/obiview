@@ -92,7 +92,7 @@ class PaintDialog(StandardDialog):
             button.set_tooltip_text('Pinsel mit weicher Kante' if ident=='brush' else title)
         self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); root.append(self.tool)
         controls.append(label('Strichbreite'))
-        self.width=SliderField(1,500,1,4,'Strichbreite',exact=True); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
+        self.width=SliderField(1,500,1,4,'Strichbreite',exact=True,unit='px'); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
         color_row=Gtk.Box(spacing=8)
         color_row.append(label('Farbe'))
         rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); color_row.append(self.color)

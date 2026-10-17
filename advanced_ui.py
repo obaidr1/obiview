@@ -456,8 +456,8 @@ class AdvancedFeatures:
         model.replace(temp.image)
 
     def text_dialog(self):
-        self.form('Text einfügen', [('text','Text','',str),('x','X',20,(0,50000,1)),('y','Y',20,(0,50000,1)),
-                  ('size','Schriftgröße',32,(8,500,1)),('color','Farbe (#RRGGBB)','#ffffff',str)],
+        self.form('Text einfügen', [('text','Text','',str),('x','Position X (px)',20,(0,50000,1)),('y','Position Y (px)',20,(0,50000,1)),
+                  ('size','Schriftgröße (px)',32,(8,500,1)),('color','Farbe (#RRGGBB)','#ffffff',str)],
                   lambda v:self.edit(lambda m:m.add_text(v['text'],v['x'],v['y'],v['size'],v['color'])))
 
     def watermark_dialog(self):
@@ -482,7 +482,7 @@ class AdvancedFeatures:
             self.save_settings = replace(self.save_settings, quality=self.export_quality,
                 keep_exif=v['metadata'], keep_icc=v['metadata'],
                 keep_comment=v['metadata'], keep_xmp=v['metadata'])
-        self.form('Exportoptionen', [('quality','JPEG-/WebP-Qualität',self.export_quality,(1,100,1)),
+        self.form('Exportoptionen', [('quality','JPEG-/WebP-Qualität (%)',self.export_quality,(1,100,1)),
                   ('metadata','EXIF / ICC übernehmen (soweit Format unterstützt)',self.keep_metadata,'bool')],apply)
 
     def show_info(self):
@@ -558,10 +558,10 @@ class AdvancedFeatures:
             self.message(f'{len(plan)} Dateien verarbeiten?',details,lambda:self.start_batch(plan,v,ext=='copy'))
         self.form('Stapelverarbeitung', [('format','Zielformat oder copy für umbenannte Kopien','png',str),
                   ('pattern','Namensvorlage: {stem}, {index:04d}','{stem}',str),
-                  ('width','Max. Breite (0 = unverändert)',0,(0,50000,1)),
-                  ('height','Max. Höhe (0 = unverändert)',0,(0,50000,1)),
+                  ('width','Max. Breite (px; 0 = unverändert)',0,(0,50000,1)),
+                  ('height','Max. Höhe (px; 0 = unverändert)',0,(0,50000,1)),
                   ('rotate','90° im Uhrzeigersinn drehen',False,'bool'),
-                  ('quality','JPEG-/WebP-Qualität',95,(1,100,1)),
+                  ('quality','JPEG-/WebP-Qualität (%)',95,(1,100,1)),
                   ('metadata','Metadaten übernehmen',True,'bool')],preview)
 
     def start_batch(self, plan, values, copy_only):

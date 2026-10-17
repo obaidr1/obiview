@@ -47,10 +47,17 @@ class ImageInfoDialog(StandardDialog):
                 self.dpi_x=Gtk.SpinButton.new_with_range(1,9600,1)
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
-                    spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7); accessible(spin,title)
+                    spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7)
+                    spin.set_increments(1,10); spin.set_tooltip_text('Pfeiltasten: 1 DPI; Bild auf/ab: 10 DPI.')
+                    accessible(spin,title)
                 for spin,caption in ((self.dpi_x,'Horizontal'),(self.dpi_y,'Vertikal')):
                     axis=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
-                    axis.append(label(caption,'small muted')); axis.append(spin); dpi_row.append(axis)
+                    axis.append(label(caption,'small muted'))
+                    measure=Gtk.Box(spacing=4)
+                    measure.append(spin); measure.append(label('DPI','small muted unit-suffix'))
+                    axis.append(measure); dpi_row.append(axis)
+                    spin.set_alignment(0.0)
+                    spin.add_css_class('left-aligned')
                 self.dpi_button=Gtk.Button(label='DPI ändern',halign=Gtk.Align.END)
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)
             elif key=='count':

@@ -77,7 +77,9 @@ def normalize(widget):
             widget.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
             widget.set_max_width_chars(36)
     if isinstance(widget, Gtk.SpinButton):
-        widget.set_alignment(1.0)
+        # Keep values readable at the start of the field; GTK keeps its stepper
+        # controls grouped at the trailing edge.
+        widget.set_alignment(0.0)
         widget.set_width_chars(5)
         widget.set_max_width_chars(8)
     if isinstance(widget, Gtk.ScrolledWindow):

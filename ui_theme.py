@@ -36,8 +36,9 @@ button:focus-visible, entry:focus-within, spinbutton:focus-within, scale:focus-v
 .card { background: @card; border: 1px solid transparent; border-radius: {{radius-card}}; padding: 16px; }
 .inspector button { padding: 4px 10px; min-height: 34px; }
 .inspector { padding: 8px 16px 16px 8px; }
-.effect-choice { border: 1px solid @line; border-radius: {{radius-control}}; padding: 4px 10px; min-height: 34px; }
-.effect-choice:checked { border-color: {{color-selected-border}}; }
+.effect-choice { background: @card; border: 1px solid {{color-control-border}}; border-radius: {{radius-control}}; padding: 4px 10px; min-height: 40px; }
+.effect-choice:hover { background: {{color-hover}}; }
+.effect-choice:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
 .tool-strip { padding: 4px 16px; }
 .workspace { background: @surface; }
 .zoom-dock { background: {{color-white}}; border: 1px solid @line; border-radius: 28px; padding: 4px; box-shadow: 0 3px 12px alpha(black,.04); }
@@ -61,9 +62,17 @@ switch:checked { background: @ink; }
 switch slider { border: 1px solid #a0a09a; box-shadow: none; background: white; border-radius: 50%; min-width: 22px; min-height: 22px; }
 checkbutton check, checkbutton radio { border: 1px solid #95958f; background: white; color: white; }
 checkbutton check:checked, checkbutton radio:checked { background: @ink; }
-.choice { border: 1px solid transparent; border-radius: 14px; padding: 10px; min-height: 48px; }
-.choice:checked { background: white; border-color: #c6c6c0; }
+.choice { border: 1px solid {{color-control-border}}; border-radius: 14px; padding: 10px; min-height: 48px; }
+.choice:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
 .choice:hover { background: #eeeeeb; }
+.segmented-choice button.effect-choice { background: white; border: 1px solid {{color-control-border}}; border-radius: 10px; min-height: 40px; }
+.segmented-choice button.effect-choice:hover { background: {{color-hover}}; }
+.segmented-choice button.effect-choice:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
+.segmented-choice .selection-mark { opacity: 0; min-width: 0; }
+.ratio-link { min-width: 40px; min-height: 40px; border: 1px solid {{color-control-border}}; border-radius: 12px; background: white; }
+.ratio-link:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
+.ratio-link-indicator { min-width: 36px; min-height: 36px; color: @ink; }
+.unit-suffix { padding-inline: 4px; }
 window.dialog { background: @surface; border-radius: {{radius-dialog}}; }
 window.dialog headerbar { background: transparent; padding: 4px 12px; }
 window.dialog .dialog-action-area { padding: 0; }
@@ -85,10 +94,9 @@ window.viewer menubar > item:hover { background: {{color-hover}}; }
 .status-bar { color: @muted; font-size: {{text-small}}; }
 textview text { background: @card; color: @ink; }
 button:checked { background: {{color-selected}}; color: @ink; }
-button.effect-choice { background: transparent; border-color: transparent; }
+button.effect-choice { background: @card; border-color: {{color-control-border}}; }
 button.effect-choice:hover { background: {{color-hover}}; }
 button.effect-choice:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
-.effect-choice .selection-mark { min-width: 14px; }
 .choice:checked { background: {{color-selected}}; border-color: {{color-selected-border}}; }
 .preview-surface { background: {{color-preview}}; border-radius: {{radius-control}}; }
 .numeric-value { font-size: {{text-body}}; font-weight: 600; font-feature-settings: "tnum"; }
@@ -143,21 +151,24 @@ def icon_button(icon, title, callback):
 
 
 def selection_content(button, title, content=None):
-    """Keep selection explicit without competing with the primary action."""
+    """Show selection through a clear control boundary and active surface."""
     row = Gtk.Box(spacing=8, hexpand=True)
-    marker = Gtk.Image(icon_name='object-select-symbolic', pixel_size=14)
-    marker.add_css_class('selection-mark')
-    button.selection_marker = marker
-    marker.set_opacity(1 if button.get_active() else 0)
-    row.append(marker)
     if content is None:
         content = Gtk.Label(label=title, wrap=True, max_width_chars=24, xalign=0, hexpand=True)
     row.append(content)
     button.set_child(row)
     button.add_css_class('effect-choice')
     accessible(button, title)
-    button.connect('toggled', lambda current: marker.set_opacity(1 if current.get_active() else 0))
-    return marker
+    return button
+
+
+def ratio_link_state(button):
+    """Keep the link icon and accessible tooltip aligned with its state."""
+    linked = button.get_active()
+    button.set_tooltip_text('Seitenverhältnis beibehalten' if linked else 'Seitenverhältnis frei ändern')
+    child = button.get_child()
+    if isinstance(child, Gtk.Image):
+        child.set_from_icon_name('insert-link-symbolic' if linked else 'edit-unlink-symbolic')
 
 
 def preview_surface(picture):

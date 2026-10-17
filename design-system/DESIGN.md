@@ -1,6 +1,6 @@
 # Bildblick · verbindlicher Designvertrag
 
-Version 1.2 · 17. Oktober 2026
+Version 1.3 · 17. Oktober 2026
 
 Diese Referenz gilt ab jetzt für neue und überarbeitete Benutzeroberflächen in Bildblick. Sie beschreibt die native GTK-App. Die HTML-Website ist ein lokal ausführbarer Komponenten- und Musterkatalog, keine zusätzliche Bildbearbeitung.
 
@@ -50,8 +50,8 @@ Schrift: Inter, Cantarell, System Sans. Dialogtitel 22 px / 600, Abschnittstitel
 | Primärer Button | Abschließende Hauptaktion | Ein schwarzer Hauptbutton pro Dialog; rechts unten; präzises Verb wie „Anwenden“ oder „Bild speichern“ |
 | Sekundärer / Textbutton | Abbrechen, Zurücksetzen, ergänzende Aktion | Leicht, ohne konkurrierende schwarze Fläche; Abbrechen links neben der Hauptaktion |
 | Symbolbutton | Kompakte Toolbar | Vektor, zugänglicher Name, Tooltip einschließlich Kürzel; normal 40–44 px Ziel, in der App-Toolbar kompakt 30 px |
-| Werkzeugauswahl | Stift, Pinsel, Linie, Pfeil, Rechteck, Ellipse | Eigene Symbole plus sichtbarer Text, aktive Auswahl hell mit sichtbarem Auswahlzeichen |
-| Direkte Auswahl | Effekte, Varianten, Einheiten, Interpolation, Formate | Alle Optionen als Buttons oder Karten sichtbar; helle aktive Fläche mit Auswahlzeichen; kein Effekt-Dropdown |
+| Werkzeugauswahl | Stift, Pinsel, Linie, Pfeil, Rechteck, Ellipse | Eigene Symbole plus sichtbarer Text, aktive Auswahl über Fläche und Kontur |
+| Direkte Auswahl | Effekte, Varianten, Einheiten, Interpolation, Formate | Alle Optionen als Buttons oder Karten sichtbar; jede Option hat eine erkennbare Grenze und Hover-Zustand; aktive Fläche und Kontur zeigen die Wahl ohne redundantes Häkchen; kein Effekt-Dropdown |
 | Formatkarte | Exportformat und Auflösung | Beschriftung plus Erklärung, dezente helle ausgewählte Karte und eindeutiger Auswahlpunkt |
 | Slider | Stärke, Qualität, Kontrast, Winkel, Radius | Beschriftung, Einheit/Grenzen wo nötig, sichtbarer aktueller Wert; genaue Eingabe bei Bedarf gekoppelt |
 | Zahlenfeld | Pixelmaße, Position, DPI | Plus/Minus, Eingabegrenzen, Einheit; keine unnötigen Slider für exakte Maße |
@@ -119,10 +119,14 @@ Die kompakte Abfrage bietet „Abbrechen“, „Verwerfen“ und „Speichern“
 
 Die Erkenntnisse in `../knowlede.md` und die Bestandsaufnahme in `../redesign.md` ergänzen diesen Vertrag. Das Bild und die Aufgabe haben Vorrang vor Dekoration.
 
-- Auswahl ist keine Abschlussaktion: helle ausgewählte Fläche (`color-selected`), dunkle Kontur (`color-selected-border`) und ein sichtbares Häkchen bzw. Radiozeichen. Nur die Hauptaktion ist durchgehend dunkel. Zeichensymbole bleiben dunkel und 24 px groß.
+- Auswahl ist keine Abschlussaktion: helle ausgewählte Fläche (`color-selected`) und sichtbare Kontur (`color-selected-border`) zeigen den Status ohne redundantes Häkchen. Ein Radiozeichen ist nur bei einer klassischen Radiobutton-Gruppe zulässig. Nur die Hauptaktion ist durchgehend dunkel. Zeichensymbole bleiben dunkel und 24 px groß.
 - Karten trennen über Fläche und Abstand. Eingaben erhalten eine eigene erkennbare Begrenzung (`color-control-border`); dekorative Linien bleiben leiser. GTK liest dieselben Rollenfarben, Schriftgrößen und Radien wie die HTML-Referenz.
-- Feldlabel und Eingabe: 4 px Abstand; voneinander unabhängige Felder: 16 px; größere Sektionen: 24 px. Reglername und Zahlenwert gehören zur jeweiligen Bahn. Zahlenfelder sind rechtsbündig.
+- Feldlabel und Eingabe: 4 px Abstand; voneinander unabhängige Felder: 16 px; größere Sektionen: 24 px. Reglername und Zahlenwert gehören zur jeweiligen Bahn. Zahlenwerte stehen am Anfang des Feldes; Stepper bleiben am Ende gebündelt.
 - Export: Zusammenfassung, offen sichtbares Speicherziel (Dateiname und Ordner), Format, Qualität, Auflösung, Metadaten, weitere Optionen. Das Speicherziel darf nicht unter einem geschlossenen Expander versteckt werden.
 - Bildinformationen: Datei, Abmessungen & Druck, Farben, Speicher & Anzeige. Vollständige bisherige Daten bleiben zugänglich. Horizontale und vertikale DPI haben sichtbare Beschriftungen.
 - Bildvorschauen liegen auf einer neutralen Fläche (`color-preview`). Vollständiges Bild einpassen; niemals für das Layout zuschneiden oder verändern. Fehlermeldungen nennen ausdrücklich das Scheitern.
 - Leere Vorschaulisten erklären, ob ein Ordner fehlt oder Filter keine Treffer liefern, und bieten Ordnerauswahl bzw. Filter zurücksetzen an. Zeichen-Rückgängig bleibt bis zum ersten Strich deaktiviert.
+
+## Dialogdesign (1.3)
+
+`../dialogdesign.md` ergänzt den gemeinsamen Prüfkatalog für alle Dialoge. Die Größenänderung ist das Referenzmuster für direkt erkennbare Einzelauswahlen, kompakte Vorgaben, verständlich beschriftete Maße und einklappbare seltene Optionen. Für andere Aufgaben gilt dieselbe Interaktionsklarheit; die konkrete Anordnung folgt dem Inhalt des jeweiligen Dialogs.
