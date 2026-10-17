@@ -20,6 +20,20 @@ if Gdk.Display.get_default() is None:
     raise SystemExit(77)
 
 root = Path(__file__).resolve().parents[1]
+VISUAL_TYPES=(Gtk.Button,Gtk.CheckButton,Gtk.Entry,Gtk.Scale,Gtk.DropDown,Gtk.Switch,Gtk.TextView,Gtk.Label,Gtk.Picture)
+
+def clipped_dialog_items(dialog):
+    clipped=[]
+    def visit(widget):
+        if widget.get_visible() and isinstance(widget,VISUAL_TYPES):
+            ok,rect=widget.compute_bounds(dialog.body_scroll)
+            if ok and (rect.get_y() < -1 or rect.get_y()+rect.get_height() > dialog.body_scroll.get_height()+1):
+                clipped.append(type(widget).__name__)
+        child=widget.get_first_child()
+        while child:
+            visit(child); child=child.get_next_sibling()
+    visit(dialog.body)
+    return clipped
 temporary = tempfile.TemporaryDirectory(prefix='bildblick-ui-')
 os.environ['XDG_CONFIG_HOME']=str(Path(temporary.name)/'config')
 sample = Path(temporary.name)/'sample.png'
@@ -308,8 +322,7 @@ def tick(window):
                 target=dialog_size(window,control_count(dialog.body))
                 assert size[0]>=target[0] and size[1]<=target[1], (size,target)
                 assert dialog.body_scroll.get_height()>100, 'Scrollable effects body remains usable'
-                scroll=dialog.body_scroll.get_vadjustment()
-                assert scroll.get_upper()<=scroll.get_page_size()+1, 'Effects fit without vertical scrolling on the audit display'
+                assert not clipped_dialog_items(dialog), ('Effects controls are clipped in the viewport',clipped_dialog_items(dialog))
                 screenshot('effects')
                 # Hold one completed worker to exercise stale and post-close delivery.
                 submit=window.submit

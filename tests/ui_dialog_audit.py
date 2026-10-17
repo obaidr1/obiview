@@ -11,6 +11,7 @@ sample=Path(scratch.name)/'long-sample-name-for-dialog-width-check.png'
 Image.new('RGB',(960,600),'#668877').save(sample)
 app=Gtk.Application(application_id='local.bildblick.DialogAudit',flags=Gio.ApplicationFlags.NON_UNIQUE)
 failures=[]; cases=[]; index=0; current=None; phase=0; started=time.monotonic()
+VISUAL_TYPES=(Gtk.Button,Gtk.CheckButton,Gtk.Entry,Gtk.Scale,Gtk.DropDown,Gtk.Switch,Gtk.TextView,Gtk.Label,Gtk.Picture)
 
 def capture(name):
     output=Path('tests/screenshots'); output.mkdir(exist_ok=True)
@@ -21,6 +22,17 @@ def capture(name):
 def expanded(widget):
     if isinstance(widget,Gtk.Expander): widget.set_expanded(True)
     for child in children(widget): expanded(child)
+
+def clipped_items(scroll,root):
+    clipped=[]
+    def visit(widget):
+        if widget.get_visible() and isinstance(widget,VISUAL_TYPES):
+            ok,rect=widget.compute_bounds(scroll)
+            if ok and (rect.get_y() < -1 or rect.get_y()+rect.get_height() > scroll.get_height()+1):
+                clipped.append((type(widget).__name__,rect.get_y(),rect.get_height()))
+        for child in children(widget): visit(child)
+    visit(root)
+    return clipped
 
 def check(window,name):
     if isinstance(window,Gtk.PopoverMenu):
@@ -69,9 +81,10 @@ def check(window,name):
             ok,rect=button.compute_bounds(window)
             assert ok and rect.get_y()>=0 and rect.get_y()+rect.get_height()<=actual[1],(name,'footer clipped')
         scroll=window.body_scroll.get_vadjustment()
-        needs_scroll=scroll.get_upper()>scroll.get_page_size()+1
-        body_natural=window.body.measure(Gtk.Orientation.VERTICAL,max(240,window.body.get_width()))[1]
-        print(f'AUDIT {name}: controls={elements}, width-target={expected[0]}, actual={actual[0]}x{actual[1]}, body-natural={body_natural}, scroll-needed={needs_scroll}',flush=True)
+        min_height,natural_height=window.body.measure(Gtk.Orientation.VERTICAL,max(240,window.body.get_width()))[:2]
+        clipped=clipped_items(window.body_scroll,window.body)
+        needs_scroll=bool(clipped)
+        print(f'AUDIT {name}: controls={elements}, width-target={expected[0]}, actual={actual[0]}x{actual[1]}, body-min/natural={min_height}/{natural_height}, scroll-needed={needs_scroll}, clipped={clipped[:3]}',flush=True)
         scroll.set_value(max(0,scroll.get_upper()-scroll.get_page_size()))
     else:
         print(f'AUDIT {name}: controls={elements}, width-target={expected[0]}, actual={actual[0]}x{actual[1]}',flush=True)
