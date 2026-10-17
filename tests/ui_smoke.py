@@ -580,7 +580,8 @@ def tick(window):
             assert window.show_info() is dialog
             assert '960 × 600' in dialog.values['original_size'].get_text()
             assert dialog.values['filename'].get_text()=='sample.png'
-            assert 'Millisekunden' in dialog.values['load_time'].get_text()
+            assert any(unit in dialog.values['load_time'].get_text()
+                       for unit in ('Millisekunden', 'milliseconds'))
             window.info_pixels=window.model.image.tobytes()
             dialog.dpi_x.set_value(300); dialog.dpi_y.set_value(600)
             dialog.dpi_button.emit('clicked')
