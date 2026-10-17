@@ -29,7 +29,7 @@ def dialog_size(parent, element_count=0):
     max_width, max_height = _screen_limits(parent)
     # Width grows with complexity, while the square-root curve avoids making
     # long forms span the whole display just because they contain many labels.
-    target = MIN_DIALOG_WIDTH + math.sqrt(max(0, element_count-4))*DIALOG_WIDTH_CURVE
+    target = math.ceil(MIN_DIALOG_WIDTH + math.sqrt(max(0, element_count-4))*DIALOG_WIDTH_CURVE)
     return min(target, max_width), max_height
 
 
