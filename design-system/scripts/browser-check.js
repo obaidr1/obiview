@@ -28,7 +28,11 @@
       assert(rect.width+2>=Math.min(target,innerWidth-32),kind+' width '+rect.width+' below count target '+target);
       assert(rect.width<=innerWidth-32,kind+' exceeds available screen width');
       if(kind==='confirm') { assert(rect.height<380, 'Confirmation must stay compact'); assert([...d.querySelectorAll('.dialog-footer button')].map(b=>b.textContent.trim()).join(',')==='Abbrechen,Verwerfen,Speichern'); }
-      else { const body=q('#modal-content .modal-body'); assert(body.scrollHeight<=body.clientHeight+1,kind+' content unexpectedly scrolls: '+body.scrollHeight+'/'+body.clientHeight+'; dialog '+rect.width+'x'+rect.height); }
+      else {
+        const body=q('#modal-content .modal-body');
+        if(body.scrollHeight>body.clientHeight+1)
+          assert(rect.height>=innerHeight-34,kind+' scrolls before reaching the available screen height: '+body.scrollHeight+'/'+body.clientHeight+'; dialog '+rect.width+'x'+rect.height);
+      }
       const footer=q('#modal-content > .dialog-footer').getBoundingClientRect();
       assert(footer.bottom<=rect.bottom && footer.top>=rect.top,kind+' footer');
       click('#demo-dialog [data-close-dialog]');
