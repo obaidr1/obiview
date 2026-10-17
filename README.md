@@ -1,465 +1,470 @@
 <p align="center">
-  <img src="assets/local.bildblick.Viewer.svg" width="160" alt="Bildblick: ein Eisvogel in Blau und Orange">
+  <img src="assets/local.bildblick.Viewer.svg" width="160" alt="Bildblick kingfisher logo in blue and orange">
 </p>
 
 # Bildblick
 
-**Bilder ansehen, schnell bearbeiten und gezielt exportieren – direkt auf deinem Linux-Desktop.**
+**Browse images, make quick edits, and export exactly what you need — on your Linux desktop.**
 
-Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordner blättern, Bilder zuschneiden oder skalieren, Farben anpassen und Ergebnisse mit passenden Formatoptionen speichern. Für wiederkehrende Aufgaben gibt es Stapelverarbeitung, benannte Exportprofile und eine Kommandozeilenschnittstelle.
+Bildblick is a local GTK 4 desktop image viewer and editor. Browse image folders, crop or resize pictures, adjust color, and save with format-specific options. It also includes batch processing, named export profiles, and a command-line interface.
 
-Die Oberfläche folgt der Systemsprache und ist auf Deutsch und Englisch verfügbar. Mit `BILDBLICK_LANGUAGE=en` oder `BILDBLICK_LANGUAGE=de` lässt sich die Sprache beim Start festlegen. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
+The interface follows the system language and is available in English and German. Set `BILDBLICK_LANGUAGE=en` or `BILDBLICK_LANGUAGE=de` to choose a language at launch. Image editing does not require an account or cloud service.
 
-**Stand: 0.11.1 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Version 0.11.2 · early release · MIT license · reference system: Fedora 44**
 
-## Inhalt
+## Contents
 
-- [Funktionen](#funktionen)
+- [Features](#features)
 - [Installation](#installation)
-- [Erste Schritte](#erste-schritte)
-- [Tastenkürzel](#tastenkürzel)
-- [Größe ändern](#größe-ändern)
-- [Speichern und Exportprofile](#speichern-und-exportprofile)
-- [Stapelverarbeitung und CLI](#stapelverarbeitung-und-cli)
-- [Formate und Mehrseiten-Dateien](#formate-und-mehrseiten-dateien)
-- [Datenspeicherung und Grenzen](#datenspeicherung-und-grenzen)
-- [Entwicklung und Tests](#entwicklung-und-tests)
-- [Fehler melden und mitarbeiten](#fehler-melden-und-mitarbeiten)
+- [Getting started](#getting-started)
+- [Keyboard shortcuts](#keyboard-shortcuts)
+- [Resizing](#resizing)
+- [Saving and export profiles](#saving-and-export-profiles)
+- [Batch processing and CLI](#batch-processing-and-cli)
+- [Formats and multipage files](#formats-and-multipage-files)
+- [Data storage and limitations](#data-storage-and-limitations)
+- [Development and tests](#development-and-tests)
+- [Report issues and contribute](#report-issues-and-contribute)
 
-Das [Produktdokument](PRODUCT.md) beschreibt Zielgruppe, Bedienkonzept, Produktumfang und nächste Entwicklungsschritte.
+The [product document](PRODUCT.md) describes the intended audience, interaction model, product scope, and next development steps.
 
-## Funktionen
+## Features
 
-| Bereich | Verfügbar |
+| Area | Available features |
 | --- | --- |
-| Anzeige | Zoom, Einpassen, 100-%-Ansicht, Vollbild, Transparenzraster |
-| Navigation | Ordner öffnen, natürlich sortierte Dateinamen, Vorschaubilder, Namensfilter |
-| Bearbeitung | Freie Drehung, Spiegeln, präzise Auswahl, Zuschneiden, Pixel/Prozent/cm/Zoll/DPI, Rückgängig und Wiederholen |
-| Farben und Details | Gamma, RGB-Balance, Helligkeit, Kontrast, Sättigung, Rote Augen, Histogramm, Farbkanäle, Palette und zehn Effekte |
-| Ergänzungen | Text im Auswahlrahmen mit Schriftwahl, Zeichnen, Rahmen, Leinwand, Bildwasserzeichen, Panorama |
-| Export | Formatwahl, JPEG-/GIF-/PNG-/WebP-Optionen, Metadaten-Schalter, Profile |
-| Serien | Stapelkonvertierung, skalierte Ausgaben, umbenannte Kopien, Vorschau und Abbruch |
-| Mehrere Seiten | Seiten-/Framewechsel, Animation, Export nach TIFF, GIF, WebP oder PDF |
-| Desktop | Anwendungsmenü, Zwischenablage, mehrere Fenster, Dateiaktionen, eigene Druckgröße und Position |
-| Optionale Systemfunktionen | Scannen über SANE; Audio/Video über GTK/GStreamer |
-| Automatisierung | CLI mit JSON-Ergebnis, Vorschau und Fehlerstatus |
+| Viewing | Zoom, fit to window, 100% view, fullscreen, transparency checkerboard |
+| Navigation | Open folders, natural filename sorting, thumbnails, filename filter |
+| Editing | Fine rotation, flip, precise selections, crop, pixels/percent/cm/inches/DPI, undo and redo |
+| Color and detail | Gamma, RGB balance, brightness, contrast, saturation, red-eye correction, histogram, color channels, palette, ten effects |
+| Additions | Text in a selection, drawing, borders, canvas extension, image watermark, panorama layout |
+| Export | Format selection, JPEG/GIF/PNG/WebP options, metadata controls, profiles |
+| Batch | Batch conversion, resized output, renamed copies, preview, cancellation |
+| Multipage | Page/frame navigation, animation, export to TIFF, GIF, WebP, or PDF |
+| Desktop | Application menu, clipboard, multiple windows, file actions, custom print size and position |
+| Optional system features | Scanning through SANE; audio/video through GTK and GStreamer |
+| Automation | CLI with JSON results, preview mode, and error status |
 
-Die Druckanbindung ist implementiert; eine physische Druckausgabe wurde bislang nicht bestätigt. Die zentralen grafischen Abläufe werden zusätzlich in einer GTK-Sitzung in GitHub Actions geprüft. Details zum Teststand findest du unter [Entwicklung und Tests](#entwicklung-und-tests).
+Print layout is implemented, but printing to a physical printer has not yet been confirmed. Key graphical workflows are also checked in a GTK session in GitHub Actions. See [Development and tests](#development-and-tests) for the current test status.
 
 ## Installation
 
-### Voraussetzungen
+### Requirements
 
-Bildblick benötigt eine grafische Linux-Sitzung und folgende Systembibliotheken:
+Bildblick needs a graphical Linux session and these system libraries:
 
-| Komponente | Zweck |
+| Component | Purpose |
 | --- | --- |
-| `/usr/bin/python3` | Anwendung und Installer ausführen |
-| GTK 4 und PyGObject | Native Fenster und Dialoge |
-| Pycairo | Bildfläche und Druckanbindung |
-| Pillow ab Version 12 | Bildoperationen und Standard-Codecs |
-| GdkPixbuf | Darstellung von Bilddaten und Symbolen |
-| Fontconfig (`fc-match`) und installierte Schriften | Schriftfamilien und Stile für eingefügten Text |
+| `/usr/bin/python3` | Runs the app and installer |
+| GTK 4 and PyGObject | Native windows and dialogs |
+| Pycairo | Image canvas and printing |
+| Pillow 12 or later | Image operations and standard codecs |
+| GdkPixbuf | Displays image data and icons |
+| Fontconfig (`fc-match`) and installed fonts | Font families and styles for inserted text |
 
-Auf dem Referenzsystem wurden Python 3.14, GTK 4.22 und Pillow 12.3 verwendet. Andere Distributionen können funktionieren, sind jedoch noch nicht als vollständige Konfiguration geprüft.
+The reference system uses Python 3.14, GTK 4.22, and Pillow 12.3. Other distributions may work, but have not all been verified as complete configurations.
 
-Fedora-Pakete für die Grundausstattung:
+Install the core dependencies on Fedora:
 
 ```bash
 sudo dnf install python3 python3-gobject python3-cairo python3-pillow gtk4 fontconfig
 ```
 
-Zusätzliche Formate nutzen optional installierte Decoder:
+Optional decoders provide additional formats:
 
 ```bash
 sudo dnf install ImageMagick poppler-utils ffmpeg-free util-linux
 ```
 
-Scannen benötigt zusätzlich `sane-backends` und einen eingerichteten Scanner. Die Medienwiedergabe benötigt das GTK-Medienbackend und passende GStreamer-Codecs. Beides ist optional; die App meldet fehlende Unterstützung.
+Scanning also requires `sane-backends` and a configured scanner. Media playback needs the GTK media backend and suitable GStreamer codecs. Both are optional; the app reports when support is unavailable.
 
-Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Codec-Builds ab. Der Installer lädt keine Abhängigkeiten herunter und installiert keine Systempakete.
+Available formats and extra decoders depend on the codecs installed on the system. The installer does not download dependencies or install system packages.
 
-### Fertiges Paket installieren
+### Install a packaged version
 
-#### Für Ubuntu und andere Linux-Distributionen (empfohlen)
+#### Flatpak (recommended for Ubuntu and other distributions)
 
-Die Flatpak-Version bündelt die Bildverarbeitungsabhängigkeit und nutzt eine gemeinsame GTK-Laufzeit. Damit musst du Python, GTK und Pillow nicht selbst über den Paketmanager deiner Distribution einrichten.
+The Flatpak bundles the image-processing dependency and uses a shared GTK runtime, so you do not need to install Python, GTK, and Pillow through your distribution's package manager.
 
-1. Flatpak installieren und Flathub aktivieren (auf Ubuntu meist über die Software-App oder die [Flatpak-Anleitung](https://flatpak.org/setup/)).
-2. `Bildblick-0.11.1.flatpak` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
-3. Die Datei mit der Software-App öffnen oder im Download-Ordner ausführen:
+1. Install Flatpak and enable Flathub (on Ubuntu, use the Software app or the [Flatpak setup guide](https://flatpak.org/setup/)).
+2. Download `Bildblick-0.11.2.flatpak` from [GitHub Releases](https://github.com/obaidr1/obiview/releases).
+3. Open the file with your software installer, or run this from the download directory:
 
 ```bash
-flatpak install --user ./Bildblick-0.11.1.flatpak
+flatpak install --user ./Bildblick-0.11.2.flatpak
 ```
 
-Bildblick erscheint danach im Anwendungsmenü. Beim ersten Start gewährt die Dateiauswahl Zugriff auf die von dir geöffneten Bilder und Ordner. Die erste Flatpak-Veröffentlichung ist für x86-64-PCs gebaut; andere Architekturen sind noch nicht enthalten.
+Bildblick will then appear in your application menu. The file chooser grants access to images and folders you open. The first Flatpak release targets x86-64 PCs; other architectures are not included yet.
 
-#### Manuelle Systeminstallation
+#### AppImage (portable download)
 
-1. `Bildblick-0.11.1-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
-2. Archiv entpacken.
-3. Im entpackten Ordner `install.sh` ausführen.
-4. Im Anwendungsmenü nach **Bildblick** suchen.
+Download `Bildblick-0.11.2-x86_64.AppImage` from [GitHub Releases](https://github.com/obaidr1/obiview/releases), make it executable, and launch it:
 
 ```bash
-tar -xzf Bildblick-0.11.1-linux.tar.gz
-cd Bildblick-0.11.1
+chmod +x Bildblick-0.11.2-x86_64.AppImage
+./Bildblick-0.11.2-x86_64.AppImage
+```
+
+The AppImage includes an Ubuntu 24.04 based GTK/Python runtime. Some systems may need the FUSE 2 compatibility library. The x86-64 Flatpak remains available for users who prefer software-center installation and sandboxed file access.
+
+#### Manual system install
+
+1. Download `Bildblick-0.11.2-linux.tar.gz` from [GitHub Releases](https://github.com/obaidr1/obiview/releases).
+2. Extract the archive.
+3. Run `install.sh` from the extracted directory.
+4. Search for **Bildblick** in your application menu.
+
+```bash
+tar -xzf Bildblick-0.11.2-linux.tar.gz
+cd Bildblick-0.11.2
 ./install.sh
 ```
 
-Die Installation erfolgt im eigenen Benutzerkonto und benötigt kein `sudo`. Ein vorhandener Standard-Bildbetrachter bleibt unverändert. Bildblick wird zusätzlich als Anwendung unter **Öffnen mit** angeboten. Diese Variante benötigt weiterhin die oben beschriebenen Systemabhängigkeiten.
+This installs into your user account and does not require `sudo`. It leaves your current default image viewer unchanged and adds Bildblick as an **Open With** option. This variant still needs the system dependencies listed above.
 
-Das Archiv enthält Anwendungscode, Dokumentation und Symbol. Die Python-/GTK-Laufzeit wird vom System bereitgestellt; das Paket ist kein eigenständiges AppImage.
+The archive contains the application code, documentation, and icon. The system provides the Python/GTK runtime; this package is not a standalone AppImage.
 
-### Aus dem Quellcode starten oder installieren
+### Run or install from source
 
-Im Projektverzeichnis:
+From the project directory:
 
 ```bash
 ./start.sh
-./start.sh /pfad/zum/bild.jpg
-./start.sh /pfad/zum/bildordner
+./start.sh /path/to/image.jpg
+./start.sh /path/to/image-folder
 ```
 
-Für einen dauerhaften Menüeintrag:
+To add a persistent application menu entry:
 
 ```bash
 /usr/bin/python3 packaging/install.py --source .
 ```
 
-Nach einer Aktualisierung eine laufende Instanz schließen und Bildblick erneut über das Anwendungsmenü öffnen. Änderungen im Quellcodeverzeichnis werden erst nach erneutem Installieren in die installierte Kopie übernommen.
+After updating, close any running instance and reopen Bildblick from the application menu. Changes in the source directory appear in the installed copy after reinstalling it.
 
-### Installationsorte
+### Install locations
 
-| Inhalt | Standardpfad |
+| Content | Default location |
 | --- | --- |
-| Anwendungsdateien | `~/.local/share/bildblick/app/` |
-| Terminal-Starter | `~/.local/bin/bildblick` |
-| Menüeintrag | `~/.local/share/applications/io.github.obaidr1.obiview.desktop` |
-| Symbol | `~/.local/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg` |
-| Exportprofile | `~/.config/bildblick/save-profiles.json` |
-| Ansichtsoptionen | `~/.config/bildblick/viewer.json` |
-| Die letzten zehn Bildordner | `~/.config/bildblick/recent.json` |
+| Application files | `~/.local/share/bildblick/app/` |
+| Terminal launcher | `~/.local/bin/bildblick` |
+| Menu entry | `~/.local/share/applications/io.github.obaidr1.obiview.desktop` |
+| Icon | `~/.local/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg` |
+| Export profiles | `~/.config/bildblick/save-profiles.json` |
+| Viewing options | `~/.config/bildblick/viewer.json` |
+| Last ten image folders | `~/.config/bildblick/recent.json` |
 
-`XDG_DATA_HOME` und `XDG_CONFIG_HOME` werden für die entsprechenden Daten- und Konfigurationsorte berücksichtigt. Der Terminal-Starter liegt unabhängig davon unter `~/.local/bin`.
+`XDG_DATA_HOME` and `XDG_CONFIG_HOME` are respected for data and configuration. The terminal launcher is placed under `~/.local/bin` regardless.
 
-Zur Deinstallation die oben genannten Anwendungsdateien, den Starter, Menüeintrag und das Symbol entfernen. Exportprofile können separat aufbewahrt werden. Eigene Bilddateien liegen außerhalb der Installation.
+To uninstall, remove the application files, launcher, menu entry, and icon listed above. Export profiles can be kept separately. Your image files remain outside the installation.
 
-## Oberfläche und Bildanpassungen
+## Interface and image adjustments
 
-**Einheitliche Bearbeitungsdialoge:** Helligkeit/Kontrast/Farbe, Schärfen/Weichzeichnen, freie Drehung, Rahmen, Rote Augen, Farbreduktion, Farbkanaltausch, automatischer Zuschnitt, Leinwand und Text bieten eine große Live-Vorschau mit Originalvergleich, Zurücksetzen, Anwenden und Abbrechen. Stärke, Kontrast, Sättigung, Schärfe, Winkel, Toleranz und Farbanzahl werden mit Slidern eingestellt. Rahmenstile, Farbkanal-Reihenfolgen und Zeichenwerkzeuge stehen als direkte Schaltflächen bereit. Änderungen werden erst beim Anwenden als ein Undo-Schritt übernommen.
+**Consistent editing dialogs:** Brightness/contrast/color, sharpen/blur, fine rotation, borders, red-eye correction, color reduction, channel swapping, auto-crop, canvas, and text use a large live preview with original comparison, reset, apply, and cancel. Strength, contrast, saturation, sharpness, angle, tolerance, and color count use sliders. Border styles, channel orders, and drawing tools are direct buttons. Changes become one undo step only after you apply them.
 
-Bei Rahmen- und Strichbreiten ergänzt eine genaue Zahleneingabe den Slider. Bildmaße, DPI, Positionen und Dateinamen bleiben präzise Eingabefelder. Einheiten, Interpolation, Größenvorgaben, Auswahlverhältnisse, Druckmodi und weitere Exportformate sind direkt anklickbar. PNG-Kompression und die Qualität in Export- und Stapeloptionen verwenden ebenfalls Regler.
+For border and stroke widths, a precise number field accompanies the slider. Image dimensions, DPI, positions, and filenames remain precise input fields. Units, interpolation methods, presets, selection ratios, print modes, and additional export formats are directly selectable. PNG compression and quality in export and batch options also use sliders.
 
-Die neuen Werkzeugvorschauen werden im Hintergrund aus den Originalpixeln berechnet und anschließend für die Anzeige verkleinert. Bei großen Bildern kann die Berechnung länger dauern. Ein Klick auf Anwenden während der Berechnung wartet auf die aktuelle, gültige Vorschau; Abbrechen bleibt möglich. Veraltete Ergebnisse werden verworfen. Der bestehende Effekte-Dialog und die Bildanpassungen nutzen weiterhin verkleinerte Arbeitsvorschauen.
+New tool previews are calculated in the background from the original pixels and then scaled for display. Large images may take longer to process. Applying while a calculation is running waits for the current valid preview; cancellation remains available. Stale results are discarded. The existing effects dialog and image-adjustment panel continue to use reduced working previews.
 
-Bildblick verwendet eine helle, monochrome Oberfläche mit abgerundeten Karten und schwarzen Hauptaktionen. Das Hauptfenster startet mit **720 × 640 Pixeln**. Eine sichtbare Menüleiste und eine einzelne kompakte Symbolleiste stehen oberhalb der Bildfläche; die Statuszeile liegt unten. Öffnen, Speichern, Ausschnitt, Historie, Bildinformationen, Zoom, Navigation, Größenänderung und Bildanpassungen sind direkt erreichbar. Die Bildfläche enthält keine schwebenden Bedienelemente oder Bearbeitungsleiste.
+Bildblick uses a light monochrome interface with rounded cards and dark primary actions. The main window starts at **720 × 640 pixels**. A visible menu bar and a compact toolbar sit above the image; the status bar is at the bottom. Open, save, crop, history, image information, zoom, navigation, resize, and image adjustments are directly accessible. The canvas has no floating controls or editing bar.
 
-- **Looks:** Original, Film, Fade und Warm.
-- **Licht:** RGB-Histogramm, Helligkeit, Kontrast, Gamma, Lichter und Schatten.
-- **Farbe:** Temperatur, Sättigung, Dynamik sowie Rot-, Grün- und Blau-Balance.
-- **Effekte:** Körnung, Vignette und Schärfe.
+- **Looks:** Original, Film, Fade, and Warm.
+- **Light:** RGB histogram, brightness, contrast, gamma, highlights, and shadows.
+- **Color:** Temperature, saturation, vibrance, and red/green/blue balance.
+- **Effects:** Grain, vignette, and sharpness.
 
-**Bild → Bildanpassungen** oder das Einstellungs-Symbol öffnet einen eigenen Dialog mit Bildvorschau, Looks und Reglern. Auch Vorschaubilder öffnen sich in einem separaten Fenster. Regler zeigen zunächst eine Vorschau. **Anwenden** übernimmt sie als rückgängig machbaren Bearbeitungsschritt; **Zurücksetzen** verwirft die Vorschau. Speichern und weitere Bildoperationen übernehmen offene Anpassungen vor ihrer Ausführung. Die Vorschau ist für schnelle Rückmeldung verkleinert; beim Anwenden wird das Bild in voller Auflösung verarbeitet. Das Histogramm basiert auf dem Vorschaubild und dient zur Orientierung.
+**Image → Adjustments** or the adjustment icon opens a separate dialog with image preview, looks, and sliders. Thumbnails also open in a separate window. Sliders show a preview first. **Apply** commits it as an undoable edit; **Reset** discards the preview. Saving and other image operations apply pending adjustments before continuing. The preview is reduced for a quick response; applying processes the image at full resolution. The histogram is based on the preview and is intended as a guide.
 
-Die Menüleiste enthält **Datei**, **Bearbeiten**, **Bild**, **Ansicht**, **Extras** und **Hilfe**. Die wichtigsten Aktionen besitzen Tastenkürzel; die Tabelle unten nennt die aktuelle Zuordnung. Die Oberfläche verwendet ausdrücklich das helle Erscheinungsbild; ein separates dunkles Design ist nicht enthalten.
+The menu bar contains **File**, **Edit**, **Image**, **View**, **Extras**, and **Help**. Common actions have keyboard shortcuts; the table below lists the current mapping. The interface uses the light appearance; a separate dark theme is not included.
 
-## Erste Schritte
+## Getting started
 
-1. **Bild öffnen:** `Strg+O` verwenden oder eine einzelne Datei ins Fenster ziehen.
-2. **Ordner durchsuchen:** Über **Datei → Ordner öffnen** einen Bildordner wählen. Vorschaubilder lassen sich im Menü **Ansicht** einblenden und nach Dateinamen filtern.
-3. **Ansicht einstellen:** Mit `F` an den Desktop anpassen, mit `Strg+H` auf 100 % wechseln oder mit `+` und `−` zoomen.
-4. **Bearbeiten:** Eine Auswahl aufziehen und zuschneiden, das Bild drehen oder mit `Strg+R` die Pixelgröße ändern.
-5. **Speichern:** Mit `Strg+Umschalt+S` Dateiname, Zielordner, Format und Optionen festlegen.
+1. **Open an image:** press `Ctrl+O` or drop a single file onto the window.
+2. **Browse a folder:** choose a folder from **File → Open Folder**. Show thumbnails and filter by filename from **View**.
+3. **Adjust the view:** press `F` to fit to the desktop, `Ctrl+H` for 100%, or `+` and `−` to zoom.
+4. **Edit:** drag a selection to crop, rotate the image, or press `Ctrl+R` to resize it.
+5. **Save:** press `Ctrl+Shift+S` to choose a filename, destination, format, and options.
 
-Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, wenn ungespeicherte Änderungen vorhanden sind. Speichern erfolgt erst durch eine ausdrückliche Speicheraktion.
+When you move to another image or close the window, Bildblick asks about unsaved changes. Changes are saved only when you explicitly choose a save action.
 
-## Bildinformationen
+## Image information
 
-**I** oder **Bild → Bildinformationen** öffnet die Datei- und Bildübersicht: Dateiname, Verzeichnis, voller Pfad, Format, getrennte X-/Y-DPI, ursprüngliche und aktuelle Abmessungen mit Megapixeln und Seitenverhältnis, Druckmaße in cm und Zoll, ursprüngliche und aktuelle Farbtiefe, gezählte RGB-Farben, Dateigröße, Speicherbedarf der aktuellen Pixel, Ordnerposition, Änderungsdatum, Ladezeit und Seite/Frame.
+Press **I** or choose **Image → Image Information** to view the filename, directory, full path, format, separate X/Y DPI, original and current dimensions with megapixels and aspect ratio, print size in cm and inches, original and current color depth, counted RGB colors, file size, current pixel-buffer memory, folder position, modification date, load time, and page/frame.
 
-Die Farbzählung läuft im Hintergrund und lässt sich abschalten; unterschiedliche Alpha-Werte werden nicht als zusätzliche RGB-Farben gezählt. Der angegebene Pixel-Speicher umfasst weder den gesamten Prozess noch die Undo-Historie. Fehlende Quelldaten werden als nicht verfügbar gekennzeichnet; bei extern gerasterten Formaten wird keine ursprüngliche Farbtiefe erfunden.
+Color counting runs in the background and can be disabled. Different alpha values are not counted as extra RGB colors. Pixel memory does not include the entire process or undo history. Missing source data is marked unavailable; an original color depth is not guessed for externally rasterized formats.
 
-**Ändern** übernimmt X-/Y-DPI ohne Änderung der Pixelzahl, mit Rückgängig. Fehlt eine gültige Auflösung, wird die angenommene Vorgabe 96 DPI gekennzeichnet. EXIF, IPTC und Kommentare haben eigene Leseansichten. Das ist kein vollständiger Metadateneditor; insbesondere ist eine vollständige IPTC-Erhaltung beim Export nicht zugesichert.
+**Change** updates X/Y DPI without changing pixel dimensions and can be undone. If no valid resolution exists, the assumed default of 96 DPI is identified. EXIF, IPTC, and comments have separate read-only views. This is not a full metadata editor; complete IPTC preservation on export is not guaranteed.
 
-## Tastenkürzel
+## Keyboard shortcuts
 
-Die [vollständige Belegung](docs/SHORTCUTS.md) ist in der App über **F1** durchsuchbar. Im Zoom scrollen Pfeiltasten das Bild, sonst wechseln sie die Datei.
+The [complete shortcut list](docs/SHORTCUTS.md) is searchable in the app with **F1**. While zoomed in, arrow keys scroll the image; otherwise, they change files.
 
-| Kürzel | Aktion |
+| Shortcut | Action |
 | --- | --- |
-| `O`, `Strg+O` | Bild öffnen |
-| `S`, `Strg+Umschalt+S` | Speichern unter |
-| `Strg+S` | Speicherdialog öffnen |
-| `Strg+R` | Größe ändern |
-| `I` | Bildinformationen |
-| `Strg+Z` / `Strg+Umschalt+Z` | Rückgängig / Wiederholen |
-| `Strg+Y` | Auswahl zuschneiden |
-| `Strg+C` / `Strg+V` | Auswahl oder ganzes Bild kopieren / Bild als neues Dokument einfügen |
-| `Strg+X` / `Strg+A` | Auswahl ausschneiden / alles auswählen |
-| `Umschalt+C` | Eigene Auswahl |
-| `Umschalt` + Pfeiltasten | Auswahl um einen Pixel verschieben |
-| `Strg+T` | Text in die Auswahl einfügen |
-| `Strg+N` | Arbeitsbild in neuem Fenster öffnen |
-| `D` | Bild vom Bildschirm entfernen, Datei behalten |
-| `Umschalt+R` | Gespeicherte Datei erneut öffnen |
-| `Strg+F` | Dateinamen in den Vorschaubildern suchen |
-| `F2` | Datei umbenennen |
-| `F12` | Zeichnen |
-| `Strg+P` | Drucken |
-| `R` | 90° im Uhrzeigersinn drehen |
-| `+` / `−` | Vergrößern / Verkleinern |
-| `F` / `Strg+H` | Desktop-/Fensteranpassung / 100 % |
-| `←` / `→` | Vorherige / nächste Datei im Ordner |
-| `Strg+Bild auf` / `Strg+Bild ab` | Vorherige / nächste Seite oder Frame |
-| `Esc` | Auswahlmodus verlassen |
-| `F5` / `F9` | Ansicht aktualisieren / Diashow starten oder stoppen |
-| `Enter` | Vollbild umschalten |
-| `F11` | Vollbild öffnen; darin Mauszeiger umschalten |
-| `F1` | Durchsuchbare Tastaturhilfe |
+| `O`, `Ctrl+O` | Open image |
+| `S`, `Ctrl+Shift+S` | Save as |
+| `Ctrl+S` | Open save dialog |
+| `Ctrl+R` | Resize |
+| `I` | Image information |
+| `Ctrl+Z` / `Ctrl+Shift+Z` | Undo / redo |
+| `Ctrl+Y` | Crop selection |
+| `Ctrl+C` / `Ctrl+V` | Copy selection or whole image / paste image as a new document |
+| `Ctrl+X` / `Ctrl+A` | Cut selection / select all |
+| `Shift+C` | Custom selection |
+| `Shift` + arrow keys | Move selection by one pixel |
+| `Ctrl+T` | Insert text into selection |
+| `Ctrl+N` | Open working image in a new window |
+| `D` | Clear image from screen, keep file |
+| `Shift+R` | Reopen saved file |
+| `Ctrl+F` | Search thumbnail filenames |
+| `F2` | Rename file |
+| `F12` | Draw |
+| `Ctrl+P` | Print |
+| `R` | Rotate 90° clockwise |
+| `+` / `−` | Zoom in / out |
+| `F` / `Ctrl+H` | Fit to desktop/window / 100% |
+| `←` / `→` | Previous / next file in folder |
+| `Ctrl+Page Up` / `Ctrl+Page Down` | Previous / next page or frame |
+| `Esc` | Exit selection mode |
+| `F5` / `F9` | Refresh view / start or stop slideshow |
+| `Enter` | Toggle fullscreen |
+| `F11` | Enter fullscreen; toggle pointer visibility there |
+| `F1` | Searchable keyboard help |
 
-## Größe ändern
+## Resizing
 
-**Bild → Größe ändern**, der sichtbare Größen-Button und `Strg+R` öffnen denselben Dialog.
+**Image → Resize**, the visible resize button, and `Ctrl+R` open the same dialog.
 
-- Breite und Höhe lassen sich in **Pixeln**, **Prozent**, **Zentimetern** oder **Zoll** eingeben.
-- Bei aktiviertem Seitenverhältnis passt die Änderung eines Feldes das andere an.
-- Prozentwerte beziehen sich auf die Bildgröße beim Öffnen des Dialogs.
-- Vorlagen bieten 25, 50, 100 und 200 Prozent; weitere Werte können direkt eingegeben werden.
-- Auflösungsvorgaben reichen von 640 × 480 bis 3840 × 2160 sowie Bildschirmgröße. Bei gesperrtem Verhältnis wird das Bild in diese Abmessungen eingepasst.
-- **DPI** bestimmt die physische Druckgröße. Eine reine DPI-Änderung bei unveränderten Pixelmaßen erzeugt keine Details und ist rückgängig machbar. JPEG, PNG, TIFF, BMP und PDF erhalten die Druckauflösung beim Export. Die technische Druckauflösung bleibt auch bei deaktivierten privaten Metadaten erhalten.
-- Als Interpolation stehen Lanczos, bikubisch, bilinear und nächster Nachbar bereit.
-- Die Zielgröße und Megapixelzahl werden vor dem Anwenden angezeigt.
+- Enter width and height in **pixels**, **percent**, **centimeters**, or **inches**.
+- When aspect ratio is locked, changing one dimension updates the other.
+- Percentages are based on the image size when the dialog opened.
+- Presets include 25%, 50%, 100%, and 200%; enter any other value directly.
+- Size presets range from 640 × 480 to 3840 × 2160 and include screen size. With aspect ratio locked, the image is fitted within those dimensions.
+- **DPI** sets physical print size. Changing DPI alone does not create detail and can be undone. JPEG, PNG, TIFF, BMP, and PDF preserve print resolution on export. Print resolution is retained even when private metadata is disabled.
+- Interpolation options are Lanczos, bicubic, bilinear, and nearest neighbor.
+- The target dimensions and megapixel count are shown before applying.
 
-Die Größenänderung verändert den Bearbeitungsstand und kann rückgängig gemacht werden. Eine Änderung des Zoomfaktors verändert dagegen nur die Ansicht.
+Resizing changes the edit state and can be undone. Changing zoom only changes the view.
 
-## Auswahl, Korrekturen und Ergänzungen
+## Selections, corrections, and additions
 
-Ein Rechteck lässt sich direkt mit der linken Maustaste aufziehen. Ziehen an Kanten oder Ecken ändert es; die rechte Maustaste verschiebt es innerhalb des Bildes. **Bearbeiten → Eigene Auswahl** bietet Position, Pixel-/cm-/Zoll-Maße, DPI und feste Seitenverhältnisse. Bei festem Verhältnis bestimmt die Breite die Höhe. **Auswahl maximieren und zentrieren** vergrößert den Ausschnitt mit seinem Verhältnis bis zum Bildrand.
+Drag with the left mouse button to create a rectangle. Drag its edges or corners to resize it; use the right mouse button to move it. **Edit → Custom Selection** offers position, pixel/cm/inch dimensions, DPI, and fixed aspect ratios. With a fixed ratio, width determines height. **Maximize and center selection** expands the crop to the image edge while preserving its ratio.
 
-**Strg+C** kopiert die Auswahl, ohne Auswahl das ganze Bild. **Datei → Neues Fenster**, danach **Strg+V**, erzeugt daraus ein separat speicherbares Dokument. **Strg+X** kopiert die Auswahl und ersetzt deren Pixel durch Weiß. **Außerhalb der Auswahl löschen** erhält die Leinwandgröße und füllt die Umgebung weiß. **Einfarbige Ränder entfernen** erkennt transparenten Rand oder die Hintergrundfarbe oben links; die Toleranz ist einstellbar.
+**Ctrl+C** copies the selection, or the whole image when there is no selection. Choose **File → New Window**, then press **Ctrl+V**, to create a separately saveable document. **Ctrl+X** copies the selection and replaces its pixels with white. **Clear Outside Selection** preserves the canvas size and fills the outside white. **Remove Solid Borders** detects transparent borders or the top-left background color; tolerance is adjustable.
 
-**Bild → Frei drehen** verwendet Gradangaben, positive Werte im Uhrzeigersinn. Erweiterte Bildfläche und Randfarbe sind wählbar. **Rote Augen korrigieren** benötigt eine enge Auswahl um das Auge und verändert nur rot dominierte Pixel darin.
+**Image → Fine Rotation** uses degrees, with positive values rotating clockwise. The expanded canvas and border color are configurable. **Red-eye Correction** needs a tight selection around the eye and changes only red-dominant pixels inside it.
 
-**Effekte** enthält 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kantenerkennung, Median, Explosion, Pixelieren, Sepia und Regentropfen. Alle zehn Effekte sind direkt über eigene Schaltflächen auswählbar, ohne Dropdown. Eine große Live-Vorschau zeigt die Änderungen. Der Intensitätsregler mischt jeden Effekt mit dem Original; je nach Effekt kommen Regler für Radius, Randbreite, Pixelgröße, Streuung oder Tropfenpaare hinzu. „Original vergleichen“ zeigt das unveränderte Bild. Einstellungen bleiben beim Wechsel zwischen Effekten erhalten. „Effekt zurücksetzen“ setzt den ausgewählten Effekt zurück. Erst „Anwenden“ übernimmt ihn in voller Auflösung als einen rückgängig machbaren Schritt; „Abbrechen“ verwirft die Vorschau. Bei großen Bildern ist die Vorschau verkleinert und kann bei pixelabhängigen Effekten vom Ergebnis in Originalauflösung abweichen. **Farben reduzieren** bietet 2–256 Farben und Dithering. **Farbkanäle tauschen** vertauscht RGB-Kanäle; ein eigener Histogrammdialog zeigt die volle Bildverteilung.
+**Effects** includes 3D button, blur, emboss, oil paint, edge detection, median, explosion, pixelize, sepia, and raindrops. Each effect is directly selectable with its own button; there is no dropdown. A large live preview shows the changes. The strength slider blends each effect with the original; depending on the effect, additional controls adjust radius, edge width, pixel size, scatter, or droplet pairs. **Compare with Original** shows the unchanged image. Settings remain when switching between effects. **Reset Effect** resets the selected effect. **Apply** commits it at full resolution as one undoable step; **Cancel** discards the preview. For large images, the preview is reduced and pixel-dependent effects may differ from the full-resolution result. **Reduce Colors** offers 2–256 colors and dithering. **Swap Color Channels** swaps RGB channels; a separate histogram dialog shows the full image distribution.
 
-**Rahmen hinzufügen** bietet einfache, doppelte und plastische Rahmen mit Breiten und Farbauswahl. **Leinwand erweitern** stellt jede Seite getrennt ein: positive Werte fügen Fläche hinzu, negative schneiden Rand ab. **Bilder zusammenfügen** setzt mehrere Bilder horizontal oder vertikal mit Abstand zusammen; es ist keine perspektivische Panoramaverschmelzung.
+**Add Border** offers simple, double, and raised frames with width and color controls. **Extend Canvas** sets each side separately: positive values add canvas and negative values crop it. **Join Images** arranges multiple images horizontally or vertically with spacing; it does not blend a perspective panorama.
 
-**Text einfügen** verwendet die gewählte Schriftfamilie, Schriftstil, Punktgröße und Farbe. Text wird innerhalb der Auswahl umgebrochen und begrenzt. Ohne Auswahl beginnt er mit 20 Pixel Abstand oben links. Die Umrechnung von Punkt in Pixel berücksichtigt die Bild-DPI. **Bearbeiten → Zeichnen** öffnet einen eigenen Dialog für Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellipse. Alle sechs Werkzeuge haben eigene Symbole und Textbeschriftungen. Einzelne Striche können dort zurückgenommen werden; Anwenden erzeugt einen gemeinsamen Undo-Schritt.
+**Insert Text** uses the selected font family, style, point size, and color. Text wraps inside the selection. Without a selection, it starts 20 pixels from the top-left. Point-to-pixel conversion uses the image DPI. **Edit → Draw** opens a separate dialog for pen, soft brush, line, arrow, rectangle, and ellipse. Each of the six tools has its own icon and text label. Strokes can be undone in the dialog; applying creates one undo step.
 
-## Dateien, Ansicht und Druck
+## Files, view, and printing
 
-Das Datei-Menü enthält **Erneut öffnen**, **Öffnen mit**, **Dateien suchen**, **Letzte Ordner**, **Umbenennen**, **Kopieren**, **Verschieben** und **In den Papierkorb**. Dateiaktionen verwenden gespeicherte Dateien; offene Änderungen müssen zuerst gespeichert oder rückgängig gemacht werden. Kopieren, Verschieben und Umbenennen überschreiben kein vorhandenes Ziel. Löschen fragt nach und verwendet ausschließlich den System-Papierkorb.
+The File menu includes **Reopen**, **Open With**, **Search Files**, **Recent Folders**, **Rename**, **Copy**, **Move**, and **Move to Trash**. File actions operate on saved files; pending edits must first be saved or discarded. Copy, move, and rename do not overwrite an existing target. Deletion asks for confirmation and uses the system trash only.
 
-Unter **Extras → Ansicht einstellen** sind die Hintergrundfarbe und das Vergrößern kleiner Bilder beim Einpassen konfigurierbar. Einstellungen werden lokal gespeichert. Das Hauptfenster startet mit 720 × 640 Pixeln. Bei manuellem Zoom oder 100-%-Ansicht wächst es mit dem Bild bis zur verfügbaren Bildschirmfläche und maximiert sich an dieser Grenze. Weiteres Zoomen verwendet Scrollleisten; Verkleinern schrumpft das Fenster nicht automatisch.
+Use **Extras → View Settings** to configure the background color and whether small images are enlarged when fitted. Settings are stored locally. The main window starts at 720 × 640 pixels. At manual zoom or 100%, it grows with the image up to the available screen area and maximizes at that limit. Further zoom uses scrollbars; zooming out does not automatically shrink the window.
 
-**Drucken** öffnet zuerst die Bildanordnung: Hoch-/Querformat, bestmögliches Einpassen, eigene Größe in cm mit gekoppeltem Verhältnis oder getrennte Skalierung in Prozent. Zentrieren und Abstände vom linken/oberen druckbaren Seitenrand sind wählbar. Danach folgt der native Druckdialog für Drucker, Papier und Geräteeigenschaften. Übergröße wird am druckbaren Seitenrand abgeschnitten. Die PDF-Ausgabe wird automatisch geprüft; ein realer Drucker ist noch nicht abgenommen.
+**Print** first opens the image layout: portrait/landscape, best fit, custom size in cm with linked aspect ratio, or independent scaling in percent. Centering and offsets from the top/left printable page edge are configurable. The native print dialog then selects the printer, paper, and device options. Oversized images are clipped at the printable page edge. PDF output is checked automatically; a physical printer has not yet been verified.
 
-**Scannen** verwendet SANE zur Geräteauswahl, Auflösung und Farbauswahl. **Scannen und drucken** führt nach dem Scan zur Druckanordnung. Scanner können andere Modi oder DPI-Werte verlangen; Fehler des Gerätetreibers werden angezeigt. Der Hardwareablauf ist noch nicht mit einem realen Scanner geprüft. **Audio / Video öffnen** spielt lokale Medien in einem separaten Fenster mit GTK-Steuerung ab, sofern das System den Codec unterstützt; diese Medien werden nicht als Bilder bearbeitet.
+**Scan** uses SANE for device, resolution, and color selection. **Scan and Print** continues to print layout after scanning. Scanners may require different modes or DPI values; driver errors are shown. The hardware workflow has not been tested with a real scanner. **Open Audio / Video** plays local media in a separate window using GTK controls when the system supports its codec; media is not edited as an image.
 
-Eine vollständige Übersicht aller sichtbaren Menüaktionen und ihrer Grenzen steht in [docs/FEATURES.md](docs/FEATURES.md).
+See [docs/FEATURES.md](docs/FEATURES.md) for a full list of visible menu actions and their limitations.
 
-## Speichern und Exportprofile
+## Saving and export profiles
 
-Der Speicherdialog enthält Dateiname, Zielordner, Formatauswahl und passende Optionen. Der vorgeschlagene Name lautet `<name>-bearbeitet` im unterstützten Quellformat; andernfalls wird PNG verwendet. Die Dateiendung wird an das ausgewählte Format angepasst.
+The save dialog provides a filename, destination folder, format selector, and relevant options. The suggested name is `<name>-edited` in the supported source format; otherwise PNG is selected. The file extension follows the chosen format.
 
-JPG, PNG und WebP sind als direkte Auswahlkarten sichtbar. **Weitere Formate** enthält die übrigen Ausgabeformate. Die Größenanzeige wird im Hintergrund durch tatsächliches Kodieren mit den gewählten Einstellungen berechnet; sie ist keine pauschale Schätzung. Bei großen Dateien kann das etwas dauern.
+JPG, PNG, and WebP are shown as direct-choice cards. **More Formats** contains the remaining output formats. The file-size display is calculated in the background by encoding with the selected settings; it is not a generic estimate. This can take a little while for large files.
 
-**Auflösung** bietet 50 %, 100 % und eigene Pixelmaße bei festem Seitenverhältnis. Ein verkleinerter Export verändert weder die Pixelmaße noch den Speicherstatus der Arbeitsdatei im Editor. Diese Größenwahl gilt für den aktuellen Export; ausdrücklich gespeicherte Profile können eigene Ausgabemaße enthalten.
+**Resolution** offers 50%, 100%, and custom pixel dimensions with a locked aspect ratio. A reduced export does not change the editor's working image or save state. This size setting applies to the current export; named profiles may include their own output dimensions.
 
-Unter **Speicherort** werden Dateiname und Zielordner geändert. **Metadaten entfernen** schaltet EXIF, ICC, Kommentar und XMP gemeinsam aus. Einzelne Metadaten, formatabhängige Einstellungen und benannte Profile stehen unter **Erweiterte Optionen & Profile**.
+Change the filename and destination under **Location**. **Remove Metadata** disables EXIF, ICC, comments, and XMP together. Individual metadata options, format-specific settings, and named profiles are under **Advanced Options & Profiles**.
 
-### Formatoptionen
+### Format options
 
-| Format | Einstellmöglichkeiten |
+| Format | Options |
 | --- | --- |
-| JPEG | Qualität 1–100, progressive Ausgabe, Graustufen, Farbunterabtastung deaktivieren (4:4:4), maximales Dateivolumen |
-| GIF | Interlacing, Transparenz erhalten oder auf Weiß reduzieren |
-| PNG | Verlustfreie Kompression von 0 bis 9 |
-| WebP | Qualität und verlustfreier Modus |
-| TIFF, BMP, ICO, PDF, JPEG 2000, PPM | Ausgabe mit den jeweiligen Standardoptionen |
+| JPEG | Quality 1–100, progressive, grayscale, disable chroma subsampling (4:4:4), maximum file size |
+| GIF | Interlacing, preserve transparency or flatten to white |
+| PNG | Lossless compression from 0 to 9 |
+| WebP | Quality and lossless mode |
+| TIFF, BMP, ICO, PDF, JPEG 2000, PPM | Export using the format's available standard options |
 
-Das JPEG-Größenlimit wird in **KiB** angegeben: 1 KiB entspricht 1.024 Bytes. Bildblick reduziert bei Bedarf die Qualität unterhalb des gewählten Ausgangswerts. Ist das Limit selbst bei Qualität 1 nicht erreichbar, schlägt der Export mit einer verständlichen Meldung fehl; eine vorhandene Zieldatei bleibt erhalten. Das Limit verändert nicht automatisch die Pixelmaße.
+The JPEG size limit is specified in **KiB**; 1 KiB equals 1,024 bytes. If needed, Bildblick lowers quality below the selected starting value. If the limit cannot be met even at quality 1, export fails with a clear message and an existing target file is preserved. The limit does not automatically change pixel dimensions.
 
-PNG-Kompression ist immer verlustfrei: höhere Stufen sparen meist mehr Platz und brauchen mehr Rechenzeit; sie verschlechtern keine Bildqualität. GIF hat keinen JPEG-artigen Qualitätsregler.
+PNG compression is always lossless: higher levels generally save more space and take more processing time; they do not reduce image quality. GIF has no JPEG-style quality setting.
 
-GIF unterstützt höchstens 256 Farben und nur binäre Transparenz. Bei aktivierter Transparenz werden Pixel mit Alpha unter 50 % transparent. Die übrigen Pixel werden bei Teiltransparenz mit Weiß verrechnet. Interlacing wird vom verwendeten Encoder erst ab 16 × 16 Pixeln eingesetzt.
+GIF supports at most 256 colors and binary transparency only. With transparency enabled, pixels with alpha below 50% become transparent. The remaining partially transparent pixels are composited against white. The encoder uses interlacing only for images at least 16 × 16 pixels.
 
-JPEG, BMP, PDF und PPM erhalten bei Transparenz einen weißen Hintergrund. ICO-Ausgaben werden auf die unterstützten Icon-Größen reduziert. Exportoptionen wie JPEG-Graustufen verändern das Bild im Editor nicht.
+JPEG, BMP, PDF, and PPM use a white background for transparent images. ICO output is reduced to supported icon sizes. Export options such as JPEG grayscale do not alter the editor image.
 
-### Metadaten
+### Metadata
 
-EXIF, ICC-Farbprofil, Original-Kommentar und XMP lassen sich getrennt übernehmen. Nur Daten, die eingelesen wurden und vom Zielformat unterstützt werden, können erhalten bleiben.
+EXIF, ICC color profile, original comment, and XMP can be preserved separately. Only metadata that was read and is supported by the target format can be retained.
 
-| Daten | Unterstützte Einzelbild-Ausgaben |
+| Data | Supported single-image output formats |
 | --- | --- |
 | EXIF | JPEG, PNG, WebP |
-| ICC | JPEG, PNG, WebP, TIFF, PDF, soweit vom Encoder unterstützt |
-| Kommentar | JPEG, GIF |
+| ICC | JPEG, PNG, WebP, TIFF, PDF, where supported by the encoder |
+| Comment | JPEG, GIF |
 | XMP | JPEG, WebP |
 
-Die EXIF-Ausrichtung wird beim Laden normalisiert. Ein ursprüngliches RGB-Farbprofil wird nicht an ein Graustufen-JPEG angehängt. IPTC, eingebettete Vorschaubilder und spezielle Formatmetadaten werden nicht vollständig erhalten. Bildblick enthält keinen Metadaten-Editor.
+EXIF orientation is normalized when loading. An original RGB color profile is not attached to a grayscale JPEG. IPTC, embedded previews, and specialized format metadata are not fully preserved. Bildblick does not include a metadata editor.
 
-### Profile
+### Profiles
 
-Im Bereich **Profile** einen Namen eingeben und die aktuellen Einstellungen speichern. **Laden** übernimmt ein vorhandenes Profil; **Löschen** entfernt es. Ein vorhandener Name wird beim Speichern aktualisiert.
+Enter a name in **Profiles** and save the current settings. **Load** applies an existing profile; **Delete** removes it. Saving an existing name updates that profile.
 
-Profile enthalten Format und Speicheroptionen, jedoch keine Bilddateien oder Zielpfade. Sie bleiben nach einem Neustart erhalten. Die zuletzt gewählten Optionen ohne benanntes Profil gelten nur für die laufende Sitzung.
+Profiles store format and save options, but not image files or destination paths. They persist after restarting the app. Options last used without a named profile apply only for the current session.
 
-## Stapelverarbeitung und CLI
+## Batch processing and CLI
 
-Unter **Extras → Stapelverarbeitung** werden Quelldateien, Zielordner, Format, maximale Größe und Namensvorlage gewählt. Vor dem Start zeigt Bildblick die Zuordnung von Quell- zu Zieldateien. Existierende Ziele und Namenskollisionen werden abgelehnt.
+Under **Extras → Batch Processing**, choose source files, destination folder, format, maximum size, and filename template. Before starting, Bildblick previews source-to-destination names. Existing targets and filename collisions are rejected.
 
-Erlaubte Platzhalter sind `{stem}`, `{index}` und numerisch formatierte Indizes wie `{index:04d}`. Beispiel: `Urlaub-{index:04d}-{stem}`.
+Allowed placeholders are `{stem}`, `{index}`, and numerically formatted indices such as `{index:04d}`. Example: `Holiday-{index:04d}-{stem}`.
 
-Der Modus `copy` erstellt umbenannte, bitgenaue Kopien. Die Bildkonvertierung kann zusätzlich skalieren und um 90° drehen. Ein Abbruch beendet die Verarbeitung nach der aktuellen Datei. Mehrseitige Quellen werden bei einer Einzelbild-Konvertierung abgelehnt, damit Seiten nicht unbemerkt entfallen.
+The `copy` mode creates renamed, byte-for-byte copies. Image conversion can also resize and rotate by 90°. Cancellation stops after the current file. Multipage sources are rejected for single-image conversion so pages are not silently lost.
 
-### Vorschau ohne Dateien zu schreiben
+### Preview without writing files
 
-Der Zielordner muss bereits existieren:
+The destination folder must already exist:
 
 ```bash
-/usr/bin/python3 cli.py ./bilder --output ./export \
+/usr/bin/python3 cli.py ./images --output ./export \
   --format jpg --max-width 1920 --quality 90 \
-  --pattern 'Bild-{index:04d}' --dry-run
+  --pattern 'Image-{index:04d}' --dry-run
 ```
 
-Ohne `--dry-run` wird der geplante Auftrag ausgeführt. Ordner werden ohne Unterordner eingelesen. Mehrere Dateien und Ordner können gemeinsam als Quellen angegeben werden.
+Without `--dry-run`, the planned job is executed. Folders are read without descending into subfolders. Multiple files and folders can be supplied as sources together.
 
-### Weitere Beispiele
+### More examples
 
 ```bash
-# In ein 1600 × 1200 großes Rechteck einpassen, ohne kleine Bilder hochzuskalieren
-/usr/bin/python3 cli.py foto.png --output ./export \
+# Fit within a 1600 × 1200 rectangle without enlarging small images
+/usr/bin/python3 cli.py photo.png --output ./export \
   --format webp --max-width 1600 --max-height 1200
 
-# Bitgenaue Kopien mit fortlaufenden Namen
-/usr/bin/python3 cli.py ./bilder --output ./kopien \
-  --format copy --pattern 'Archiv-{index:04d}-{stem}'
+# Byte-for-byte copies with sequential names
+/usr/bin/python3 cli.py ./images --output ./copies \
+  --format copy --pattern 'Archive-{index:04d}-{stem}'
 
-# JPEG-Ausgaben ohne übernommene Metadaten
-/usr/bin/python3 cli.py ./bilder --output ./export \
+# JPEG output without preserved metadata
+/usr/bin/python3 cli.py ./images --output ./export \
   --format jpg --quality 85 --strip-metadata
 ```
 
-Die CLI schreibt JSON mit Quellpfad, Zielpfad und Ergebnis. Exit-Code `0` bedeutet Erfolg, `1` mindestens einen Fehler während der Verarbeitung und `2` einen Fehler bei Argumenten oder Planung. Der erweiterte Speicherdialog und seine Profile werden nicht vollständig durch CLI-Parameter abgebildet.
+The CLI writes JSON containing source path, destination path, and result. Exit code `0` means success, `1` means at least one processing error, and `2` means an argument or planning error. The advanced save dialog and its profiles are not fully represented by CLI options.
 
-## Formate und Mehrseiten-Dateien
+## Formats and multipage files
 
-Standardformate werden über Pillow gelesen. Weitere Formate nutzen vorhandene native Decoder. Eine erkannte Dateiendung garantiert nicht, dass jede Variante des Formats unterstützt ist.
+Standard formats are read through Pillow. Additional formats use native decoders already installed on the system. A recognized file extension does not guarantee every variant of a format is supported.
 
-| Bereich | Stand |
+| Area | Status |
 | --- | --- |
-| PNG, JPEG, WebP, GIF, BMP, TIFF | Zentrale Lese-/Schreibformate |
-| ICO, JPEG 2000, PPM | Export über die installierten Pillow-Codecs |
-| PDF | Lesen über Poppler mit Rasterisierung bei 150 dpi; Raster-PDF-Ausgabe |
-| SVG/SVGZ | Rasterisierung über einen vorhandenen ImageMagick-SVG-Decoder |
-| JPEG XL, EXR, DPX, CIN, MNG | Zusatzdecoder mit erzeugten Testdateien geprüft |
-| AVIF | Native Dekodierung einfacher Standbilder und Animationen geprüft |
-| RAW, DICOM, XCF, WPG | Je nach System gemeldete Decoder; keine umfassende Variantenprüfung |
-| HEIC/HEIF | In der Referenzkonfiguration nicht unterstützt |
+| PNG, JPEG, WebP, GIF, BMP, TIFF | Core read/write formats |
+| ICO, JPEG 2000, PPM | Export through installed Pillow codecs |
+| PDF | Read through Poppler and rasterized at 150 dpi; raster PDF output |
+| SVG/SVGZ | Rasterized through an available ImageMagick SVG decoder |
+| JPEG XL, EXR, DPX, CIN, MNG | Extra decoders checked with generated test files |
+| AVIF | Native decoding checked for simple still images and animations |
+| RAW, DICOM, XCF, WPG | Decoders reported by the system; variants not comprehensively tested |
+| HEIC/HEIF | Not supported in the reference configuration |
 
-Bei mehrseitigen Dateien zeigt Bildblick die aktuelle Seite beziehungsweise den aktuellen Frame. **Speichern unter** exportiert nur diese Seite und verhindert damit das Überschreiben des mehrseitigen Originals am ursprünglichen Quellpfad.
+For a multipage file, Bildblick shows the current page or frame. **Save As** exports only that page, preventing accidental overwrite of the original multipage source.
 
-**Datei → Alle Seiten exportieren** kombiniert die aktuell bearbeitete Seite mit den übrigen Originalseiten. TIFF, GIF, WebP und PDF sind als Ziele vorgesehen. GIF/WebP erfordern identische Framegrößen. Animationsausgaben laufen in einer Endlosschleife.
+**File → Export All Pages** combines the currently edited page with the remaining original pages. TIFF, GIF, WebP, and PDF are supported targets. GIF/WebP require identical frame sizes. Animated outputs loop continuously.
 
-Es gibt derzeit kein Dokumentmodell, das beliebig viele separat bearbeitete Seiten gleichzeitig verwaltet. Ein Mehrseitenexport markiert den einzelnen Bearbeitungsstand nicht als gespeichert.
+There is no document model for maintaining arbitrary separately edited pages at once. A multipage export does not mark the single-page edit state as saved.
 
-## Datenspeicherung und Grenzen
+## Data storage and limitations
 
-Bildblick verarbeitet Bilder lokal. Die Anwendung enthält keinen Kontozwang, Cloud-Upload, Telemetrie-Client oder automatischen Update-Download. Externe Decoder werden als lokale Prozesse aufgerufen.
+Bildblick processes images locally. It has no account requirement, cloud upload, telemetry client, or automatic update download. External decoders are invoked as local processes.
 
-Ausgabedateien werden zunächst im Zielverzeichnis vollständig temporär geschrieben. Erst danach wird das Ergebnis veröffentlicht. Das Ersetzen vorhandener Dateien verlangt im Dialog eine Bestätigung; Stapelverarbeitung überschreibt vorhandene Ziele nicht.
+Output files are first written completely to a temporary file in the destination directory. Only then is the result published. Replacing an existing file requires confirmation in the dialog; batch processing never overwrites existing targets.
 
-Aktuelle Grenzen:
+Current limitations:
 
-- Bearbeitung intern mit 8-Bit-RGBA; keine Ebenen oder durchgehende HDR-/16-Bit-Verarbeitung.
-- Bis zu 20 Undo-Schritte, bei großen Bildern durch das Speicherbudget reduziert.
-- Größenänderungen und normale Bildladung auf höchstens 80 Megapixel begrenzt; native Zusatzdecoder haben strengere Grenzen.
-- Native Decoder begrenzen Laufzeit, Speicher und Dateigröße; große Eingaben können abgelehnt werden.
-- Vektorgrafiken und PDF-Seiten werden gerastert. Externe relative SVG-Ressourcen werden nicht übernommen.
-- AVIF-Hilfsbilder und bestimmte Alpha-Varianten werden nicht vollständig unterstützt.
-- Kein validierter, monitorprofilierter Farbmanagement-Workflow.
-- JPEG wird neu kodiert; keine verlustfreie JPEG-Rotation oder automatische Ermittlung der Originalqualität.
-- Keine Ebenen, komplexe Pinselbibliothek, Bildschirmaufnahme oder nahtlose Panoramaverschmelzung.
-- Scanner und Medien benötigen optionale Systemmodule; Windows-Plugins und ausführbare Diashows werden nicht unterstützt.
-- Physischer Druck, Scanner-Hardware, Medien-Codecs und vollständige Desktop-/Accessibility-Abnahme sind noch nicht manuell bestätigt.
+- Editing uses 8-bit RGBA internally; there are no layers or full HDR/16-bit workflow.
+- Up to 20 undo steps are kept, reduced when large images reach the memory budget.
+- Resizing and standard image loading are limited to 80 megapixels; native extra decoders may impose stricter limits.
+- Native decoders limit runtime, memory, and file size; large inputs may be rejected.
+- Vector graphics and PDF pages are rasterized. External relative SVG resources are not included.
+- AVIF auxiliary images and some alpha variants are not fully supported.
+- No validated, monitor-profiled color-management workflow.
+- JPEG is re-encoded; lossless JPEG rotation and automatic detection of original quality are not available.
+- No layers, advanced brush library, screen capture, or seamless panorama stitching.
+- Scanning and media require optional system modules; Windows plugins and executable slideshows are unsupported.
+- Physical printing, scanner hardware, media codecs, and complete desktop/accessibility checks have not yet been manually confirmed.
 
-## Entwicklung und Tests
+## Development and tests
 
-### Projektaufbau
+### Project structure
 
-| Datei/Ordner | Aufgabe |
+| File/folder | Purpose |
 | --- | --- |
-| `bildblick.py` | Fenster, Zeichenfläche, Öffnen/Speichern und Eingabe |
-| `editor_ui.py`, `ui_theme.py`, `adjustments.py`, `edit_controls.py` | Gestaltung, Slider, direkte Auswahl und Bildanpassungen |
-| `advanced_ui.py`, `menus.py` | Menüaktionen, Navigation, Dialoge und Hintergrundaufträge |
-| `image_tools.py`, `tool_dialogs.py`, `file_tools_ui.py`, `paint_dialog.py` | Auswahl, Pixelwerkzeuge, DPI/Druck, Dateiaktionen, Zeichnen und optionale Systemanbindung |
-| `image_model.py` | Bildzustand, Bearbeitung, Undo/Redo und Seitenexport |
-| `image_export.py`, `save_options.py`, `save_dialog.py` | Encoderoptionen, Profile und Speicherdialog |
-| `resize_settings.py`, `resize_dialog.py` | Größenberechnung und Größenänderungsdialog |
-| `native_codecs.py` | Begrenzte Aufrufe zusätzlicher Decoder |
-| `batch.py`, `cli.py` | Auftragsplanung und Stapelverarbeitung |
-| `assets/` | Eisvogel-Symbol und zugehörige Asset-Dokumentation |
-| `packaging/` | Benutzerinstallation, Paketbau und Veröffentlichung |
-| `tests/` | Modell-, Controller-, Export- und Decoder-Prüfungen |
+| `bildblick.py` | Window, canvas, open/save, and input handling |
+| `editor_ui.py`, `ui_theme.py`, `adjustments.py`, `edit_controls.py` | Styling, sliders, direct selection, and image adjustments |
+| `advanced_ui.py`, `menus.py` | Menu actions, navigation, dialogs, and background jobs |
+| `image_tools.py`, `tool_dialogs.py`, `file_tools_ui.py`, `paint_dialog.py` | Selection, pixel tools, DPI/printing, file actions, drawing, and optional system integration |
+| `image_model.py` | Image state, editing, undo/redo, and page export |
+| `image_export.py`, `save_options.py`, `save_dialog.py` | Encoder options, profiles, and save dialog |
+| `resize_settings.py`, `resize_dialog.py` | Resize calculations and dialog |
+| `native_codecs.py` | Bounded calls to extra decoders |
+| `batch.py`, `cli.py` | Job planning and batch processing |
+| `assets/` | Kingfisher icon and asset documentation |
+| `packaging/` | User install, package builds, and publication |
+| `tests/` | Model, controller, export, and decoder checks |
 
-### Automatische Tests
+### Automated tests
 
 ```bash
 /usr/bin/python3 -m unittest discover -s tests -v
 ```
 
-Auf dem Referenzsystem bestehen **103 Tests**. Geprüft werden unter anderem tatsächliche Exportdateien, Pixeloperationen, JPEG-Optionen, GIF-Transparenz, Metadaten-Schalter, Profile, Zielkollisionen und native Decoder. Auf anderen Systemen können codecabhängige Prüfungen übersprungen werden.
+The current suite contains **114 tests**. It checks actual output files, pixel operations, JPEG options, GIF transparency, metadata controls, profiles, destination collisions, and native decoders. Codec-dependent checks may be skipped on other systems.
 
-### Grafischer Integrationstest
+### Graphical integration test
 
 ```bash
 PYTHONPATH=. GDK_BACKEND=x11 GSK_RENDERER=cairo xvfb-run -a \
   -s '-screen 0 1280x900x24' /usr/bin/python3 tests/ui_smoke.py
 ```
 
-Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er mit Status `77`, nicht mit einem erfolgreichen Test. Die lokale Entwicklungsumgebung erlaubt keinen Display-Zugriff. GitHub Actions führt den Test deshalb mit Xvfb und Openbox aus und stellt Screenshots als Workflow-Artefakt bereit. Getestet werden auch Vorschau, Zurücksetzen, verkleinerter Export und ein kompaktes Fenster. Zusätzliche Prüfungen umfassen cm/DPI, Auswahlkanten und Verschieben, Zwischenablage, Rahmen, freie Drehung, Text, Gamma/RGB, Einstellungen, PDF-Druck, Umbenennen und Zeichnen. Eine vollständige Prüfung mit Screenreader, Scanner und realem Drucker steht weiterhin aus.
+This test needs a graphical environment. Without a display it exits with status `77`, rather than reporting a pass. The local development environment does not allow display access. GitHub Actions runs it with Xvfb and Openbox and provides screenshots as a workflow artifact. It also checks preview, reset, reduced-size export, and a compact window. Further checks cover cm/DPI, selection edges and movement, clipboard, borders, fine rotation, text, gamma/RGB, settings, PDF printing, renaming, and drawing. A complete screen reader, scanner, and physical printer review is still pending.
 
-### Paket bauen
+### Build packages
 
 ```bash
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.11.1-linux.tar.gz` und die zugehörige SHA-256-Datei. GitHub Actions erstellt zusätzlich das Flatpak-Bundle. Das Quellarchiv enthält eine Liste der Prüfsummen seiner Dateien; Benutzerdaten und Exportprofile werden nicht eingepackt.
+The build creates `dist/Bildblick-0.11.2-linux.tar.gz` and its SHA-256 file. GitHub Actions also builds the x86-64 AppImage and Flatpak bundle. The source archive includes checksums for its files; user data and export profiles are not packaged.
 
-Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
-baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag
-noch keinen Release besitzt. Bereits veröffentlichte Dateien werden dabei
-nicht ersetzt. Für künftige Versionen müssen Versionsnummern in Paketbau,
-Veröffentlichungsskript, Workflow und Release-Text gemeinsam aktualisiert werden.
+The GitHub workflow checks changes on `main` in a Fedora container, builds packages, and publishes a prerelease if the version tag does not already have a release. Existing release files are not replaced. For future versions, update the version numbers in the package builder, publication script, workflow, and release notes together.
 
-## Fehler melden und mitarbeiten
+## Report issues and contribute
 
-Bitte bei Fehlerberichten Distribution, Python-/GTK-/Pillow-Version, Bildformat, erwartetes Verhalten und nachvollziehbare Schritte angeben. Beispieldateien nur teilen, wenn du sie veröffentlichen möchtest; Bildmetadaten können persönliche Informationen enthalten.
+When reporting a bug, include your distribution, Python/GTK/Pillow versions, image format, expected behavior, and reproducible steps. Share sample files only if you want to make them public; image metadata may contain personal information.
 
-Beiträge sollten einen klaren Anwendungsfall behandeln und passende Prüfungen mitbringen. Funktionsversprechen müssen zwischen implementiert, automatisch geprüft und manuell bestätigt unterscheiden. Die nächste Produktentwicklung steht in [PRODUCT.md](PRODUCT.md).
+Contributions should address a clear use case and include suitable checks. Feature claims should distinguish between implemented, automatically tested, and manually verified behavior. The [product document](PRODUCT.md) describes the next development steps.
 
-## Lizenz und verwendete Komponenten
+## License and third-party components
 
-Bildblick wird unter der [MIT-Lizenz](LICENSE) veröffentlicht. Die installierten Bibliotheken und optionalen Decoder bleiben eigenständige Komponenten mit ihren jeweiligen Lizenzen; sie werden nicht in das Anwendungspaket gebündelt.
+Bildblick is released under the [MIT License](LICENSE). Installed libraries and optional decoders remain separate components under their respective licenses; they are not bundled in the system package.
 
+## Design reference
 
-## Verbindliche Designreferenz
+The local [design reference](design-system/index.html) is an offline HTML/CSS/TypeScript site showing component families, states, and complete dialog examples. [DESIGN.md](design-system/DESIGN.md) and [tokens.json](design-system/tokens.json) define the styling for new and updated parts of the app. Read the project-wide [AGENTS.md](AGENTS.md) before UI changes. See [design-system/README.md](design-system/README.md) for usage and development.
 
-Die lokale [Designreferenz](design-system/index.html) zeigt alle vorhandenen Elementfamilien, ihre Zustände und vollständige Dialogmuster als offline nutzbare HTML/CSS/TypeScript-Website. [DESIGN.md](design-system/DESIGN.md) und [tokens.json](design-system/tokens.json) legen die Gestaltung für neue und überarbeitete App-Bereiche fest. Vor UI-Änderungen die projektweite [AGENTS.md](AGENTS.md) beachten. Start und Bearbeitung sind in [design-system/README.md](design-system/README.md) beschrieben.
+### Consistent interfaces
 
-### Einheitliche Oberflächen
+Dialog width is based on the number of controls and height on natural content. Screen space limits dialog dimensions; dialogs should show their controls without scrolling whenever there is enough room. The [sizing rules](docs/DIALOG-SIZING.md) and [UI audit](docs/UI-AUDIT.md) describe the formula, inventory, and exceptions for native system dialogs.
 
-Dialoge erhalten eine Breite nach Zahl ihrer Bedienelemente und eine Höhe nach dem natürlichen Inhalt. Die Bildschirmfläche begrenzt die Maße; Dialoge sollen ihre Elemente ohne Scrollen zeigen, solange der Platz reicht. Die [Größenregel](docs/DIALOG-SIZING.md) und der [UI-Abgleich](docs/UI-AUDIT.md) beschreiben Formel, Inventar und Ausnahmen für native Systemdialoge.
+Short messages and unsaved-change prompts remain compact. **Save**, **Discard**, and **Cancel** are separate actions. A cancelled or failed save never discards changes.
 
-Kurze Meldungen und die Abfrage bei ungespeicherten Änderungen bleiben kompakt. **Speichern**, **Verwerfen** und **Abbrechen** sind getrennte Aktionen. Ein abgebrochener oder fehlgeschlagener Speichervorgang verwirft keine Änderungen.
+## Design knowledge and ongoing redesign
 
+[knowlede.md](knowlede.md) summarizes the design principles and their application to Bildblick. [redesign.md](redesign.md) records the surface audit, the first implementation pass, and remaining work. The [local HTML reference](design-system/index.html) is the canonical component reference.
 
-## Designwissen und laufendes Redesign
-
-[knowlede.md](knowlede.md) fasst die Designprinzipien und ihre Anwendung auf Bildblick zusammen. [redesign.md](redesign.md) enthält die Bestandsaufnahme aller Oberflächenfamilien, den ersten Umsetzungsdurchgang und die noch offenen Schritte. Die [lokale HTML-Referenz](design-system/index.html) ist der verbindliche Komponentenvergleich.
-
-Version 0.11.1 behebt fehlende Design-Tokens im Flatpak-Paket, die zuvor den Programmstart verhinderten. Version 0.11.0 ergänzt das Flatpak-Paket für gängige x86-64-Linux-Distributionen. Version 0.10.0 verbesserte die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten.
+Version 0.11.2 adds an x86-64 AppImage alongside Flatpak. Version 0.11.1 fixes missing design tokens in the Flatpak package that prevented startup. Version 0.11.0 adds a Flatpak package for common x86-64 Linux distributions. Version 0.10.0 improved visual hierarchy with clear selection states, grouped fields, a visible save destination, organized image information, and useful empty thumbnail lists.

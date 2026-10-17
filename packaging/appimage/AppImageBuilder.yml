@@ -1,0 +1,55 @@
+version: 1
+
+AppDir:
+  path: ./AppDir
+  app_info:
+    id: io.github.obaidr1.obiview
+    name: Bildblick
+    icon: io.github.obaidr1.obiview
+    version: 0.11.2
+    exec: usr/bin/python3
+    exec_args: '${APPDIR}/usr/share/bildblick/bildblick.py $@'
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ noble main universe'
+      - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ noble-updates main universe'
+    include:
+      - python3
+      - python3-gi
+      - python3-cairo
+      - gir1.2-gtk-4.0
+      - libgtk-4-1
+      - libgdk-pixbuf-2.0-0
+      - libfontconfig1
+      - fontconfig
+      - fonts-dejavu-core
+      - adwaita-icon-theme
+
+  runtime:
+    arch: x86_64
+    env:
+      PYTHONHOME: '${APPDIR}/usr'
+      PYTHONPATH: '${APPDIR}/usr/lib/python3/dist-packages:${APPDIR}/usr/lib/python3.12/site-packages:${APPDIR}/usr/share/bildblick'
+      GI_TYPELIB_PATH: '${APPDIR}/usr/lib/x86_64-linux-gnu/girepository-1.0'
+      GTK_DATA_PREFIX: '${APPDIR}/usr'
+      XDG_DATA_DIRS: '${APPDIR}/usr/share:/usr/local/share:/usr/share'
+
+  files:
+    exclude:
+      - usr/share/doc/*
+      - usr/share/man/*
+      - usr/include/*
+
+AppImage:
+  arch: x86_64
+  file_name: Bildblick-0.11.2-x86_64.AppImage
+
+script:
+  - mkdir -p "$TARGET_APPDIR/usr/share/bildblick/design-system" "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps" "$TARGET_APPDIR/usr/share/applications" "$TARGET_APPDIR/usr/lib/python3.12/site-packages"
+  - cp "$SOURCE_DIR"/../../*.py "$TARGET_APPDIR/usr/share/bildblick/"
+  - cp "$SOURCE_DIR"/../../design-system/tokens.json "$TARGET_APPDIR/usr/share/bildblick/design-system/tokens.json"
+  - cp "$SOURCE_DIR"/../../assets/local.bildblick.Viewer.svg "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg"
+  - sed 's/^Exec=.*/Exec=AppRun %f/; s/^Icon=.*/Icon=io.github.obaidr1.obiview/' "$SOURCE_DIR"/../../bildblick.desktop > "$TARGET_APPDIR/usr/share/applications/io.github.obaidr1.obiview.desktop"
+  - python3 -m pip install --no-deps --target "$TARGET_APPDIR/usr/lib/python3.12/site-packages" Pillow==12.2.0

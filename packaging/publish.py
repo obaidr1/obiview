@@ -8,7 +8,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = 'obaidr1/obiview'
-VERSION = '0.11.1'
+VERSION = '0.11.2'
 
 
 def run(*args, capture=False, check=True):
@@ -50,8 +50,16 @@ def publish():
     if release.returncode == 0:
         print('Release existiert bereits; bestehende Release-Dateien bleiben unverändert.')
     else:
-        package = ROOT/'dist'/f'Bildblick-{VERSION}-linux.tar.gz'
-        run('gh', 'release', 'create', tag, str(package), str(package)+'.sha256',
+        packages = [
+            ROOT/'dist'/f'Bildblick-{VERSION}.flatpak',
+            ROOT/'dist'/f'Bildblick-{VERSION}-x86_64.AppImage',
+            ROOT/'dist'/f'Bildblick-{VERSION}-linux.tar.gz',
+            ROOT/'dist'/f'Bildblick-{VERSION}-linux.tar.gz.sha256',
+        ]
+        missing = [path.name for path in packages if not path.is_file()]
+        if missing:
+            raise ValueError('Vor der Veröffentlichung fehlen Paketdateien: '+', '.join(missing))
+        run('gh', 'release', 'create', tag, *(str(path) for path in packages),
             '--repo', REPOSITORY, '--verify-tag', '--prerelease', '--title', 'Bildblick '+VERSION,
             '--notes-file', str(ROOT/'docs'/f'release-{VERSION}.md'))
     print(f'https://github.com/{REPOSITORY}')

@@ -7,7 +7,7 @@ import tarfile
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-VERSION = '0.11.1'
+VERSION = '0.11.2'
 output = root/'dist'/f'Bildblick-{VERSION}-linux.tar.gz'
 output.parent.mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='bildblick-package-') as staging:
