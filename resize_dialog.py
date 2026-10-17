@@ -144,6 +144,7 @@ class ResizeDialog(StandardDialog):
         widget = Gtk.SpinButton.new_with_range(1,80_000_000,1)
         widget.set_hexpand(True)
         widget.set_numeric(True)
+        widget.set_snap_to_ticks(False)
         widget.set_activates_default(True)
         widget.set_alignment(0.0)
         widget.add_css_class('left-aligned')
@@ -179,9 +180,13 @@ class ResizeDialog(StandardDialog):
                 widget=getattr(self,axis)
                 widget.set_alignment(0.0)
                 widget.set_digits(3 if unit in ('cm','inch') else 2 if self.percent else 0)
+                widget.set_snap_to_ticks(False)
                 widget.set_range(.001 if fractional else 1,8_000_000_000 if self.percent else 80_000_000)
-                widget.set_increments(.1 if unit in ('cm','inch') else 1,
-                                      1 if unit in ('cm','inch') else 10)
+                steps={'pixels':(1,10),'percent':(.1,1),'cm':(.01,.1),'inch':(.01,.1)}[unit]
+                widget.set_increments(*steps)
+                step_text=f'{steps[0]:g} {suffix}'
+                page_text=f'{steps[1]:g} {suffix}'
+                widget.set_tooltip_text(f'Pfeiltasten: {step_text}; Bild auf/ab: {page_text}.')
                 widget.set_value(value/factor)
                 getattr(self,axis+'_unit').set_text(suffix)
             if custom and self.preset.get_selected()!=0:

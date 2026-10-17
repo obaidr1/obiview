@@ -237,6 +237,8 @@ def tick(window):
             dialog.dpi.set_value(300)
             dialog.units.set_active_id('cm')
             dialog.width.set_value(2.54)
+            dialog.width.update()
+            assert abs(dialog.width.get_value()-2.54)<1e-6, (dialog.width.get_value(),dialog.width.get_text())
             assert dialog.settings.dimensions()==(300,188)
             dialog.response(Gtk.ResponseType.ACCEPT)
         elif step == 23:
