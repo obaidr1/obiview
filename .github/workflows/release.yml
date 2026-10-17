@@ -55,6 +55,12 @@ jobs:
           PY
       - name: Build AppImage
         run: /tmp/appimage-builder-venv/bin/appimage-builder --recipe packaging/appimage/AppImageBuilder.yml --skip-test
+      - name: Inspect AppImage launcher layout
+        run: |
+          ./Bildblick-0.11.2-x86_64.AppImage --appimage-extract >/dev/null
+          ls -l squashfs-root/AppRun squashfs-root/usr/bin/python3
+          file squashfs-root/AppRun
+          sed -n '1,24p' squashfs-root/AppRun
       - name: Smoke test the packaged GTK application
         run: |
           set +e
