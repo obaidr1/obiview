@@ -28,7 +28,7 @@ AppDir:
       - adwaita-icon-theme
 
   runtime:
-    arch: x86_64
+    arch: [x86_64]
     env:
       PYTHONHOME: '${APPDIR}/usr'
       PYTHONPATH: '${APPDIR}/usr/lib/python3/dist-packages:${APPDIR}/usr/lib/python3.12/site-packages:${APPDIR}/usr/share/bildblick'
