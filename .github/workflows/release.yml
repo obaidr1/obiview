@@ -39,7 +39,7 @@ jobs:
       - name: Install AppImage build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-venv python3-pip libfuse2t64 xvfb xauth dbus-x11 openbox
+          sudo apt-get install -y python3-venv python3-pip python3-apt libfuse2t64 xvfb xauth dbus-x11 openbox
           python3 -m venv --system-site-packages /tmp/appimage-builder-venv
           /tmp/appimage-builder-venv/bin/pip install 'appimage-builder==1.1.0'
           python3 - <<'PY'
@@ -47,9 +47,10 @@ jobs:
           package_module = Path('/tmp/appimage-builder-venv/lib/python3.12/site-packages/appimagebuilder/modules/deploy/apt/package.py')
           source = package_module.read_text()
           old = 'return version.parse(self.version) > version.parse(other.version)'
-          new = "return version.parse(self.version.replace('ubuntu', '+ubuntu')) > version.parse(other.version.replace('ubuntu', '+ubuntu'))"
+          new = 'return apt_pkg.version_compare(self.version, other.version) > 0'
           if old not in source:
-              raise SystemExit('Could not apply Debian/Ubuntu package-version compatibility patch')
+              raise SystemExit('Could not apply Debian package-version comparison patch')
+          source = source.replace('from packaging import version', 'import apt_pkg\napt_pkg.init_system()')
           package_module.write_text(source.replace(old, new))
           PY
       - name: Build AppImage
