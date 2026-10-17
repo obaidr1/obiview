@@ -75,9 +75,9 @@ class ResizeDialog(StandardDialog):
         dimension_grid = Gtk.Grid(column_spacing=8,row_spacing=4,hexpand=True)
         dimension_grid.set_column_homogeneous(False)
         dimensions.append(dimension_grid)
-        self.width = self.dimension_field('Breite','width')
-        self.height = self.dimension_field('Höhe','height')
-        dimension_grid.attach(self.width.get_parent().get_parent(),0,0,1,1)
+        self.width, width_field = self.dimension_field('Breite','width')
+        self.height, height_field = self.dimension_field('Höhe','height')
+        dimension_grid.attach(width_field,0,0,1,1)
 
         self.ratio_button = Gtk.ToggleButton(child=Gtk.Image.new_from_icon_name('insert-link-symbolic'),
                                                active=True,valign=Gtk.Align.CENTER)
@@ -86,7 +86,7 @@ class ResizeDialog(StandardDialog):
         accessible(self.ratio_button,'Seitenverhältnis beibehalten')
         self.ratio_button.connect('toggled',self.lock_changed)
         dimension_grid.attach(self.ratio_button,1,0,1,1)
-        dimension_grid.attach(self.height.get_parent().get_parent(),2,0,1,1)
+        dimension_grid.attach(height_field,2,0,1,1)
 
         preset_row = Gtk.Box(spacing=12,hexpand=True)
         preset_row.append(label('Vorgabe','small muted'))
@@ -155,9 +155,8 @@ class ResizeDialog(StandardDialog):
         suffix.add_css_class('unit-suffix')
         row.append(widget); row.append(suffix)
         group.append(row)
-        setattr(self,axis,widget)
         setattr(self,axis+'_unit',suffix)
-        return widget
+        return widget,group
 
     def dimension_changed(self,widget,axis):
         if self.syncing:
