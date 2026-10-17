@@ -18,6 +18,8 @@ AppDir:
       - sourceline: 'deb [arch=amd64] https://archive.ubuntu.com/ubuntu/ noble-updates main universe'
         key_url: 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
     include:
+      - coreutils
+      - dash
       - python3
       - python3-gi
       - python3-cairo
