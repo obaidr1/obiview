@@ -46,6 +46,7 @@
       "build-commands": [
         "install -d ${FLATPAK_DEST}/share/bildblick",
         "install -m 644 *.py ${FLATPAK_DEST}/share/bildblick/",
+        "install -Dm 644 design-system/tokens.json ${FLATPAK_DEST}/share/bildblick/design-system/tokens.json",
         "install -Dm 755 packaging/flatpak/bildblick-launcher ${FLATPAK_DEST}/bin/bildblick",
         "install -Dm 644 packaging/flatpak/io.github.obaidr1.obiview.desktop ${FLATPAK_DEST}/share/applications/io.github.obaidr1.obiview.desktop",
         "install -Dm 644 packaging/flatpak/io.github.obaidr1.obiview.metainfo.xml ${FLATPAK_DEST}/share/metainfo/io.github.obaidr1.obiview.metainfo.xml",

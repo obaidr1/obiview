@@ -13,6 +13,9 @@
   <url type="bugtracker">https://github.com/obaidr1/obiview/issues</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.11.1" date="2026-10-17">
+      <description><p>Behebt den Flatpak-Start unter Linux Mint und anderen Distributionen, indem die gemeinsam genutzten Design-Tokens mitinstalliert werden.</p></description>
+    </release>
     <release version="0.11.0" date="2026-10-17">
       <description><p>Erste Flatpak-Veröffentlichung mit gebündelten Bildverarbeitungsabhängigkeiten und plattformübergreifender Linux-Laufzeit.</p></description>
     </release>

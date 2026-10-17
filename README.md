@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 8937)
-Total output lines: 465
-
 <p align="center">
   <img src="assets/local.bildblick.Viewer.svg" width="160" alt="Bildblick: ein Eisvogel in Blau und Orange">
 </p>
@@ -13,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche folgt der Systemsprache und ist auf Deutsch und Englisch verfügbar. Mit `BILDBLICK_LANGUAGE=en` oder `BILDBLICK_LANGUAGE=de` lässt sich die Sprache beim Start festlegen. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.11.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.11.1 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -89,25 +86,25 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 Die Flatpak-Version bündelt die Bildverarbeitungsabhängigkeit und nutzt eine gemeinsame GTK-Laufzeit. Damit musst du Python, GTK und Pillow nicht selbst über den Paketmanager deiner Distribution einrichten.
 
 1. Flatpak installieren und Flathub aktivieren (auf Ubuntu meist über die Software-App oder die [Flatpak-Anleitung](https://flatpak.org/setup/)).
-2. `Bildblick-0.11.0.flatpak` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+2. `Bildblick-0.11.1.flatpak` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 3. Die Datei mit der Software-App öffnen oder im Download-Ordner ausführen:
 
 ```bash
-flatpak install --user ./Bildblick-0.11.0.flatpak
+flatpak install --user ./Bildblick-0.11.1.flatpak
 ```
 
 Bildblick erscheint danach im Anwendungsmenü. Beim ersten Start gewährt die Dateiauswahl Zugriff auf die von dir geöffneten Bilder und Ordner. Die erste Flatpak-Veröffentlichung ist für x86-64-PCs gebaut; andere Architekturen sind noch nicht enthalten.
 
 #### Manuelle Systeminstallation
 
-1. `Bildblick-0.11.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+1. `Bildblick-0.11.1-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.11.0-linux.tar.gz
-cd Bildblick-0.11.0
+tar -xzf Bildblick-0.11.1-linux.tar.gz
+cd Bildblick-0.11.1
 ./install.sh
 ```
 
@@ -180,7 +177,120 @@ Beim Wechseln zu einem anderen Bild oder beim Schließen fragt Bildblick nach, w
 
 ## Bildinformationen
 
-**I** oder **Bild → Bildinformationen** öffnet die Datei- und Bildübersicht: Dateiname, Verzeichnis, voller Pfad, Format, getrennte X-/Y-DPI, ursprüngliche und aktuelle Abmessungen mit Megapixeln und Seitenverhältnis, Druckmaße in cm und Zoll, ursprüngliche und aktuelle Farbtiefe, gezählte RGB-Farben, Dateigröße, Speicherbedarf der aktuellen Pixel, Ordnerposition, Änderungsda…2937 tokens truncated… bleiben.
+**I** oder **Bild → Bildinformationen** öffnet die Datei- und Bildübersicht: Dateiname, Verzeichnis, voller Pfad, Format, getrennte X-/Y-DPI, ursprüngliche und aktuelle Abmessungen mit Megapixeln und Seitenverhältnis, Druckmaße in cm und Zoll, ursprüngliche und aktuelle Farbtiefe, gezählte RGB-Farben, Dateigröße, Speicherbedarf der aktuellen Pixel, Ordnerposition, Änderungsdatum, Ladezeit und Seite/Frame.
+
+Die Farbzählung läuft im Hintergrund und lässt sich abschalten; unterschiedliche Alpha-Werte werden nicht als zusätzliche RGB-Farben gezählt. Der angegebene Pixel-Speicher umfasst weder den gesamten Prozess noch die Undo-Historie. Fehlende Quelldaten werden als nicht verfügbar gekennzeichnet; bei extern gerasterten Formaten wird keine ursprüngliche Farbtiefe erfunden.
+
+**Ändern** übernimmt X-/Y-DPI ohne Änderung der Pixelzahl, mit Rückgängig. Fehlt eine gültige Auflösung, wird die angenommene Vorgabe 96 DPI gekennzeichnet. EXIF, IPTC und Kommentare haben eigene Leseansichten. Das ist kein vollständiger Metadateneditor; insbesondere ist eine vollständige IPTC-Erhaltung beim Export nicht zugesichert.
+
+## Tastenkürzel
+
+Die [vollständige Belegung](docs/SHORTCUTS.md) ist in der App über **F1** durchsuchbar. Im Zoom scrollen Pfeiltasten das Bild, sonst wechseln sie die Datei.
+
+| Kürzel | Aktion |
+| --- | --- |
+| `O`, `Strg+O` | Bild öffnen |
+| `S`, `Strg+Umschalt+S` | Speichern unter |
+| `Strg+S` | Speicherdialog öffnen |
+| `Strg+R` | Größe ändern |
+| `I` | Bildinformationen |
+| `Strg+Z` / `Strg+Umschalt+Z` | Rückgängig / Wiederholen |
+| `Strg+Y` | Auswahl zuschneiden |
+| `Strg+C` / `Strg+V` | Auswahl oder ganzes Bild kopieren / Bild als neues Dokument einfügen |
+| `Strg+X` / `Strg+A` | Auswahl ausschneiden / alles auswählen |
+| `Umschalt+C` | Eigene Auswahl |
+| `Umschalt` + Pfeiltasten | Auswahl um einen Pixel verschieben |
+| `Strg+T` | Text in die Auswahl einfügen |
+| `Strg+N` | Arbeitsbild in neuem Fenster öffnen |
+| `D` | Bild vom Bildschirm entfernen, Datei behalten |
+| `Umschalt+R` | Gespeicherte Datei erneut öffnen |
+| `Strg+F` | Dateinamen in den Vorschaubildern suchen |
+| `F2` | Datei umbenennen |
+| `F12` | Zeichnen |
+| `Strg+P` | Drucken |
+| `R` | 90° im Uhrzeigersinn drehen |
+| `+` / `−` | Vergrößern / Verkleinern |
+| `F` / `Strg+H` | Desktop-/Fensteranpassung / 100 % |
+| `←` / `→` | Vorherige / nächste Datei im Ordner |
+| `Strg+Bild auf` / `Strg+Bild ab` | Vorherige / nächste Seite oder Frame |
+| `Esc` | Auswahlmodus verlassen |
+| `F5` / `F9` | Ansicht aktualisieren / Diashow starten oder stoppen |
+| `Enter` | Vollbild umschalten |
+| `F11` | Vollbild öffnen; darin Mauszeiger umschalten |
+| `F1` | Durchsuchbare Tastaturhilfe |
+
+## Größe ändern
+
+**Bild → Größe ändern**, der sichtbare Größen-Button und `Strg+R` öffnen denselben Dialog.
+
+- Breite und Höhe lassen sich in **Pixeln**, **Prozent**, **Zentimetern** oder **Zoll** eingeben.
+- Bei aktiviertem Seitenverhältnis passt die Änderung eines Feldes das andere an.
+- Prozentwerte beziehen sich auf die Bildgröße beim Öffnen des Dialogs.
+- Vorlagen bieten 25, 50, 100 und 200 Prozent; weitere Werte können direkt eingegeben werden.
+- Auflösungsvorgaben reichen von 640 × 480 bis 3840 × 2160 sowie Bildschirmgröße. Bei gesperrtem Verhältnis wird das Bild in diese Abmessungen eingepasst.
+- **DPI** bestimmt die physische Druckgröße. Eine reine DPI-Änderung bei unveränderten Pixelmaßen erzeugt keine Details und ist rückgängig machbar. JPEG, PNG, TIFF, BMP und PDF erhalten die Druckauflösung beim Export. Die technische Druckauflösung bleibt auch bei deaktivierten privaten Metadaten erhalten.
+- Als Interpolation stehen Lanczos, bikubisch, bilinear und nächster Nachbar bereit.
+- Die Zielgröße und Megapixelzahl werden vor dem Anwenden angezeigt.
+
+Die Größenänderung verändert den Bearbeitungsstand und kann rückgängig gemacht werden. Eine Änderung des Zoomfaktors verändert dagegen nur die Ansicht.
+
+## Auswahl, Korrekturen und Ergänzungen
+
+Ein Rechteck lässt sich direkt mit der linken Maustaste aufziehen. Ziehen an Kanten oder Ecken ändert es; die rechte Maustaste verschiebt es innerhalb des Bildes. **Bearbeiten → Eigene Auswahl** bietet Position, Pixel-/cm-/Zoll-Maße, DPI und feste Seitenverhältnisse. Bei festem Verhältnis bestimmt die Breite die Höhe. **Auswahl maximieren und zentrieren** vergrößert den Ausschnitt mit seinem Verhältnis bis zum Bildrand.
+
+**Strg+C** kopiert die Auswahl, ohne Auswahl das ganze Bild. **Datei → Neues Fenster**, danach **Strg+V**, erzeugt daraus ein separat speicherbares Dokument. **Strg+X** kopiert die Auswahl und ersetzt deren Pixel durch Weiß. **Außerhalb der Auswahl löschen** erhält die Leinwandgröße und füllt die Umgebung weiß. **Einfarbige Ränder entfernen** erkennt transparenten Rand oder die Hintergrundfarbe oben links; die Toleranz ist einstellbar.
+
+**Bild → Frei drehen** verwendet Gradangaben, positive Werte im Uhrzeigersinn. Erweiterte Bildfläche und Randfarbe sind wählbar. **Rote Augen korrigieren** benötigt eine enge Auswahl um das Auge und verändert nur rot dominierte Pixel darin.
+
+**Effekte** enthält 3D-Schaltfläche, Weichzeichnen, Relief, Ölgemälde, Kantenerkennung, Median, Explosion, Pixelieren, Sepia und Regentropfen. Alle zehn Effekte sind direkt über eigene Schaltflächen auswählbar, ohne Dropdown. Eine große Live-Vorschau zeigt die Änderungen. Der Intensitätsregler mischt jeden Effekt mit dem Original; je nach Effekt kommen Regler für Radius, Randbreite, Pixelgröße, Streuung oder Tropfenpaare hinzu. „Original vergleichen“ zeigt das unveränderte Bild. Einstellungen bleiben beim Wechsel zwischen Effekten erhalten. „Effekt zurücksetzen“ setzt den ausgewählten Effekt zurück. Erst „Anwenden“ übernimmt ihn in voller Auflösung als einen rückgängig machbaren Schritt; „Abbrechen“ verwirft die Vorschau. Bei großen Bildern ist die Vorschau verkleinert und kann bei pixelabhängigen Effekten vom Ergebnis in Originalauflösung abweichen. **Farben reduzieren** bietet 2–256 Farben und Dithering. **Farbkanäle tauschen** vertauscht RGB-Kanäle; ein eigener Histogrammdialog zeigt die volle Bildverteilung.
+
+**Rahmen hinzufügen** bietet einfache, doppelte und plastische Rahmen mit Breiten und Farbauswahl. **Leinwand erweitern** stellt jede Seite getrennt ein: positive Werte fügen Fläche hinzu, negative schneiden Rand ab. **Bilder zusammenfügen** setzt mehrere Bilder horizontal oder vertikal mit Abstand zusammen; es ist keine perspektivische Panoramaverschmelzung.
+
+**Text einfügen** verwendet die gewählte Schriftfamilie, Schriftstil, Punktgröße und Farbe. Text wird innerhalb der Auswahl umgebrochen und begrenzt. Ohne Auswahl beginnt er mit 20 Pixel Abstand oben links. Die Umrechnung von Punkt in Pixel berücksichtigt die Bild-DPI. **Bearbeiten → Zeichnen** öffnet einen eigenen Dialog für Stift, weichen Pinsel, Linie, Pfeil, Rechteck und Ellipse. Alle sechs Werkzeuge haben eigene Symbole und Textbeschriftungen. Einzelne Striche können dort zurückgenommen werden; Anwenden erzeugt einen gemeinsamen Undo-Schritt.
+
+## Dateien, Ansicht und Druck
+
+Das Datei-Menü enthält **Erneut öffnen**, **Öffnen mit**, **Dateien suchen**, **Letzte Ordner**, **Umbenennen**, **Kopieren**, **Verschieben** und **In den Papierkorb**. Dateiaktionen verwenden gespeicherte Dateien; offene Änderungen müssen zuerst gespeichert oder rückgängig gemacht werden. Kopieren, Verschieben und Umbenennen überschreiben kein vorhandenes Ziel. Löschen fragt nach und verwendet ausschließlich den System-Papierkorb.
+
+Unter **Extras → Ansicht einstellen** sind die Hintergrundfarbe und das Vergrößern kleiner Bilder beim Einpassen konfigurierbar. Einstellungen werden lokal gespeichert. Das Hauptfenster startet mit 720 × 640 Pixeln. Bei manuellem Zoom oder 100-%-Ansicht wächst es mit dem Bild bis zur verfügbaren Bildschirmfläche und maximiert sich an dieser Grenze. Weiteres Zoomen verwendet Scrollleisten; Verkleinern schrumpft das Fenster nicht automatisch.
+
+**Drucken** öffnet zuerst die Bildanordnung: Hoch-/Querformat, bestmögliches Einpassen, eigene Größe in cm mit gekoppeltem Verhältnis oder getrennte Skalierung in Prozent. Zentrieren und Abstände vom linken/oberen druckbaren Seitenrand sind wählbar. Danach folgt der native Druckdialog für Drucker, Papier und Geräteeigenschaften. Übergröße wird am druckbaren Seitenrand abgeschnitten. Die PDF-Ausgabe wird automatisch geprüft; ein realer Drucker ist noch nicht abgenommen.
+
+**Scannen** verwendet SANE zur Geräteauswahl, Auflösung und Farbauswahl. **Scannen und drucken** führt nach dem Scan zur Druckanordnung. Scanner können andere Modi oder DPI-Werte verlangen; Fehler des Gerätetreibers werden angezeigt. Der Hardwareablauf ist noch nicht mit einem realen Scanner geprüft. **Audio / Video öffnen** spielt lokale Medien in einem separaten Fenster mit GTK-Steuerung ab, sofern das System den Codec unterstützt; diese Medien werden nicht als Bilder bearbeitet.
+
+Eine vollständige Übersicht aller sichtbaren Menüaktionen und ihrer Grenzen steht in [docs/FEATURES.md](docs/FEATURES.md).
+
+## Speichern und Exportprofile
+
+Der Speicherdialog enthält Dateiname, Zielordner, Formatauswahl und passende Optionen. Der vorgeschlagene Name lautet `<name>-bearbeitet` im unterstützten Quellformat; andernfalls wird PNG verwendet. Die Dateiendung wird an das ausgewählte Format angepasst.
+
+JPG, PNG und WebP sind als direkte Auswahlkarten sichtbar. **Weitere Formate** enthält die übrigen Ausgabeformate. Die Größenanzeige wird im Hintergrund durch tatsächliches Kodieren mit den gewählten Einstellungen berechnet; sie ist keine pauschale Schätzung. Bei großen Dateien kann das etwas dauern.
+
+**Auflösung** bietet 50 %, 100 % und eigene Pixelmaße bei festem Seitenverhältnis. Ein verkleinerter Export verändert weder die Pixelmaße noch den Speicherstatus der Arbeitsdatei im Editor. Diese Größenwahl gilt für den aktuellen Export; ausdrücklich gespeicherte Profile können eigene Ausgabemaße enthalten.
+
+Unter **Speicherort** werden Dateiname und Zielordner geändert. **Metadaten entfernen** schaltet EXIF, ICC, Kommentar und XMP gemeinsam aus. Einzelne Metadaten, formatabhängige Einstellungen und benannte Profile stehen unter **Erweiterte Optionen & Profile**.
+
+### Formatoptionen
+
+| Format | Einstellmöglichkeiten |
+| --- | --- |
+| JPEG | Qualität 1–100, progressive Ausgabe, Graustufen, Farbunterabtastung deaktivieren (4:4:4), maximales Dateivolumen |
+| GIF | Interlacing, Transparenz erhalten oder auf Weiß reduzieren |
+| PNG | Verlustfreie Kompression von 0 bis 9 |
+| WebP | Qualität und verlustfreier Modus |
+| TIFF, BMP, ICO, PDF, JPEG 2000, PPM | Ausgabe mit den jeweiligen Standardoptionen |
+
+Das JPEG-Größenlimit wird in **KiB** angegeben: 1 KiB entspricht 1.024 Bytes. Bildblick reduziert bei Bedarf die Qualität unterhalb des gewählten Ausgangswerts. Ist das Limit selbst bei Qualität 1 nicht erreichbar, schlägt der Export mit einer verständlichen Meldung fehl; eine vorhandene Zieldatei bleibt erhalten. Das Limit verändert nicht automatisch die Pixelmaße.
+
+PNG-Kompression ist immer verlustfrei: höhere Stufen sparen meist mehr Platz und brauchen mehr Rechenzeit; sie verschlechtern keine Bildqualität. GIF hat keinen JPEG-artigen Qualitätsregler.
+
+GIF unterstützt höchstens 256 Farben und nur binäre Transparenz. Bei aktivierter Transparenz werden Pixel mit Alpha unter 50 % transparent. Die übrigen Pixel werden bei Teiltransparenz mit Weiß verrechnet. Interlacing wird vom verwendeten Encoder erst ab 16 × 16 Pixeln eingesetzt.
+
+JPEG, BMP, PDF und PPM erhalten bei Transparenz einen weißen Hintergrund. ICO-Ausgaben werden auf die unterstützten Icon-Größen reduziert. Exportoptionen wie JPEG-Graustufen verändern das Bild im Editor nicht.
+
+### Metadaten
+
+EXIF, ICC-Farbprofil, Original-Kommentar und XMP lassen sich getrennt übernehmen. Nur Daten, die eingelesen wurden und vom Zielformat unterstützt werden, können erhalten bleiben.
 
 | Daten | Unterstützte Einzelbild-Ausgaben |
 | --- | --- |
@@ -318,7 +428,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.11.0-linux.tar.gz` und die zugehörige SHA-256-Datei. GitHub Actions erstellt zusätzlich das Flatpak-Bundle. Das Quellarchiv enthält eine Liste der Prüfsummen seiner Dateien; Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.11.1-linux.tar.gz` und die zugehörige SHA-256-Datei. GitHub Actions erstellt zusätzlich das Flatpak-Bundle. Das Quellarchiv enthält eine Liste der Prüfsummen seiner Dateien; Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag
@@ -352,4 +462,4 @@ Kurze Meldungen und die Abfrage bei ungespeicherten Änderungen bleiben kompakt.
 
 [knowlede.md](knowlede.md) fasst die Designprinzipien und ihre Anwendung auf Bildblick zusammen. [redesign.md](redesign.md) enthält die Bestandsaufnahme aller Oberflächenfamilien, den ersten Umsetzungsdurchgang und die noch offenen Schritte. Die [lokale HTML-Referenz](design-system/index.html) ist der verbindliche Komponentenvergleich.
 
-Version 0.11.0 ergänzt ein Flatpak-Paket für gängige x86-64-Linux-Distributionen. Version 0.10.0 verbesserte die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten.
+Version 0.11.1 behebt fehlende Design-Tokens im Flatpak-Paket, die zuvor den Programmstart verhinderten. Version 0.11.0 ergänzt das Flatpak-Paket für gängige x86-64-Linux-Distributionen. Version 0.10.0 verbesserte die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten.
