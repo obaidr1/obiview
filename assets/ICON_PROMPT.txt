@@ -1,8 +1,0 @@
-Bildblick icon — generated with the built-in image_gen tool.
-Transparent background requested; original PNG alpha preserved.
-Source: bildblick-kingfisher.png
-Desktop asset: local.bildblick.Viewer.svg embeds that PNG unchanged, allowing
-the desktop icon theme to scale it. No external file dependency in the SVG.
-
-Final generation prompt:
-Use case: logo-brand. Create one distinctive premium Linux desktop application icon for an independent app named Bildblick. No lettering. The user explicitly wants something beautiful that does NOT look like a generic image editor. Subject: a curious abstract kingfisher-like bird, compact sculptural silhouette, one prominent attentive eye, short sharp beak, a folded wing forming an elegant curved shape. Sophisticated graphic identity rather than a cute cartoon mascot. Deep midnight indigo body, vivid warm coral/orange wing and a small pale ivory eye; beautifully balanced flat color areas with very subtle dimensional shading, bold clean edges. Square canvas, centered single icon occupying about 85 percent of the canvas, generous even transparent padding, truly transparent background. Cohesive silhouette recognizable at 32 pixels. No rounded square app tile behind it, no mountains, sun landscape, photo frame, camera, brush, pencil, aperture symbol, text, letters, watermark, mockup, or multiple variants. Deliver the finished icon only, high resolution PNG with alpha.
