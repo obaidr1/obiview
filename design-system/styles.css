@@ -64,14 +64,14 @@ dialog { max-width: min(520px,calc(100vw - 32px)); width: 520px; padding: 24px; 
 @media (max-width:700px) { .edit-example { flex-direction: column; }.edit-example > .preview-area,.edit-example > .stack { width: 100%; min-width: 0; } }
 
 /* Shared native-dialog contract: logical/CSS pixels, border-box. */
-.dialog-shell, dialog { width: min(var(--dialog-width-complex),100%); max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); min-height: 0; max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
+.dialog-shell, dialog { width: min(var(--dialog-width-complex),100%); max-width: calc(100vw - var(--dialog-screen-margin)); min-height: 0; max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
 .dialog-shell { display: flex; flex-direction: column; overflow: hidden; }
 .dialog-shell > h3, .dialog-shell > .demo-title, .dialog-shell > .dialog-footer { flex: none; }
 .dialog-shell > #export-example, .dialog-shell > .edit-example { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 .edit-example { display: flex; flex-direction: column; gap: 16px; }
 .editor-shell .preview-area .art { height: 160px; width: 100%; }
 .editor-shell .demo-title { flex-wrap: wrap; gap: 8px; }
-dialog { max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); }
+dialog { max-width: calc(100vw - var(--dialog-screen-margin)); }
 dialog .dialog-footer, dialog > .close-dialog { position: sticky; bottom: 0; background: var(--color-surface); padding-block: 12px; }
 
 dialog[open] { display: flex; flex-direction: column; overflow: hidden; }

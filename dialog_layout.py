@@ -7,7 +7,6 @@ from ui_theme import label
 _TOKENS = json.loads((Path(__file__).parent / 'design-system' / 'tokens.json').read_text())
 MIN_DIALOG_WIDTH = int(_TOKENS['dialog-width-base'].removesuffix('px'))
 DIALOG_WIDTH_STEP = int(_TOKENS['dialog-width-per-element'].removesuffix('px'))
-MAX_DIALOG_WIDTH = int(_TOKENS['dialog-width-maximum'].removesuffix('px'))
 SCREEN_MARGIN = int(_TOKENS['dialog-screen-margin'].removesuffix('px'))
 
 
@@ -21,14 +20,13 @@ def _screen_limits(parent):
     if monitor:
         geometry = monitor.get_geometry()
         return max(1, geometry.width-SCREEN_MARGIN), max(1, geometry.height-SCREEN_MARGIN)
-    return MAX_DIALOG_WIDTH, 900
+    return 1200, 900
 
 
 def dialog_size(parent, element_count=0):
     """Return the content-count width target and the physical screen ceiling."""
     max_width, max_height = _screen_limits(parent)
-    target = min(MAX_DIALOG_WIDTH,
-                 MIN_DIALOG_WIDTH + max(0, element_count-4)*DIALOG_WIDTH_STEP)
+    target = MIN_DIALOG_WIDTH + max(0, element_count-4)*DIALOG_WIDTH_STEP
     return min(target, max_width), max_height
 
 
@@ -51,8 +49,8 @@ def control_count(widget):
 
 def _natural_size(body, parent, element_count):
     width, screen_height = dialog_size(parent, element_count)
-    minimum_width, natural_width = body.measure(Gtk.Orientation.HORIZONTAL, -1)[0:2]
-    width = min(max(width, natural_width), _screen_limits(parent)[0])
+    minimum_width = body.measure(Gtk.Orientation.HORIZONTAL, -1)[0]
+    width = min(max(width, minimum_width), _screen_limits(parent)[0])
     body_width = max(240, width)
     natural_height = body.measure(Gtk.Orientation.VERTICAL, body_width)[1]
     # Include the title, shell padding and persistent action row around the body.

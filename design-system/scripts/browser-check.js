@@ -24,7 +24,7 @@
       q(`[data-open=${kind}]`).click(); const d=q('#demo-dialog');
       const rect=d.getBoundingClientRect();
       const count=q('#modal-content .modal-body').querySelectorAll('button,input,select,textarea,[role="switch"],label,p,.data-list > div,.info-groups > section').length;
-      const target=Math.min(960,480+Math.max(0,count-4)*24);
+      const target=480+Math.max(0,count-4)*24;
       assert(Math.abs(rect.width-Math.min(target,innerWidth-32))<2,kind+' width '+rect.width+' / '+target);
       if(kind==='confirm') { assert(rect.height<380, 'Confirmation must stay compact'); assert([...d.querySelectorAll('.dialog-footer button')].map(b=>b.textContent.trim()).join(',')==='Abbrechen,Verwerfen,Speichern'); }
       else { const body=q('#modal-content .modal-body'); assert(body.scrollHeight<=body.clientHeight+1,kind+' content unexpectedly scrolls: '+body.scrollHeight+'/'+body.clientHeight+'; dialog '+rect.width+'x'+rect.height); }

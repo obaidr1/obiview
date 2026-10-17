@@ -195,8 +195,7 @@
     const tokens = getComputedStyle(document.documentElement);
     const base = parseFloat(tokens.getPropertyValue('--dialog-width-base')) || 480;
     const step = parseFloat(tokens.getPropertyValue('--dialog-width-per-element')) || 24;
-    const maximum = parseFloat(tokens.getPropertyValue('--dialog-width-maximum')) || 960;
-    const targetWidth = Math.min(maximum, base + Math.max(0, controls.length - 4) * step);
+    const targetWidth = base + Math.max(0, controls.length - 4) * step;
     dialog.style.width = `min(${targetWidth}px, calc(100vw - 32px))`;
     dialog.style.height = kind === 'confirm' ? 'fit-content' : 'auto';
     content.oninput = () => {

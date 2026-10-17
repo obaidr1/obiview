@@ -24,9 +24,10 @@ def expanded(widget):
 
 def check(window,name):
     if isinstance(window,Gtk.PopoverMenu):
-        assert 0<window.get_width()<=960,(name,'menu width',window.get_width())
         monitor=window.get_display().get_monitor_at_surface(window.get_native().get_surface())
-        assert window.get_height()<=monitor.get_geometry().height,(name,'menu height',window.get_height())
+        bounds=monitor.get_geometry()
+        assert 0<window.get_width()<=bounds.width-32,(name,'menu width',window.get_width())
+        assert window.get_height()<=bounds.height-32,(name,'menu height',window.get_height())
         print('PASS MENU',name,window.get_width(),window.get_height(),flush=True)
         return
     elements=control_count(window.body) if isinstance(window,StandardDialog) else control_count(window.module_content)
@@ -42,7 +43,7 @@ def check(window,name):
     if isinstance(window,StandardDialog):
         # Check expanded content too: no horizontal clipping inside the body.
         width=window.body.get_width()
-        allowed_width=min(960,bounds.width-32)
+        allowed_width=bounds.width-32
         assert width<=allowed_width-48,(name,'body width',width,allowed_width)
         if name=='save_dialog':
             assert window.destination_section.get_visible()

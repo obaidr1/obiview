@@ -61,4 +61,4 @@ Geprüft am 16. Oktober 2026: beide Größen mit 14/14 erfolgreichen Prüfungen.
 
 ## Gemeinsame Dialogmaße
 
-Die Dialogbreite folgt der Zahl der Bedienelemente (480 px Grundbreite plus 24 px pro Element ab dem fünften, maximal 960 px). Die Höhe wird aus der natürlichen Inhaltshöhe gemessen; Bildschirmgrenzen haben Vorrang. Vorschau, Optionen und Abschlussaktion sollen ohne vertikales Scrollen sichtbar sein. Formel und Messprotokoll stehen in `../docs/DIALOG-SIZING.md` und der native Rahmen setzt sie in `dialog_layout.py` um.
+Die Dialogbreite folgt der Zahl der Bedienelemente (480 px Grundbreite plus 24 px pro Element ab dem fünften). Es gibt keine feste Dialogobergrenze; der Bildschirm begrenzt die Maße. Die Höhe wird aus der natürlichen Inhaltshöhe gemessen. Vorschau, Optionen und Abschlussaktion sollen ohne vertikales Scrollen sichtbar sein. Formel und Messprotokoll stehen in `../docs/DIALOG-SIZING.md` und der native Rahmen setzt sie in `dialog_layout.py` um.

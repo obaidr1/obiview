@@ -720,7 +720,7 @@ def tick(window):
         elif step == 70:
             dialog=window.dialogs[-1]
             assert [b.get_label() for b in dialog.action_buttons]==['Abbrechen','Verwerfen','Speichern']
-            assert dialog.get_surface().get_width()<=960 and dialog.get_surface().get_height()<320
+            assert dialog.get_surface().get_width()<window.get_display().get_monitor_at_surface(window.get_surface()).get_geometry().width and dialog.get_surface().get_height()<320
             scroll=dialog.body_scroll.get_vadjustment()
             assert scroll.get_upper()<=scroll.get_page_size()+1, 'Short confirmation text is clipped'
             screenshot('compact-unsaved')

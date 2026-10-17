@@ -40,7 +40,6 @@
   --dialog-width-base: 480px;
   --dialog-width-per-element: 24px;
   --dialog-width-complex: 800px;
-  --dialog-width-maximum: 960px;
   --dialog-screen-margin: 32px;
   --color-control-border: #85857f;
   --color-selected: #eeeee9;
@@ -121,14 +120,14 @@ dialog { max-width: min(520px,calc(100vw - 32px)); width: 520px; padding: 24px; 
 @media (max-width:700px) { .edit-example { flex-direction: column; }.edit-example > .preview-area,.edit-example > .stack { width: 100%; min-width: 0; } }
 
 /* Shared native-dialog contract: logical/CSS pixels, border-box. */
-.dialog-shell, dialog { width: min(var(--dialog-width-complex),100%); max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); min-height: 0; max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
+.dialog-shell, dialog { width: min(var(--dialog-width-complex),100%); max-width: calc(100vw - var(--dialog-screen-margin)); min-height: 0; max-height: calc(100dvh - var(--dialog-screen-margin)); box-sizing: border-box; }
 .dialog-shell { display: flex; flex-direction: column; overflow: hidden; }
 .dialog-shell > h3, .dialog-shell > .demo-title, .dialog-shell > .dialog-footer { flex: none; }
 .dialog-shell > #export-example, .dialog-shell > .edit-example { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 .edit-example { display: flex; flex-direction: column; gap: 16px; }
 .editor-shell .preview-area .art { height: 160px; width: 100%; }
 .editor-shell .demo-title { flex-wrap: wrap; gap: 8px; }
-dialog { max-width: min(var(--dialog-width-maximum),calc(100vw - var(--dialog-screen-margin))); }
+dialog { max-width: calc(100vw - var(--dialog-screen-margin)); }
 dialog .dialog-footer, dialog > .close-dialog { position: sticky; bottom: 0; background: var(--color-surface); padding-block: 12px; }
 
 dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
@@ -1136,7 +1135,7 @@ Comment: Sommer am Meer</textarea>
 </div>
 </div>
 </section>
-<footer class="footer"><span>Bildblick · Designreferenz 1.1 · 16. Oktober 2026</span><a href="#overview">Zurück nach oben ↑</a>
+<footer class="footer"><span>Bildblick · Designreferenz 1.2 · 17. Oktober 2026</span><a href="#overview">Zurück nach oben ↑</a>
 </footer>
 </main>
 <dialog id="demo-dialog" aria-labelledby="modal-title">
@@ -1345,8 +1344,7 @@ Comment: Sommer am Meer</textarea>
     const tokens = getComputedStyle(document.documentElement);
     const base = parseFloat(tokens.getPropertyValue('--dialog-width-base')) || 480;
     const step = parseFloat(tokens.getPropertyValue('--dialog-width-per-element')) || 24;
-    const maximum = parseFloat(tokens.getPropertyValue('--dialog-width-maximum')) || 960;
-    const targetWidth = Math.min(maximum, base + Math.max(0, controls.length - 4) * step);
+    const targetWidth = base + Math.max(0, controls.length - 4) * step;
     dialog.style.width = `min(${targetWidth}px, calc(100vw - 32px))`;
     dialog.style.height = kind === 'confirm' ? 'fit-content' : 'auto';
     content.oninput = () => {
