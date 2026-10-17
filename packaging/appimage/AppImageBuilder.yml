@@ -56,5 +56,6 @@ script:
   - cp "$SOURCE_DIR"/../../design-system/tokens.json "$TARGET_APPDIR/usr/share/bildblick/design-system/tokens.json"
   - cp "$SOURCE_DIR"/../../assets/local.bildblick.Viewer.svg "$TARGET_APPDIR/usr/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg"
   - sed 's/^Exec=.*/Exec=AppRun %f/; s/^Icon=.*/Icon=io.github.obaidr1.obiview/' "$SOURCE_DIR"/../../bildblick.desktop > "$TARGET_APPDIR/usr/share/applications/io.github.obaidr1.obiview.desktop"
-  - python3 -m pip download --only-binary=:all: --no-deps --python-version 3.10 --implementation cp --abi cp310 --platform manylinux_2_28_x86_64 --platform manylinux_2_27_x86_64 --dest "$BUILD_DIR/pillow-wheel" Pillow==12.2.0
-  - python3 -c 'import os,pathlib,zipfile; wheel = next((pathlib.Path(os.environ["BUILD_DIR"])/"pillow-wheel").glob("Pillow*.whl")); zipfile.ZipFile(wheel).extractall(pathlib.Path(os.environ["TARGET_APPDIR"])/"usr/lib/python3.10/site-packages")'
+  - 'python3 -m pip download --only-binary=:all: --no-deps --python-version 3.10 --implementation cp --abi cp310 --platform manylinux_2_28_x86_64 --platform manylinux_2_27_x86_64 --dest "$BUILD_DIR/pillow-wheel" Pillow==12.2.0'
+  - >-
+    python3 -c 'import os,pathlib,zipfile; wheel = next((pathlib.Path(os.environ["BUILD_DIR"])/"pillow-wheel").glob("Pillow*.whl")); zipfile.ZipFile(wheel).extractall(pathlib.Path(os.environ["TARGET_APPDIR"])/"usr/lib/python3.10/site-packages")'
