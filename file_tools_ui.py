@@ -133,7 +133,7 @@ class FileToolsUI:
         if not path or not path.is_file() or self.model.dirty or self.has_preview():
             self.message('Bild zuerst speichern','Eine externe Anwendung öffnet die gespeicherte Datei.'); return
         content_type=Gio.content_type_guess(str(path),None)[0]
-        apps=[app for app in Gio.AppInfo.get_all_for_type(content_type) if app.get_id()!='local.bildblick.Viewer.desktop']
+        apps=[app for app in Gio.AppInfo.get_all_for_type(content_type) if app.get_id()!='io.github.obaidr1.obiview.desktop']
         if not apps:
             self.message('Keine Anwendung registriert','Über die Linux-Dateiverwaltung eine Anwendung für dieses Dateiformat einrichten.'); return
         def launch(v): apps[int(v['app'])].launch([Gio.File.new_for_path(str(path))],None)

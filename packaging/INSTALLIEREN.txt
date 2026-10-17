@@ -1,4 +1,4 @@
-Bildblick 0.10.0 – Linux-App
+Bildblick 0.11.0 – Linux-App
 =========================
 
 Installation für dein Benutzerkonto:
@@ -14,8 +14,8 @@ durch diese Installation nicht geändert.
 Installation ohne sudo und ohne Downloads:
   Programm: ~/.local/share/bildblick/app/
   Starter: ~/.local/bin/bildblick
-  Menüeintrag: ~/.local/share/applications/local.bildblick.Viewer.desktop
-  Symbol: ~/.local/share/icons/hicolor/scalable/apps/local.bildblick.Viewer.svg
+  Menüeintrag: ~/.local/share/applications/io.github.obaidr1.obiview.desktop
+  Symbol: ~/.local/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg
 Bei gesetztem XDG_DATA_HOME wird dieser Datenordner verwendet.
 
 Nach erfolgreicher Installation kann der entpackte Paketordner entfernt werden.

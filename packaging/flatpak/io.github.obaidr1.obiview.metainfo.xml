@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.obaidr1.obiview</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Bildblick</name>
+  <summary>Bilder ansehen, schnell bearbeiten und gezielt exportieren</summary>
+  <description>
+    <p>Bildblick ist ein lokaler Bildbetrachter und Editor für den Linux-Desktop. Die App bietet Ordnernavigation, Zuschneiden, Skalieren, Bildanpassungen, Stapelverarbeitung und detaillierte Exportoptionen.</p>
+  </description>
+  <launchable type="desktop-id">io.github.obaidr1.obiview.desktop</launchable>
+  <url type="homepage">https://github.com/obaidr1/obiview</url>
+  <url type="bugtracker">https://github.com/obaidr1/obiview/issues</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.11.0" date="2026-10-17">
+      <description><p>Erste Flatpak-Veröffentlichung mit gebündelten Bildverarbeitungsabhängigkeiten und plattformübergreifender Linux-Laufzeit.</p></description>
+    </release>
+  </releases>
+</component>

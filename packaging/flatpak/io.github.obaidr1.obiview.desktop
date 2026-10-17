@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Bildblick
+GenericName=Bildbetrachter
+Comment=Bilder ansehen, bearbeiten und konvertieren
+Exec=bildblick %f
+Icon=io.github.obaidr1.obiview
+Terminal=false
+Categories=Graphics;Viewer;Photography;
+MimeType=image/png;image/jpeg;image/webp;image/bmp;image/tiff;image/gif;image/svg+xml;image/avif;image/x-icon;application/pdf;
+StartupNotify=true
+StartupWMClass=io.github.obaidr1.obiview

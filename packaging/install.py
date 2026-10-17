@@ -8,7 +8,9 @@ import shutil
 import subprocess
 import tempfile
 
-APP_ID = 'local.bildblick.Viewer'
+APP_ID = 'io.github.obaidr1.obiview'
+LEGACY_APP_ID = 'local.bildblick.Viewer'
+ICON_SOURCE = 'local.bildblick.Viewer.svg'
 
 
 def atomic_text(path, content, mode=0o644):
@@ -56,7 +58,14 @@ def install(source, data_dir, bin_dir):
     atomic_text(launcher, '#!/bin/sh\nexec /usr/bin/python3 ' + shlex.quote(str(app_dir/'bildblick.py')) + ' "$@"\n', 0o755)
     icon = data_dir/'icons'/'hicolor'/'scalable'/'apps'/(APP_ID+'.svg')
     icon.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source/'assets'/(APP_ID+'.svg'), icon)
+    shutil.copy2(source/'assets'/ICON_SOURCE, icon)
+    # Remove the earlier development desktop entry and icon after upgrading.
+    legacy_desktop = data_dir/'applications'/(LEGACY_APP_ID+'.desktop')
+    legacy_icon = data_dir/'icons'/'hicolor'/'scalable'/'apps'/(LEGACY_APP_ID+'.svg')
+    if legacy_desktop.exists():
+        legacy_desktop.unlink()
+    if legacy_icon.exists():
+        legacy_icon.unlink()
     desktop = data_dir/'applications'/(APP_ID+'.desktop')
     atomic_text(desktop, f'''[Desktop Entry]
 Version=1.0

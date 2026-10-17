@@ -10,7 +10,7 @@ Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordne
 
 Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
-**Stand: 0.10.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
+**Stand: 0.11.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 
 ## Inhalt
 
@@ -81,18 +81,34 @@ Die Ausgabeformate und Zusatzdecoder hängen von den tatsächlich vorhandenen Co
 
 ### Fertiges Paket installieren
 
-1. `Bildblick-0.10.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+#### Für Ubuntu und andere Linux-Distributionen (empfohlen)
+
+Die Flatpak-Version bündelt die Bildverarbeitungsabhängigkeit und nutzt eine gemeinsame GTK-Laufzeit. Damit musst du Python, GTK und Pillow nicht selbst über den Paketmanager deiner Distribution einrichten.
+
+1. Flatpak installieren und Flathub aktivieren (auf Ubuntu meist über die Software-App oder die [Flatpak-Anleitung](https://flatpak.org/setup/)).
+2. `Bildblick-0.11.0.flatpak` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
+3. Die Datei mit der Software-App öffnen oder im Download-Ordner ausführen:
+
+```bash
+flatpak install --user ./Bildblick-0.11.0.flatpak
+```
+
+Bildblick erscheint danach im Anwendungsmenü. Beim ersten Start gewährt die Dateiauswahl Zugriff auf die von dir geöffneten Bilder und Ordner. Die erste Flatpak-Veröffentlichung ist für x86-64-PCs gebaut; andere Architekturen sind noch nicht enthalten.
+
+#### Manuelle Systeminstallation
+
+1. `Bildblick-0.11.0-linux.tar.gz` aus den [GitHub-Releases](https://github.com/obaidr1/obiview/releases) herunterladen.
 2. Archiv entpacken.
 3. Im entpackten Ordner `install.sh` ausführen.
 4. Im Anwendungsmenü nach **Bildblick** suchen.
 
 ```bash
-tar -xzf Bildblick-0.10.0-linux.tar.gz
-cd Bildblick-0.10.0
+tar -xzf Bildblick-0.11.0-linux.tar.gz
+cd Bildblick-0.11.0
 ./install.sh
 ```
 
-Die Installation erfolgt im eigenen Benutzerkonto und benötigt kein `sudo`. Ein vorhandener Standard-Bildbetrachter bleibt unverändert. Bildblick wird zusätzlich als Anwendung unter **Öffnen mit** angeboten.
+Die Installation erfolgt im eigenen Benutzerkonto und benötigt kein `sudo`. Ein vorhandener Standard-Bildbetrachter bleibt unverändert. Bildblick wird zusätzlich als Anwendung unter **Öffnen mit** angeboten. Diese Variante benötigt weiterhin die oben beschriebenen Systemabhängigkeiten.
 
 Das Archiv enthält Anwendungscode, Dokumentation und Symbol. Die Python-/GTK-Laufzeit wird vom System bereitgestellt; das Paket ist kein eigenständiges AppImage.
 
@@ -120,8 +136,8 @@ Nach einer Aktualisierung eine laufende Instanz schließen und Bildblick erneut 
 | --- | --- |
 | Anwendungsdateien | `~/.local/share/bildblick/app/` |
 | Terminal-Starter | `~/.local/bin/bildblick` |
-| Menüeintrag | `~/.local/share/applications/local.bildblick.Viewer.desktop` |
-| Symbol | `~/.local/share/icons/hicolor/scalable/apps/local.bildblick.Viewer.svg` |
+| Menüeintrag | `~/.local/share/applications/io.github.obaidr1.obiview.desktop` |
+| Symbol | `~/.local/share/icons/hicolor/scalable/apps/io.github.obaidr1.obiview.svg` |
 | Exportprofile | `~/.config/bildblick/save-profiles.json` |
 | Ansichtsoptionen | `~/.config/bildblick/viewer.json` |
 | Die letzten zehn Bildordner | `~/.config/bildblick/recent.json` |
@@ -412,7 +428,7 @@ Dieser Test benötigt eine erreichbare grafische Umgebung. Ohne Display endet er
 /usr/bin/python3 packaging/build.py
 ```
 
-Der Build erzeugt `dist/Bildblick-0.10.0-linux.tar.gz` und die zugehörige SHA-256-Datei. Das Archiv enthält zusätzlich eine Liste der Prüfsummen seiner Dateien. Die Benutzerdaten und Exportprofile werden nicht eingepackt.
+Der Build erzeugt `dist/Bildblick-0.11.0-linux.tar.gz` und die zugehörige SHA-256-Datei. GitHub Actions erstellt zusätzlich das Flatpak-Bundle. Das Quellarchiv enthält eine Liste der Prüfsummen seiner Dateien; Benutzerdaten und Exportprofile werden nicht eingepackt.
 
 Der GitHub-Workflow prüft Änderungen auf `main` in einem Fedora-Container,
 baut das Paket und veröffentlicht die Vorabversion, sofern der Versionstag
@@ -446,4 +462,4 @@ Kurze Meldungen und die Abfrage bei ungespeicherten Änderungen bleiben kompakt.
 
 [knowlede.md](knowlede.md) fasst die Designprinzipien und ihre Anwendung auf Bildblick zusammen. [redesign.md](redesign.md) enthält die Bestandsaufnahme aller Oberflächenfamilien, den ersten Umsetzungsdurchgang und die noch offenen Schritte. Die [lokale HTML-Referenz](design-system/index.html) ist der verbindliche Komponentenvergleich.
 
-Version 0.10.0 verbessert die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten. Hauptfenster, Shortcuts und die kompakte Speicherabfrage bleiben erhalten.
+Version 0.11.0 ergänzt ein Flatpak-Paket für gängige x86-64-Linux-Distributionen. Version 0.10.0 verbesserte die visuelle Hierarchie: helle Auswahlzustände mit Häkchen, klarere Feldgruppen, ein offen sichtbares Speicherziel, gegliederte Bildinformationen und verständliche leere Vorschaulisten.

@@ -539,11 +539,11 @@ def main():
     parser.add_argument('image', nargs='?')
     args = parser.parse_args()
     Gtk.init()
-    Gtk.Window.set_default_icon_name('local.bildblick.Viewer')
+    Gtk.Window.set_default_icon_name('io.github.obaidr1.obiview')
     if Gdk.Display.get_default() is None:
         print('Keine Verbindung zur grafischen Sitzung. Bitte start.sh im Terminal deiner Linux-Desktop-Sitzung starten.', file=sys.stderr)
         return 1
-    app = Gtk.Application(application_id='local.bildblick.Viewer', flags=Gio.ApplicationFlags.NON_UNIQUE)
+    app = Gtk.Application(application_id='io.github.obaidr1.obiview', flags=Gio.ApplicationFlags.NON_UNIQUE)
     def activate(application):
         window = Window(application)
         window.present()

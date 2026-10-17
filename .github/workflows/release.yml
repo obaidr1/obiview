@@ -13,9 +13,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: packaging/flatpak/io.github.obaidr1.obiview.json
+          bundle: Bildblick-0.11.0.flatpak
+          artifact-name: bildblick-flatpak
+
   release:
     runs-on: ubuntu-latest
     container: fedora:44
+    needs: flatpak
     timeout-minutes: 25
     permissions:
       contents: write
@@ -59,6 +76,10 @@ jobs:
         with:
           name: bildblick-ui
           path: tests/screenshots/
+      - uses: actions/download-artifact@v4
+        with:
+          name: bildblick-flatpak
+          path: dist/
       - name: Build installable package
         run: /usr/bin/python3 packaging/build.py
       - name: Publish versioned prerelease
@@ -67,14 +88,15 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_COMMIT: ${{ github.sha }}
         run: |
-          tag=v0.10.0
+          tag=v0.11.0
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag already exists; its tag and assets stay unchanged."
           else
             gh release create "$tag" \
-              dist/Bildblick-0.10.0-linux.tar.gz \
-              dist/Bildblick-0.10.0-linux.tar.gz.sha256 \
+              dist/Bildblick-0.11.0.flatpak \
+              dist/Bildblick-0.11.0-linux.tar.gz \
+              dist/Bildblick-0.11.0-linux.tar.gz.sha256 \
               --target "$RELEASE_COMMIT" --prerelease \
-              --title 'Bildblick 0.10.0' \
-              --notes-file docs/release-0.10.0.md
+              --title 'Bildblick 0.11.0' \
+              --notes-file docs/release-0.11.0.md
           fi

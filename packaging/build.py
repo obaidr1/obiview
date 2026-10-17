@@ -7,10 +7,11 @@ import tarfile
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-output = root/'dist'/'Bildblick-0.10.0-linux.tar.gz'
+VERSION = '0.11.0'
+output = root/'dist'/f'Bildblick-{VERSION}-linux.tar.gz'
 output.parent.mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='bildblick-package-') as staging:
-    bundle = Path(staging)/'Bildblick-0.10.0'
+    bundle = Path(staging)/f'Bildblick-{VERSION}'
     payload = bundle/'app'
     payload.mkdir(parents=True)
     for source in [*root.glob('*.py'), root/'start.sh', root/'README.txt',
