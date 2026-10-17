@@ -103,6 +103,7 @@ class ToolDialog(StandardDialog):
                 else:
                     widget = Gtk.SpinButton.new_with_range(*kind)
                     widget.set_digits(2 if kind[2] < 1 else 0)
+                    widget.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
                     widget.set_value(value); widget.set_numeric(True)
                     unit = _unit_from_title(title)
                     widget.set_increments(kind[2],kind[2]*10)
@@ -192,7 +193,7 @@ class ToolDialog(StandardDialog):
         result = {}
         for key,w in self.widgets.items():
             kind = self.kinds[key]
-            if isinstance(kind,tuple): w.update(); value = w.get_value()
+            if isinstance(kind,tuple): value = w.get_value()
             elif isinstance(kind,list): value = w.get_active_id()
             elif kind == 'bool': value = w.get_active()
             elif kind == 'color':

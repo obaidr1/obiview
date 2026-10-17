@@ -116,6 +116,7 @@ class ResizeDialog(StandardDialog):
         dpi_field.append(label('DPI · Druckauflösung','small muted'))
         self.dpi = Gtk.SpinButton.new_with_range(1,9600,1)
         self.dpi.set_hexpand(True)
+        self.dpi.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
         self.dpi.set_value(parent.model.dpi)
         self.dpi.set_tooltip_text('Pfeiltasten: 1 DPI · Bild auf/ab: 10 DPI')
         accessible(self.dpi,'DPI – Druckauflösung')
@@ -144,6 +145,7 @@ class ResizeDialog(StandardDialog):
         widget = Gtk.SpinButton.new_with_range(1,80_000_000,1)
         widget.set_hexpand(True)
         widget.set_numeric(True)
+        widget.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
         widget.set_snap_to_ticks(False)
         widget.set_activates_default(True)
         widget.set_alignment(0.0)
@@ -248,7 +250,6 @@ class ResizeDialog(StandardDialog):
 
     def on_response(self,_dialog,answer):
         if answer==Gtk.ResponseType.ACCEPT:
-            self.width.update(); self.height.update(); self.dpi.update()
             try:
                 width,height=self.settings.dimensions()
             except ValueError as error:

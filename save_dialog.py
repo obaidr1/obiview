@@ -127,6 +127,7 @@ class SaveAsDialog(StandardDialog):
         for axis,title in [('width','Breite'),('height','Höhe')]:
             field = Gtk.SpinButton.new_with_range(1,80_000_000,1)
             field.set_hexpand(True)
+            field.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
             field.set_increments(1,10)
             field.set_tooltip_text('Pfeiltasten: 1 px; Bild auf/ab: 10 px.')
             accessible(field,title+' in Pixel')
@@ -468,8 +469,6 @@ class SaveAsDialog(StandardDialog):
                 folder = Path(self.folder.get_text().strip()).expanduser()
                 if not self.folder.get_text().strip() or not folder.is_absolute() or not folder.is_dir():
                     raise ValueError('Bitte einen vorhandenen Zielordner mit vollständigem Pfad wählen.')
-                self.output_width.update()
-                self.output_height.update()
                 settings = self.settings()
             except (ValueError, OSError) as error:
                 self.status.set_text(str(error))

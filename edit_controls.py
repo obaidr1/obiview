@@ -57,6 +57,7 @@ class SliderField(Gtk.Box):
         if self.number is not None:
             self.number.set_digits(2 if step < 1 else 0)
             self.number.set_numeric(True)
+            self.number.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
             self.number.set_width_chars(4)
             self.number.set_increments(step,step*10)
             unit_text=f' {unit}' if unit else ''
@@ -104,4 +105,4 @@ class SliderField(Gtk.Box):
         return round(self.scale.get_value())
 
     def update(self):
-        if self.number is not None: self.number.update()
+        return None
