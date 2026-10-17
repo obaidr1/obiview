@@ -8,6 +8,7 @@ from ui_theme import card, label, accessible, icon_button, selection_content, pr
 
 def preview_pixbuf(image):
     image = image.convert('RGBA')
+    image.thumbnail((480,360),Image.Resampling.LANCZOS)
     return GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes.new(image.tobytes()),
         GdkPixbuf.Colorspace.RGB, True, 8, image.width, image.height, image.width*4)
 
