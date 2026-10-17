@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Bildblick: native GTK 4 image viewer; independent implementation."""
+from i18n import tr
 import argparse
 from pathlib import Path
 import sys
@@ -56,7 +57,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         self.connect('close-request', self.on_close)
         header = Gtk.HeaderBar()
         self.set_titlebar(header)
-        self.title_label = Gtk.Label(label='Bildblick')
+        self.title_label = Gtk.Label(label=tr('Bildblick'))
         self.title_label.set_ellipsize(3)
         self.title_label.set_max_width_chars(36)
         header.set_title_widget(self.title_label)
@@ -82,7 +83,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         toolbar.append(self.save_button)
         toolbar.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL,margin_start=4,margin_end=4))
         self.crop_toggle = Gtk.ToggleButton(icon_name='edit-select-all-symbolic')
-        self.crop_toggle.set_tooltip_text('Ausschnitt auswählen; Strg+Y schneidet zu')
+        self.crop_toggle.set_tooltip_text(tr('Ausschnitt auswählen; Strg+Y schneidet zu'))
         self.crop_toggle.update_property([Gtk.AccessibleProperty.LABEL],['Ausschnitt auswählen'])
         self.crop_toggle.connect('toggled', self.toggle_crop)
         toolbar.append(self.crop_toggle)
@@ -113,12 +114,12 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         self.empty_state.append(label('Bild hierher ziehen, öffnen oder mit Strg+V einfügen.', 'muted',wrap=True,max_width_chars=38))
         self.button(self.empty_state,'Bild öffnen',self.open_dialog,'Datei auswählen (Strg+O)').add_css_class('primary')
         self.canvas_overlay.add_overlay(self.empty_state)
-        self.zoom_label = Gtk.Label(label='100 %')
+        self.zoom_label = Gtk.Label(label=tr('100 %'))
         self.canvas = Gtk.DrawingArea(hexpand=True, vexpand=True)
         self.canvas.set_draw_func(self.draw)
         self.canvas.set_focusable(True)
         self.scroll.set_child(self.canvas)
-        self.status = Gtk.Label(label='Bild öffnen · PNG, JPEG, WebP, TIFF und weitere Formate', xalign=0,
+        self.status = Gtk.Label(label=tr('Bild öffnen · PNG, JPEG, WebP, TIFF und weitere Formate'), xalign=0,
                                 margin_start=8, margin_end=8, margin_top=4, margin_bottom=4)
         self.status.add_css_class('status-bar')
         self.status.set_ellipsize(3)
@@ -142,7 +143,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         self.refresh()
 
     def button(self, parent, label, callback, hint, start=False):
-        button = Gtk.Button(label=label, tooltip_text=hint)
+        button = Gtk.Button(label=tr(label), tooltip_text=tr(hint))
         button.connect('clicked', lambda *_: callback())
         if isinstance(parent, Gtk.HeaderBar):
             (parent.pack_start if start else parent.pack_end)(button)
@@ -271,7 +272,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
         def save(overwrite=False):
             resized = settings.output_width and (settings.output_width,settings.output_height) != self.model.image.size
             def saved():
-                self.status.set_text(f'Exportiert: {path}' if resized else f'Gespeichert: {path}')
+                self.status.set_text(f'{tr("Exportiert" if resized else "Gespeichert")}: {path}')
                 if after:
                     if resized:
                         self.message('Exportkopie gespeichert', 'Die verkleinerte Kopie wurde gespeichert. Das Arbeitsbild bleibt geöffnet; vor dem Fortfahren bitte in voller Auflösung speichern oder Änderungen ausdrücklich verwerfen.')
@@ -382,7 +383,7 @@ class Window(ViewerShortcuts, FileToolsUI, ImageToolsUI, EditorUI, AdvancedFeatu
             self.status.set_text(text)
             if hasattr(self,'fullscreen_label'): self.fullscreen_label.set_text(self.model.path.name+'  ·  '+text)
         if hasattr(self,'zoom_label'):
-            self.zoom_label.set_label(f'{self.scale*100:.0f} %')
+            self.zoom_label.set_label(tr(f'{self.scale*100:.0f} %'))
         return False
 
     def draw(self, _area, cr, width, height):

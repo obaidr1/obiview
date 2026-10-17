@@ -13,6 +13,7 @@ from image_tools import (fine_rotate, red_eye, frame, text_image,
 from ui_theme import label, card, accessible, preview_surface, ratio_link_state
 from edit_controls import ChoiceButtons, SliderField
 from editor_ui import preview_pixbuf
+from i18n import tr
 
 
 def _unit_from_title(title):
@@ -36,6 +37,11 @@ def image_clipboard_provider(image):
 
 class ToolDialog(StandardDialog):
     def __init__(self,parent,title,fields,apply,note='',preview=None,sliders=(),linked_pair=None):
+        title = tr(title)
+        note = tr(note)
+        fields = [(key, tr(field_title), value,
+                   [(ident, tr(text)) for ident, text in kind] if isinstance(kind, list) else kind)
+                  for key, field_title, value, kind in fields]
         super().__init__(title=title, transient_for=parent, modal=True)
         self.set_titlebar(Gtk.Box())
         self.widgets, self.kinds = {}, {}
@@ -70,7 +76,7 @@ class ToolDialog(StandardDialog):
             self.picture.set_size_request(-1,160); self.picture.set_vexpand(False)
             accessible(self.picture,'Live-Vorschau: '+title)
             left.append(preview_surface(self.picture))
-            self.compare = Gtk.ToggleButton(label='Original vergleichen')
+            self.compare = Gtk.ToggleButton(label=tr('Original vergleichen'))
             self.compare.connect('toggled',self.show_preview)
             left.append(self.compare)
             self.preview_note = label('','small muted',wrap=True)
@@ -109,7 +115,7 @@ class ToolDialog(StandardDialog):
                     widget.set_increments(kind[2],kind[2]*10)
                     shown_step=f'{kind[2]:g}' + (f' {unit}' if unit else '')
                     page_step=f'{kind[2]*10:g}' + (f' {unit}' if unit else '')
-                    widget.set_tooltip_text(f'Pfeiltasten: {shown_step}; Bild auf/ab: {page_step}.')
+                    widget.set_tooltip_text(tr(f'Pfeiltasten: {shown_step}; Bild auf/ab: {page_step}.'))
                     if unit:
                         value_box = Gtk.Box(spacing=4, hexpand=True)
                         value_box.append(widget)
@@ -168,7 +174,7 @@ class ToolDialog(StandardDialog):
                 row+=1; column=0
         self.error = label('','error',wrap=True); controls.append(self.error)
         if preview:
-            reset = Gtk.Button(label='Zurücksetzen')
+            reset = Gtk.Button(label=tr('Zurücksetzen'))
             reset.connect('clicked',self.reset)
             controls.append(reset)
         self.controls_scroll = Gtk.ScrolledWindow(vexpand=True,hexpand=not bool(preview))
@@ -233,7 +239,7 @@ class ToolDialog(StandardDialog):
         self.preview_ready = False
         self.error.set_text('')
         self.accept.set_sensitive(not self.pending_accept)
-        self.preview_note.set_text('Vorschau wird berechnet …')
+        self.preview_note.set_text(tr('Vorschau wird berechnet …'))
         if self.preview_timer: GLib.source_remove(self.preview_timer)
         self.preview_timer = GLib.timeout_add(120,self.render_preview)
 
@@ -257,7 +263,7 @@ class ToolDialog(StandardDialog):
             image,size = result
             self.preview_buffer = preview_pixbuf(image)
             self.preview_ready = True
-            self.preview_note.set_text(f'{size[0]} × {size[1]} px · Vorschau, noch nicht angewendet')
+            self.preview_note.set_text(tr(f'{size[0]} × {size[1]} px · Vorschau, noch nicht angewendet'))
             self.show_preview()
             if self.pending_accept: self.respond(self,Gtk.ResponseType.ACCEPT)
         def failed(error):
@@ -265,7 +271,7 @@ class ToolDialog(StandardDialog):
             if not self.alive or generation!=self.preview_generation: return
             self.pending_accept = False
             self.controls_scroll.set_sensitive(True)
-            self.error.set_text(f'Vorschau fehlgeschlagen: {error}'); self.preview_note.set_text('Einstellungen prüfen und erneut versuchen.')
+            self.error.set_text(tr(f'Vorschau fehlgeschlagen: {error}')); self.preview_note.set_text(tr('Einstellungen prüfen und erneut versuchen.'))
             self.accept.set_sensitive(False)
         self.get_transient_for().submit(work,done,failed)
         return False
@@ -281,7 +287,7 @@ class ToolDialog(StandardDialog):
                 return
             try: self.apply(values)
             except Exception as error:
-                self.error.set_text(str(error)); self.pending_accept=False
+                self.error.set_text(tr(str(error))); self.pending_accept=False
                 self.controls_scroll.set_sensitive(True); self.accept.set_sensitive(True); return
         self.alive = False
         self.pending_accept = False
@@ -458,7 +464,7 @@ class ImageToolsUI:
             self.reset_preview()
             self.model = ImageModel(); self.pixbuf = None; self.selection = None
             self.crop_toggle.set_active(False)
-            self.status.set_text('Bild öffnen · O oder Strg+V')
+            self.status.set_text(tr('Bild öffnen · O oder Strg+V'))
             self.refresh()
         self.guard(clear)
 

@@ -7,6 +7,7 @@ from advanced_ui import AdvancedFeatures
 from menus import build_menus, RESIZE_ACCELERATOR
 from resize_settings import ResizeSettings
 from image_model import ImageModel
+from i18n import tr
 
 
 class MenuWindow:
@@ -30,7 +31,7 @@ class ResizeMenuTests(unittest.TestCase):
         window = MenuWindow()
         menu,actions = build_menus(window)
         names = [menu.get_item_attribute_value(i,'label',None).unpack() for i in range(menu.get_n_items())]
-        self.assertEqual(names,['Datei','Bearbeiten','Bild','Ansicht','Extras','Hilfe'])
+        self.assertEqual(names,[tr('Datei'),tr('Bearbeiten'),tr('Bild'),tr('Ansicht'),tr('Extras'),tr('Hilfe')])
         image_menu = menu.get_item_link(2,'submenu').get_item_link(0,'section')
         self.assertEqual(image_menu.get_item_attribute_value(0,'action',None).unpack(),'win.resize')
         self.assertEqual(image_menu.get_item_attribute_value(0,'accel',None).unpack(),RESIZE_ACCELERATOR)

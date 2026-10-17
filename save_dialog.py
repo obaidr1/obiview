@@ -1,4 +1,5 @@
 """Native Save As dialog with format-specific options and named profiles."""
+from i18n import tr
 from pathlib import Path
 import gi
 gi.require_version('Gtk', '4.0')
@@ -64,7 +65,7 @@ class SaveAsDialog(StandardDialog):
         info.append(label(f'{width} × {height} px · aktuelle Seite','small muted'))
         summary.append(info)
         self.size_label = label('Berechnung …','small muted')
-        self.size_label.set_tooltip_text('Tatsächlich kodierte Dateigröße mit den gewählten Einstellungen')
+        self.size_label.set_tooltip_text(tr('Tatsächlich kodierte Dateigröße mit den gewählten Einstellungen'))
         summary.append(self.size_label)
         body.append(summary)
         layout = Gtk.Grid(column_spacing=16,row_spacing=12,hexpand=True)
@@ -94,7 +95,7 @@ class SaveAsDialog(StandardDialog):
         self.quality.set_digits(0)
         self.quality.set_value_pos(Gtk.PositionType.RIGHT)
         accessible(self.quality,'Exportqualität')
-        self.quality.connect('value-changed',lambda scale:self.quality_value.set_text(f'{round(scale.get_value())} %'))
+        self.quality.connect('value-changed',lambda scale:self.quality_value.set_text(tr(f'{round(scale.get_value())} %')))
         self.quality_row.append(self.quality)
         captions = Gtk.Box()
         captions.append(label('Kleinere Datei','small muted',hexpand=True))
@@ -129,7 +130,7 @@ class SaveAsDialog(StandardDialog):
             field.set_hexpand(True)
             field.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
             field.set_increments(1,10)
-            field.set_tooltip_text('Pfeiltasten: 1 px; Bild auf/ab: 10 px.')
+            field.set_tooltip_text(tr('Pfeiltasten: 1 px; Bild auf/ab: 10 px.'))
             accessible(field,title+' in Pixel')
             field.connect('value-changed',self.dimension_changed,axis)
             setattr(self,'output_'+axis,field)
@@ -145,7 +146,7 @@ class SaveAsDialog(StandardDialog):
                 link=Gtk.Image.new_from_icon_name('insert-link-symbolic')
                 link.add_css_class('ratio-link-indicator')
                 link.set_valign(Gtk.Align.CENTER)
-                link.set_tooltip_text('Seitenverhältnis bleibt erhalten')
+                link.set_tooltip_text(tr('Seitenverhältnis bleibt erhalten'))
                 accessible(link,'Breite und Höhe sind proportional verknüpft')
                 self.custom_size.insert_child_after(link,column)
         resolution.append(self.custom_size)
@@ -174,7 +175,7 @@ class SaveAsDialog(StandardDialog):
         folder_field.append(label('Zielordner','small muted'))
         folder_row = Gtk.Box(spacing=8)
         folder_row.append(accessible(self.folder,'Zielordner'))
-        browse = Gtk.Button(label='Wählen')
+        browse = Gtk.Button(label=tr('Wählen'))
         browse.connect('clicked',self.browse)
         folder_row.append(browse)
         folder_field.append(folder_row)
@@ -192,7 +193,7 @@ class SaveAsDialog(StandardDialog):
         self.check(jpeg,'progressive','Progressives JPEG')
         self.check(jpeg,'grayscale','Graustufen')
         self.check(jpeg,'chroma444','Volle Farbauflösung (4:4:4)')
-        self.limit = Gtk.CheckButton(label='Dateigröße begrenzen (KiB)')
+        self.limit = Gtk.CheckButton(label=tr('Dateigröße begrenzen (KiB)'))
         jpeg.append(self.limit)
         self.target = Gtk.SpinButton.new_with_range(1,1_000_000,1)
         accessible(self.target,'Maximale JPEG-Dateigröße in KiB')
@@ -223,12 +224,12 @@ class SaveAsDialog(StandardDialog):
         options.attach(self.format_note,0,2,2,1)
         profiles = card('Profile')
         self.profile = Gtk.ComboBoxText.new_with_entry()
-        self.profile.get_child().set_placeholder_text('Profilname')
+        self.profile.get_child().set_placeholder_text(tr('Profilname'))
         accessible(self.profile,'Exportprofil')
         profiles.append(self.profile)
         row = Gtk.Box(spacing=8,homogeneous=True)
         for title,callback in [('Laden',self.load_profile),('Speichern',self.save_profile),('Löschen',self.delete_profile)]:
-            button = Gtk.Button(label=title)
+            button = Gtk.Button(label=tr(title))
             button.connect('clicked',callback)
             row.append(button)
         profiles.append(row)
@@ -238,7 +239,7 @@ class SaveAsDialog(StandardDialog):
         self.reload_profiles()
         self.populate(settings)
         if self.profiles.error:
-            self.status.set_text(self.profiles.error)
+            self.status.set_text(tr(self.profiles.error))
         self.format.connect('changed',self.format_changed)
         self.limit.connect('toggled',lambda *_:self.target.set_sensitive(self.limit.get_active()))
         self.checks['grayscale'].connect('toggled',lambda *_:self.update_options())
@@ -285,7 +286,7 @@ class SaveAsDialog(StandardDialog):
         if self.preview_timer:
             GLib.source_remove(self.preview_timer)
         self.preview_timer = GLib.timeout_add(350,self.calculate_size)
-        self.size_label.set_text('Berechnung …')
+        self.size_label.set_text(tr('Berechnung …'))
 
     def calculate_size(self):
         self.preview_timer = 0
@@ -296,11 +297,11 @@ class SaveAsDialog(StandardDialog):
             return False
         try:
             settings = self.settings()
-            self.status.set_text('')
+            self.status.set_text(tr(''))
             self.save_button.set_sensitive(True)
         except ValueError as error:
-            self.status.set_text(str(error))
-            self.size_label.set_text('Ungültige Größe')
+            self.status.set_text(tr(str(error)))
+            self.size_label.set_text(tr('Ungültige Größe'))
             self.save_button.set_sensitive(False)
             return False
         parent = self.get_transient_for()
@@ -321,8 +322,8 @@ class SaveAsDialog(StandardDialog):
         def failed(error):
             self.preview_busy = False
             if self.alive and serial == self.preview_serial:
-                self.size_label.set_text('Nicht verfügbar')
-                self.status.set_text(f'Export prüfen: {error}')
+                self.size_label.set_text(tr('Nicht verfügbar'))
+                self.status.set_text(tr(f'Export prüfen: {error}'))
         parent.submit(work,done,failed)
         return False
 
@@ -332,22 +333,22 @@ class SaveAsDialog(StandardDialog):
 
     @staticmethod
     def note(text):
-        label = Gtk.Label(label=text, xalign=0, wrap=True, max_width_chars=42)
+        label = Gtk.Label(label=tr(text), xalign=0, wrap=True, max_width_chars=42)
         label.add_css_class('dim-label')
         return label
 
     def page(self, name, title):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
-        heading = Gtk.Label(label=title, xalign=0)
+        heading = Gtk.Label(label=tr(title), xalign=0)
         heading.add_css_class('heading')
         box.append(heading)
         self.stack.add_named(box, name)
         return box
 
     def check(self, box, key, text, tooltip=None):
-        check = Gtk.CheckButton(label=text)
+        check = Gtk.CheckButton(label=tr(text))
         if tooltip:
-            check.set_tooltip_text(tooltip)
+            check.set_tooltip_text(tr(tooltip))
         self.checks[key] = check
         box.append(check)
 
@@ -355,7 +356,7 @@ class SaveAsDialog(StandardDialog):
         for key, check in self.checks.items():
             check.set_active(getattr(settings, key))
         self.quality.set_value(settings.quality)
-        self.quality_value.set_text(f'{settings.quality} %')
+        self.quality_value.set_text(tr(f'{settings.quality} %'))
         self.compression.set_value(settings.png_compression)
         self.limit.set_active(settings.target_kib > 0)
         self.target.set_value(settings.target_kib or 65)
@@ -401,7 +402,7 @@ class SaveAsDialog(StandardDialog):
         notes = {'JPEG': 'JPEG wird neu kodiert. Transparente Bereiche erhalten einen weißen Hintergrund.',
                  'ICO': 'ICO wird auf die unterstützten Icon-Größen verkleinert.',
                  'GIF': 'Speichert nur die aktuelle Seite. Für Animationen: Datei → Alle Seiten exportieren.'}
-        self.format_note.set_text(notes.get(fmt, 'Speichert die aktuelle Seite. Optionen verändern das Bild im Editor nicht.'))
+        self.format_note.set_text(tr(notes.get(fmt, 'Speichert die aktuelle Seite. Optionen verändern das Bild im Editor nicht.')))
 
     def browse(self, *_):
         if self.chooser:
@@ -438,28 +439,28 @@ class SaveAsDialog(StandardDialog):
             self.populate(settings)
             self.format.set_active_id(fmt)
             self.update_options()
-            self.status.set_text('Profil geladen.')
+            self.status.set_text(tr('Profil geladen.'))
         except KeyError:
-            self.status.set_text('Bitte ein vorhandenes Profil wählen.')
+            self.status.set_text(tr('Bitte ein vorhandenes Profil wählen.'))
 
     def save_profile(self, *_):
         name = self.profile_name()
         try:
             self.profiles.save(name, self.format.get_active_id(), self.settings())
             self.reload_profiles(name)
-            self.status.set_text('Profil gespeichert.')
+            self.status.set_text(tr('Profil gespeichert.'))
         except (OSError, ValueError) as error:
-            self.status.set_text(str(error))
+            self.status.set_text(tr(str(error)))
 
     def delete_profile(self, *_):
         try:
             self.profiles.delete(self.profile_name())
             self.reload_profiles()
-            self.status.set_text('Profil gelöscht.')
+            self.status.set_text(tr('Profil gelöscht.'))
         except KeyError:
-            self.status.set_text('Bitte ein vorhandenes Profil wählen.')
+            self.status.set_text(tr('Bitte ein vorhandenes Profil wählen.'))
         except (OSError, ValueError) as error:
-            self.status.set_text(str(error))
+            self.status.set_text(tr(str(error)))
 
     def on_response(self, _dialog, answer):
         if answer == Gtk.ResponseType.ACCEPT:
@@ -471,7 +472,7 @@ class SaveAsDialog(StandardDialog):
                     raise ValueError('Bitte einen vorhandenen Zielordner mit vollständigem Pfad wählen.')
                 settings = self.settings()
             except (ValueError, OSError) as error:
-                self.status.set_text(str(error))
+                self.status.set_text(tr(str(error)))
                 return
             self.on_save(folder / name, settings)
         self.alive = False

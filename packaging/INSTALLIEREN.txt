@@ -6,6 +6,10 @@ Installation für dein Benutzerkonto:
 2. Im entpackten Ordner install.sh ausführen (im Terminal: ./install.sh).
 3. Im Anwendungsmenü nach „Bildblick“ suchen und die App öffnen.
 
+Die Oberfläche folgt der Systemsprache. Zum Start kann die Sprache mit
+BILDBLICK_LANGUAGE=en (Englisch) oder BILDBLICK_LANGUAGE=de (Deutsch)
+festgelegt werden.
+
 Auf dem ursprünglichen Fedora-Rechner ist die App bereits installiert.
 Sie lässt sich dort direkt über das Anwendungsmenü starten. Bilder können über
 „Öffnen mit → Bildblick“ geöffnet werden. Der Standard-Bildbetrachter wird

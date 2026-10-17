@@ -13,6 +13,7 @@ from image_tools import fine_rotate, frame, red_eye, reduce_colors, swap_channel
 from edit_controls import SliderField, ChoiceButtons
 from paint_dialog import paint_strokes
 from dialog_layout import control_count, dialog_size
+from i18n import tr
 
 Gtk.init()
 if Gdk.Display.get_default() is None:
@@ -710,7 +711,7 @@ def tick(window):
             assert str(sample) not in window.tags
             window.toggle_sidebar()
             window.key_pressed(None,Gdk.KEY_F1,0,Gdk.ModifierType(0))
-            assert window.dialogs[-1].get_title()=='Tastenkürzel'
+            assert window.dialogs[-1].get_title()==tr('Tastenkürzel')
             assert not window.key_pressed(None,Gdk.KEY_i,0,Gdk.ModifierType(0))
         elif step == 67:
             screenshot('shortcut-help')
@@ -734,7 +735,7 @@ def tick(window):
             window.guard(lambda:window.guard_actions.append('continued'))
         elif step == 70:
             dialog=window.dialogs[-1]
-            assert [b.get_label() for b in dialog.action_buttons]==['Abbrechen','Verwerfen','Speichern']
+            assert [b.get_label() for b in dialog.action_buttons]==[tr('Abbrechen'),tr('Verwerfen'),tr('Speichern')]
             assert dialog.get_surface().get_width()<window.get_display().get_monitor_at_surface(window.get_surface()).get_geometry().width and dialog.get_surface().get_height()<320
             scroll=dialog.body_scroll.get_vadjustment()
             assert scroll.get_upper()<=scroll.get_page_size()+1, 'Short confirmation text is clipped'
@@ -747,7 +748,7 @@ def tick(window):
             window.guard(lambda:window.guard_actions.append('saved'))
             window.dialogs[-1].response(Gtk.ResponseType.ACCEPT)
         elif step == 71:
-            assert window.dialogs[-1].get_title()=='Bild exportieren'
+            assert window.dialogs[-1].get_title()==tr('Bild exportieren')
             window.dialogs[-1].response(Gtk.ResponseType.CANCEL)
             assert window.model.dirty and window.guard_actions==['discarded']
             window.guard(lambda:window.guard_actions.append('saved'))

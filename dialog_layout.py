@@ -4,6 +4,7 @@ import math
 from pathlib import Path
 from gi.repository import Gtk, Gdk, Pango
 from ui_theme import label
+from i18n import tr
 
 _TOKENS = json.loads((Path(__file__).parent / 'design-system' / 'tokens.json').read_text())
 MIN_DIALOG_WIDTH = int(_TOKENS['dialog-width-base'].removesuffix('px'))
@@ -101,6 +102,8 @@ def normalize(widget):
 class StandardDialog(Gtk.Dialog):
     """Content-sized shell with a screen-limited body and persistent action row."""
     def __init__(self, compact=False, **kwargs):
+        if kwargs.get('title'):
+            kwargs['title'] = tr(kwargs['title'])
         kwargs.pop('default_width', None)
         kwargs.pop('default_height', None)
         parent = kwargs.get('transient_for')
@@ -134,7 +137,7 @@ class StandardDialog(Gtk.Dialog):
         return self.body
 
     def add_button(self, text, response):
-        button = super().add_button(text, response)
+        button = super().add_button(tr(text), response)
         self.action_buttons.append(button)
         actions = button.get_parent()
         for side, amount in [('start',24),('end',24),('top',12),('bottom',24)]:
@@ -183,6 +186,7 @@ class StandardDialog(Gtk.Dialog):
 class ModuleWindow(Gtk.Window):
     """Non-modal modules share the dialog footprint and a persistent close action."""
     def __init__(self, parent, title):
+        title = tr(title)
         width,height=dialog_size(parent)
         super().__init__(title=title, transient_for=parent, destroy_with_parent=True,
                          default_width=width, default_height=height, resizable=True)
@@ -193,7 +197,7 @@ class ModuleWindow(Gtk.Window):
         heading.set_wrap_mode(Pango.WrapMode.WORD_CHAR); root.append(heading)
         self.module_content=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,vexpand=True)
         root.append(self.module_content)
-        close=Gtk.Button(label='Schließen',halign=Gtk.Align.END); close.add_css_class('primary')
+        close=Gtk.Button(label=tr('Schließen'),halign=Gtk.Align.END); close.add_css_class('primary')
         close.connect('clicked',lambda *_:self.close()); root.append(close)
         super().set_child(root)
         keys=Gtk.EventControllerKey()

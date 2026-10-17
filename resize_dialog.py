@@ -1,4 +1,5 @@
 """Pixel/percentage resize dialog with two-way aspect-ratio locking."""
+from i18n import tr
 import gi
 gi.require_version('Gtk','4.0')
 from gi.repository import Gtk, GdkPixbuf, GLib
@@ -82,7 +83,7 @@ class ResizeDialog(StandardDialog):
         self.ratio_button = Gtk.ToggleButton(child=Gtk.Image.new_from_icon_name('insert-link-symbolic'),
                                                active=True,valign=Gtk.Align.CENTER)
         self.ratio_button.add_css_class('ratio-link')
-        self.ratio_button.set_tooltip_text('Seitenverhältnis beibehalten')
+        self.ratio_button.set_tooltip_text(tr('Seitenverhältnis beibehalten'))
         accessible(self.ratio_button,'Seitenverhältnis beibehalten')
         self.ratio_button.connect('toggled',self.lock_changed)
         dimension_grid.attach(self.ratio_button,1,0,1,1)
@@ -90,7 +91,7 @@ class ResizeDialog(StandardDialog):
 
         preset_row = Gtk.Box(spacing=12,hexpand=True)
         preset_row.append(label('Vorgabe','small muted'))
-        self.preset = Gtk.DropDown.new_from_strings([title for title,_spec in self.PRESETS])
+        self.preset = Gtk.DropDown.new_from_strings([tr(title) for title,_spec in self.PRESETS])
         self.preset.set_hexpand(True)
         self.preset.set_selected(0)
         accessible(self.preset,'Größenvorgabe')
@@ -118,7 +119,7 @@ class ResizeDialog(StandardDialog):
         self.dpi.set_hexpand(True)
         self.dpi.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
         self.dpi.set_value(parent.model.dpi)
-        self.dpi.set_tooltip_text('Pfeiltasten: 1 DPI · Bild auf/ab: 10 DPI')
+        self.dpi.set_tooltip_text(tr('Pfeiltasten: 1 DPI · Bild auf/ab: 10 DPI'))
         accessible(self.dpi,'DPI – Druckauflösung')
         self.dpi.connect('value-changed',lambda *_:self.sync_fields())
         dpi_row = Gtk.Box(spacing=6)
@@ -151,7 +152,7 @@ class ResizeDialog(StandardDialog):
         widget.set_alignment(0.0)
         widget.add_css_class('left-aligned')
         widget.set_increments(1,10)
-        widget.set_tooltip_text('Pfeiltasten: 1; Bild auf/ab: 10.')
+        widget.set_tooltip_text(tr('Pfeiltasten: 1; Bild auf/ab: 10.'))
         accessible(widget,title+' des Bildes')
         widget.connect('value-changed',self.dimension_changed,axis)
         suffix = label('px','small muted')
@@ -188,7 +189,7 @@ class ResizeDialog(StandardDialog):
                 widget.set_increments(*steps)
                 step_text=f'{steps[0]:g} {suffix}'
                 page_text=f'{steps[1]:g} {suffix}'
-                widget.set_tooltip_text(f'Pfeiltasten: {step_text}; Bild auf/ab: {page_text}.')
+                widget.set_tooltip_text(tr(f'Pfeiltasten: {step_text}; Bild auf/ab: {page_text}.'))
                 widget.set_value(value/factor)
                 getattr(self,axis+'_unit').set_text(suffix)
             if custom and self.preset.get_selected()!=0:
@@ -198,7 +199,7 @@ class ResizeDialog(StandardDialog):
         try:
             width,height = self.settings.dimensions()
             self.summary.remove_css_class('error')
-            self.summary.set_text(f'Neue Größe · {width} × {height} px  ·  {width*height/1_000_000:.2f} MP')
+            self.summary.set_text(tr(f'Neue Größe · {width} × {height} px  ·  {width*height/1_000_000:.2f} MP'))
             self.apply_button.set_sensitive(True)
             ratio=width/height
             pw,ph=(160,round(160/ratio)) if ratio>=1 else (round(112*ratio),112)
@@ -210,7 +211,7 @@ class ResizeDialog(StandardDialog):
             self.preview_picture.set_size_request(pw,ph)
         except ValueError as error:
             self.summary.add_css_class('error')
-            self.summary.set_text(str(error))
+            self.summary.set_text(tr(str(error)))
             self.apply_button.set_sensitive(False)
 
     def unit_changed(self,_widget):
@@ -253,7 +254,7 @@ class ResizeDialog(StandardDialog):
             try:
                 width,height=self.settings.dimensions()
             except ValueError as error:
-                self.summary.set_text(str(error))
+                self.summary.set_text(tr(str(error)))
                 return
             self.on_apply(width,height,self.method.get_active_id(),self.dpi.get_value())
         parent=self.get_transient_for()

@@ -1,4 +1,5 @@
 """Image properties, independent DPI axes and readable source metadata."""
+from i18n import tr
 import threading
 from gi.repository import Gtk
 from dialog_layout import StandardDialog
@@ -48,7 +49,7 @@ class ImageInfoDialog(StandardDialog):
                 self.dpi_y=Gtk.SpinButton.new_with_range(1,9600,1)
                 for spin,title in ((self.dpi_x,'Horizontale DPI'),(self.dpi_y,'Vertikale DPI')):
                     spin.set_digits(2); spin.set_width_chars(5); spin.set_max_width_chars(7)
-                    spin.set_increments(1,10); spin.set_tooltip_text('Pfeiltasten: 1 DPI; Bild auf/ab: 10 DPI.')
+                    spin.set_increments(1,10); spin.set_tooltip_text(tr('Pfeiltasten: 1 DPI; Bild auf/ab: 10 DPI.'))
                     accessible(spin,title)
                 for spin,caption in ((self.dpi_x,'Horizontal'),(self.dpi_y,'Vertikal')):
                     axis=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=4)
@@ -58,13 +59,13 @@ class ImageInfoDialog(StandardDialog):
                     axis.append(measure); dpi_row.append(axis)
                     spin.set_alignment(0.0)
                     spin.add_css_class('left-aligned')
-                self.dpi_button=Gtk.Button(label='DPI ändern',halign=Gtk.Align.END)
+                self.dpi_button=Gtk.Button(label=tr('DPI ändern'),halign=Gtk.Align.END)
                 self.dpi_button.connect('clicked',self.change_dpi); widget.append(self.dpi_button)
             elif key=='count':
                 widget=Gtk.Box(spacing=12)
                 self.count_label=label('Berechnung …',hexpand=True)
                 widget.append(self.count_label)
-                self.count_active=Gtk.CheckButton(label='Zählen aktiv',active=True)
+                self.count_active=Gtk.CheckButton(label=tr('Zählen aktiv'),active=True)
                 self.count_active.connect('toggled',self.start_count); widget.append(self.count_active)
             else:
                 widget=label('','info-value',selectable=True,wrap=True,max_width_chars=36,hexpand=True)
@@ -75,7 +76,7 @@ class ImageInfoDialog(StandardDialog):
         body.append(self.note)
         buttons=Gtk.Box(spacing=8,homogeneous=True)
         for name,title in (('exif','EXIF-Daten'),('iptc','IPTC-Daten'),('comment','Kommentar')):
-            button=Gtk.Button(label=title)
+            button=Gtk.Button(label=tr(title))
             button.connect('clicked',lambda _b,n=name:self.show_metadata(n)); buttons.append(button)
         body.append(buttons)
         scroll=Gtk.ScrolledWindow(vexpand=True)
@@ -89,15 +90,15 @@ class ImageInfoDialog(StandardDialog):
     def refresh_values(self):
         if not self.alive: return
         for key,value in info_values(self.parent.model,self.parent.folder_files).items():
-            self.values[key].set_text(value)
+            self.values[key].set_text(value if key in ('filename','directory','path','modified') else tr(value))
         self.dpi_x.set_value(self.parent.model.dpi_pair[0])
         self.dpi_y.set_value(self.parent.model.dpi_pair[1])
         self.dpi_button.set_sensitive(True)
         fallback='dpi' not in self.parent.model.image.info
-        self.note.set_text(('Keine DPI gespeichert: 96 DPI angenommen. ' if fallback else '')+
-                           'DPI ändert die Druckgröße, nicht die Bildpixel. RGB-Farben werden ohne Alphakanal gezählt.')
-        self.dpi_x.set_tooltip_text('Keine DPI gespeichert; 96 DPI angenommen.' if fallback else 'Horizontale Druckauflösung')
-        self.dpi_y.set_tooltip_text('Keine DPI gespeichert; 96 DPI angenommen.' if fallback else 'Vertikale Druckauflösung')
+        self.note.set_text(tr(('Keine DPI gespeichert: 96 DPI angenommen. ' if fallback else '')+
+                           'DPI ändert die Druckgröße, nicht die Bildpixel. RGB-Farben werden ohne Alphakanal gezählt.'))
+        self.dpi_x.set_tooltip_text(tr('Keine DPI gespeichert; 96 DPI angenommen.' if fallback else 'Horizontale Druckauflösung'))
+        self.dpi_y.set_tooltip_text(tr('Keine DPI gespeichert; 96 DPI angenommen.' if fallback else 'Vertikale Druckauflösung'))
 
     def change_dpi(self,*_):
         self.dpi_x.update(); self.dpi_y.update()
@@ -110,14 +111,14 @@ class ImageInfoDialog(StandardDialog):
         self.cancel_count.set(); self.cancel_count=threading.Event()
         self.count_generation+=1; generation=self.count_generation
         if not self.count_active.get_active():
-            self.count_label.set_text('Deaktiviert'); return
-        self.count_label.set_text('Berechnung …')
+            self.count_label.set_text(tr('Deaktiviert')); return
+        self.count_label.set_text(tr('Berechnung …'))
         image=self.parent.model.image; cancel=self.cancel_count
         def done(value):
             if self.alive and generation==self.count_generation and value is not None:
                 self.count_label.set_text(f'{value:,}'.replace(',',' '))
         def failed(error):
-            if self.alive and generation==self.count_generation: self.count_label.set_text(str(error))
+            if self.alive and generation==self.count_generation: self.count_label.set_text(tr(str(error)))
         self.parent.submit(lambda:count_rgb_colors(image,cancel),done,failed)
 
     def show_metadata(self,kind):

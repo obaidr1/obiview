@@ -1,4 +1,5 @@
 """Shared direct choices and sliders with optional exact numeric entry."""
+from i18n import tr
 from gi.repository import Gtk, GObject
 from ui_theme import accessible, label, selection_content
 
@@ -61,7 +62,7 @@ class SliderField(Gtk.Box):
             self.number.set_width_chars(4)
             self.number.set_increments(step,step*10)
             unit_text=f' {unit}' if unit else ''
-            self.number.set_tooltip_text(f'Pfeiltasten: {step:g}{unit_text}; Bild auf/ab: {step*10:g}{unit_text}.')
+            self.number.set_tooltip_text(tr(f'Pfeiltasten: {step:g}{unit_text}; Bild auf/ab: {step*10:g}{unit_text}.'))
             accessible(self.number, title + ' – genauer Wert')
             if unit:
                 value_group = Gtk.Box(spacing=4, valign=Gtk.Align.CENTER)
@@ -93,7 +94,7 @@ class SliderField(Gtk.Box):
         value = self.scale.get_value()
         number = f'{value:.2f}'.rstrip('0').rstrip('.')
         if hasattr(self, 'readout'):
-            self.readout.set_text(f'{number} {self.unit}')
+            self.readout.set_text(tr(f'{number} {self.unit}'))
 
     def set_value(self, value):
         self.scale.set_value(value)

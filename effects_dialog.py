@@ -1,4 +1,5 @@
 """Direct effect selection with isolated, cancellable asynchronous previews."""
+from i18n import tr
 from PIL import Image
 from gi.repository import Gtk, GLib
 from dialog_layout import StandardDialog
@@ -44,7 +45,7 @@ class EffectsDialog(StandardDialog):
         self.picture.set_pixbuf(self.original)
         accessible(self.picture, 'Live-Vorschau des ausgewählten Effekts')
         preview_area.append(preview_surface(self.picture))
-        self.compare = Gtk.ToggleButton(label='Original vergleichen')
+        self.compare = Gtk.ToggleButton(label=tr('Original vergleichen'))
         self.compare.connect('toggled', self.show_preview)
         preview_area.append(self.compare)
         self.note = label('', 'small muted', wrap=True)
@@ -77,7 +78,7 @@ class EffectsDialog(StandardDialog):
         self.amount, self.amount_value, self.amount_row = self.slider('Radius', 1, 100)
         self.amount_title = self.amount_row.get_first_child().get_first_child()
         settings.append(self.amount_row)
-        reset = Gtk.Button(label='Effekt zurücksetzen')
+        reset = Gtk.Button(label=tr('Effekt zurücksetzen'))
         reset.connect('clicked', self.reset)
         settings.append(reset)
         controls.append(settings)
@@ -114,12 +115,12 @@ class EffectsDialog(StandardDialog):
     def load_settings(self):
         self.syncing = True
         amount, strength = self.settings[self.name]
-        self.effect_title.set_text(EFFECTS[self.name])
+        self.effect_title.set_text(tr(EFFECTS[self.name]))
         parameter = EFFECT_PARAMETERS.get(self.name)
         self.amount_row.set_visible(parameter is not None)
         if parameter:
             title, lower, upper, _unit = parameter
-            self.amount_title.set_text(title)
+            self.amount_title.set_text(tr(title))
             accessible(self.amount, title)
             self.amount.set_range(lower, upper)
             self.amount.set_value(amount)
@@ -138,14 +139,14 @@ class EffectsDialog(StandardDialog):
         amount = round(self.amount.get_value()) if self.name in EFFECT_PARAMETERS else 5
         strength = round(self.strength.get_value())
         self.settings[self.name] = [amount, strength]
-        self.strength_value.set_text(f'{strength} %')
+        self.strength_value.set_text(tr(f'{strength} %'))
         unit = EFFECT_PARAMETERS.get(self.name, ('', 0, 0, ''))[3]
         self.amount_value.set_text(f'{amount} {unit}'.strip())
         self.generation += 1
         self.ready = False
         self.accept.set_sensitive(False)
         self.note.remove_css_class('error')
-        self.note.set_text('Vorschau wird berechnet …')
+        self.note.set_text(tr('Vorschau wird berechnet …'))
         if self.timer:
             GLib.source_remove(self.timer)
         self.timer = GLib.timeout_add(120, self.render)
@@ -172,16 +173,16 @@ class EffectsDialog(StandardDialog):
             self.preview = preview_pixbuf(image)
             self.ready = True
             self.accept.set_sensitive(strength > 0)
-            self.note.set_text('Verkleinerte Vorschau · Anwenden in Originalauflösung'
+            self.note.set_text(tr('Verkleinerte Vorschau · Anwenden in Originalauflösung'
                                if self.source.size != self.parent.model.image.size
-                               else 'Vorschau · noch nicht angewendet')
+                               else 'Vorschau · noch nicht angewendet'))
             self.show_preview()
 
         def failed(error):
             self.running = False
             if not self.closed and generation == self.generation:
                 self.note.add_css_class('error')
-                self.note.set_text(f'Vorschau fehlgeschlagen: {error}')
+                self.note.set_text(tr(f'Vorschau fehlgeschlagen: {error}'))
 
         self.parent.submit(lambda: mixed_effect(self.source, name, amount, strength), done, failed)
         return False

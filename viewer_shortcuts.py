@@ -1,4 +1,5 @@
 """Viewer operations backing the full shortcut catalogue."""
+from i18n import tr
 import json
 import random
 from pathlib import Path
@@ -27,7 +28,7 @@ class ViewerShortcuts:
                                     margin_start=16,margin_bottom=16,wrap=True)
         self.fullscreen_label.set_can_target(False); self.fullscreen_label.set_visible(False)
         self.canvas_overlay.add_overlay(self.fullscreen_label)
-        self.tag_filter=Gtk.CheckButton(label='Nur markierte Bilder')
+        self.tag_filter=Gtk.CheckButton(label=tr('Nur markierte Bilder'))
         self.tag_filter.connect('toggled',lambda *_:self.rebuild_thumbnails())
         self.sidebar.insert_child_after(self.tag_filter,self.search)
         self.connect('notify::fullscreened',self.fullscreen_changed)
@@ -145,7 +146,7 @@ class ViewerShortcuts:
 
     def show_tagged(self):
         if self.thumbnail_window is None: self.toggle_sidebar()
-        self.search.set_text(''); self.tag_filter.set_active(True); self.rebuild_thumbnails()
+        self.search.set_text(tr('')); self.tag_filter.set_active(True); self.rebuild_thumbnails()
         self.thumbnail_window.present()
 
     def copy_filename(self):
@@ -266,7 +267,7 @@ class ViewerShortcuts:
         body=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=16,margin_start=24,margin_end=24,margin_top=20,margin_bottom=20)
         body.append(label('Tastenkürzel','dialog-title'))
         body.append(label('Pfeiltasten scrollen vergrößerte Bilder; sonst wechseln sie Dateien. Strg+R bleibt Größe ändern.','muted',wrap=True))
-        search=Gtk.SearchEntry(placeholder_text='Aktion oder Kürzel suchen …'); body.append(search)
+        search=Gtk.SearchEntry(placeholder_text=tr('Aktion oder Kürzel suchen …')); body.append(search)
         rows=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
         entries=[]
         for keys,_method,_args,_needs,title in BINDINGS:

@@ -1,4 +1,5 @@
 """Drawing in a separate dialog; all strokes become one undoable edit."""
+from i18n import tr
 import math
 from PIL import Image, ImageDraw, ImageFilter
 from gi.repository import Gtk, Gdk
@@ -89,14 +90,14 @@ class PaintDialog(StandardDialog):
             button.connect('toggled',lambda _b,icon=symbol:icon.queue_draw())
             accessible(symbol,title+'-Symbol'); self.tool_icons[ident]=symbol
             content.append(symbol); content.append(label(title)); selection_content(button,title,content)
-            button.set_tooltip_text('Pinsel mit weicher Kante' if ident=='brush' else title)
+            button.set_tooltip_text(tr('Pinsel mit weicher Kante' if ident=='brush' else title))
         self.tool.set_active_id('pen'); accessible(self.tool,'Zeichenwerkzeug'); root.append(self.tool)
         controls.append(label('Strichbreite'))
         self.width=SliderField(1,500,1,4,'Strichbreite',exact=True,unit='px'); accessible(self.width,'Strichbreite in Bildpixeln'); controls.append(self.width)
         color_row=Gtk.Box(spacing=8)
         color_row.append(label('Farbe'))
         rgba=Gdk.RGBA(); rgba.parse('#e43b2c'); self.color=Gtk.ColorButton(rgba=rgba); accessible(self.color,'Zeichenfarbe'); color_row.append(self.color)
-        undo=Gtk.Button(tooltip_text='Letzter Strich zurück',sensitive=False); self.undo_button=undo; undo_content=Gtk.Box(spacing=6)
+        undo=Gtk.Button(tooltip_text=tr('Letzter Strich zurück'),sensitive=False); self.undo_button=undo; undo_content=Gtk.Box(spacing=6)
         undo_content.append(Gtk.Image(icon_name='edit-undo-symbolic')); undo_content.append(label('Zurück'))
         undo.set_child(undo_content); accessible(undo,'Letzter Strich zurück')
         undo.connect('clicked',lambda *_:self.undo_stroke()); undo.set_hexpand(True); undo.set_halign(Gtk.Align.END); color_row.append(undo)

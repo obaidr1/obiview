@@ -8,7 +8,7 @@
 
 Bildblick ist eine lokale Desktop-Anwendung mit GTK 4. Du kannst durch Bildordner blättern, Bilder zuschneiden oder skalieren, Farben anpassen und Ergebnisse mit passenden Formatoptionen speichern. Für wiederkehrende Aufgaben gibt es Stapelverarbeitung, benannte Exportprofile und eine Kommandozeilenschnittstelle.
 
-Die Oberfläche ist deutschsprachig. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
+Die Oberfläche folgt der Systemsprache und ist auf Deutsch und Englisch verfügbar. Mit `BILDBLICK_LANGUAGE=en` oder `BILDBLICK_LANGUAGE=de` lässt sich die Sprache beim Start festlegen. Ein Konto oder Cloud-Dienst ist für die Bildbearbeitung nicht erforderlich.
 
 **Stand: 0.11.0 · frühe Version · MIT-Lizenz · Referenzsystem: Fedora 44**
 

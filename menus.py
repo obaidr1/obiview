@@ -1,6 +1,7 @@
 """Real menu actions, shared by the menu bar, toolbar and accelerators."""
 from gi.repository import Gio, GLib
 import re
+from i18n import tr
 
 RESIZE_ACCELERATOR = '<Primary>r'
 
@@ -117,11 +118,11 @@ def build_menus(window):
             window.add_action(action)
             actions.append((action,requires_image))
             label = re.sub(r' \((?:Strg[^)]*|I|D|Enter|F9)\)$', '', label)
-            item = Gio.MenuItem.new(label,'win.'+name)
+            item = Gio.MenuItem.new(tr(label),'win.'+name)
             from shortcuts import MENU_SHORTCUTS
             if name in MENU_SHORTCUTS:
                 item.set_attribute_value('accel',GLib.Variant('s',MENU_SHORTCUTS[name]))
             section.append_item(item)
         if section.get_n_items(): submenu.append_section(None,section)
-        menu.append_submenu(title,submenu)
+        menu.append_submenu(tr(title),submenu)
     return menu, actions

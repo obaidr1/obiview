@@ -1,4 +1,5 @@
 """GTK features around the image canvas. Worker results return via GLib."""
+from i18n import tr
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import json
@@ -49,7 +50,7 @@ class AdvancedFeatures:
         self.page_next = icon_button('go-down-symbolic','Nächste Seite (Strg+Bild ab)',lambda:self.change_frame(1))
         for button in (self.previous,self.next_button,self.page_previous,self.page_next):
             toolbar.append(button)
-        self.position_label = Gtk.Label(label='0 / 0',width_chars=7)
+        self.position_label = Gtk.Label(label=tr('0 / 0'),width_chars=7)
         self.position_label.add_css_class('file-counter')
         toolbar.append(self.position_label)
         toolbar.append(Gtk.Box(hexpand=True))
@@ -59,13 +60,13 @@ class AdvancedFeatures:
         self.adjust_button = icon_button('preferences-system-symbolic','Bildanpassungen …',self.adjust_dialog)
         toolbar.append(self.adjust_button)
         self.edit_buttons.append(self.adjust_button)
-        self.slide_button = Gtk.Button(label='Diashow')
+        self.slide_button = Gtk.Button(label=tr('Diashow'))
         self.spinner = Gtk.Spinner(width_request=14)
         toolbar.append(self.spinner)
         root.prepend(self.menu_bar)
         self.thumbnail_window = None
         self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=200)
-        self.search = Gtk.SearchEntry(placeholder_text='Dateinamen filtern …')
+        self.search = Gtk.SearchEntry(placeholder_text=tr('Dateinamen filtern …'))
         self.search.connect('search-changed',lambda *_:self.rebuild_thumbnails())
         self.sidebar.add_css_class('sidebar')
         self.sidebar.append(self.search)
@@ -75,10 +76,10 @@ class AdvancedFeatures:
         self.thumb_empty_note=ui_label('Öffne einen Ordner, um seine Bilder zu durchsuchen.','muted',wrap=True,max_width_chars=32)
         self.thumb_empty.append(self.thumb_empty_title); self.thumb_empty.append(self.thumb_empty_note)
         empty_actions=Gtk.Box(orientation=Gtk.Orientation.VERTICAL,spacing=8)
-        self.thumb_reset=Gtk.Button(label='Filter zurücksetzen')
+        self.thumb_reset=Gtk.Button(label=tr('Filter zurücksetzen'))
         self.thumb_reset.connect('clicked',lambda *_:self.clear_thumbnail_filters())
         empty_actions.append(self.thumb_reset)
-        open_folder=Gtk.Button(label='Ordner öffnen'); open_folder.add_css_class('primary')
+        open_folder=Gtk.Button(label=tr('Ordner öffnen')); open_folder.add_css_class('primary')
         open_folder.connect('clicked',lambda *_:self.open_folder()); empty_actions.append(open_folder)
         self.thumb_empty.append(empty_actions); self.sidebar.append(self.thumb_empty)
         thumb_scroll = Gtk.ScrolledWindow(vexpand=True, hexpand=False)
@@ -145,7 +146,7 @@ class AdvancedFeatures:
         current = self.model.source_path
         position = self.folder_files.index(current)+1 if current in self.folder_files else 0
         self.position_label.set_text(f'{position} / {len(self.folder_files)}' if self.folder else '0 / 0')
-        self.position_label.set_tooltip_text(str(self.folder) if self.folder else 'Kein Bildordner')
+        self.position_label.set_tooltip_text(str(self.folder) if self.folder else tr('Kein Bildordner'))
 
     def request_load(self, path, frame=0, playing=False):
         if self.busy:
@@ -153,7 +154,7 @@ class AdvancedFeatures:
         if not playing:
             self.stop_slideshow()
         self.set_busy(True)
-        self.status.set_text('Bild wird geladen …')
+        self.status.set_text(tr('Bild wird geladen …'))
         def work():
             model = ImageModel()
             model.load(path, frame=frame)
@@ -272,7 +273,7 @@ class AdvancedFeatures:
             self.guard(lambda:self.request_load(self.model.source_path,frame))
 
     def clear_thumbnail_filters(self):
-        self.search.set_text('')
+        self.search.set_text(tr(''))
         self.tag_filter.set_active(False)
         self.rebuild_thumbnails()
 
@@ -292,8 +293,8 @@ class AdvancedFeatures:
         filtered=bool(query or self.tag_filter.get_active())
         self.thumb_empty.set_visible(not matches)
         self.thumb_reset.set_visible(filtered)
-        self.thumb_empty_title.set_text('Keine passenden Bilder' if filtered else 'Keine Bilder in diesem Ordner' if self.folder else 'Noch kein Ordner geöffnet')
-        self.thumb_empty_note.set_text('Setze Suchtext und Markierungsfilter zurück oder öffne einen anderen Ordner.' if filtered else 'Öffne einen Ordner mit unterstützten Bilddateien.')
+        self.thumb_empty_title.set_text(tr('Keine passenden Bilder' if filtered else 'Keine Bilder in diesem Ordner' if self.folder else 'Noch kein Ordner geöffnet'))
+        self.thumb_empty_note.set_text(tr('Setze Suchtext und Markierungsfilter zurück oder öffne einen anderen Ordner.' if filtered else 'Öffne einen Ordner mit unterstützten Bilddateien.'))
         self.more_thumbs.set_visible(len(matches)>self.thumb_limit)
         if not self.sidebar.get_visible():
             return
@@ -304,7 +305,7 @@ class AdvancedFeatures:
             label = Gtk.Label(label=('★ ' if str(path) in self.tags else '')+path.name,max_width_chars=24,ellipsize=Pango.EllipsizeMode.MIDDLE)
             box.append(picture)
             box.append(label)
-            failure=Gtk.Label(label='Vorschau nicht verfügbar',wrap=True,visible=False)
+            failure=Gtk.Label(label=tr('Vorschau nicht verfügbar'),wrap=True,visible=False)
             failure.add_css_class('small'); failure.add_css_class('muted'); box.append(failure)
             button = Gtk.Button(tooltip_text=str(path))
             button.set_child(box)
@@ -364,7 +365,7 @@ class AdvancedFeatures:
         self.slide_source = 0
         self.playing = False
         if hasattr(self,'slide_button'):
-            self.slide_button.set_label('Diashow')
+            self.slide_button.set_label(tr('Diashow'))
 
     def toggle_slideshow(self, animation=False):
         if self.busy:
@@ -384,7 +385,7 @@ class AdvancedFeatures:
             # Playback always reloads original source frames; edited pixels stay until the next tick.
             self.animation = animation
             self.playing = True
-            self.slide_button.set_label('Stopp')
+            self.slide_button.set_label(tr('Stopp'))
             self.schedule_slide()
         self.guard(start)
 
@@ -507,7 +508,7 @@ class AdvancedFeatures:
                 target = Path(file.get_path())
                 def export(overwrite=False):
                     self.edit(lambda m:m.export_document(target,overwrite),
-                              lambda:self.status.set_text(f'Alle Seiten exportiert: {target}'))
+                              lambda:self.status.set_text(tr(f'Alle Seiten exportiert: {target}')))
                 if target.exists():
                     self.message('Datei ersetzen?',str(target),lambda:export(True))
                 else:
@@ -572,7 +573,7 @@ class AdvancedFeatures:
         self.batch_cancel = cancel
         dialog = StandardDialog(title='Stapelverarbeitung',transient_for=self,modal=True)
         dialog.add_button('Nach aktueller Datei abbrechen',Gtk.ResponseType.CANCEL)
-        label = Gtk.Label(label=f'0 / {len(plan)}',margin_top=20,margin_bottom=20,margin_start=20,margin_end=20)
+        label = Gtk.Label(label=tr(f'0 / {len(plan)}'),margin_top=20,margin_bottom=20,margin_start=20,margin_end=20)
         dialog.get_content_area().append(label)
         dialog.connect('response',lambda *_:cancel.set())
         dialog.connect('close-request',lambda *_:(cancel.set(),True)[1])
@@ -584,7 +585,7 @@ class AdvancedFeatures:
                 self.dialogs.remove(dialog); self.set_scrim(False)
             dialog.destroy()
         def progress(done,total,result):
-            GLib.idle_add(lambda:(label.set_text(f'{done} / {total}  ·  {Path(result["source"]).name}'),False)[1])
+            GLib.idle_add(lambda:(label.set_text(tr(f'{done} / {total}  ·  {Path(result["source"]).name}')),False)[1])
         def finished(results):
             close_progress()
             self.batch_cancel = None

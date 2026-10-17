@@ -3,6 +3,7 @@ import json
 import re
 from pathlib import Path
 from gi.repository import Gtk, Gdk
+from i18n import tr
 
 TOKENS = json.loads((Path(__file__).parent / "design-system/tokens.json").read_text())
 
@@ -123,7 +124,7 @@ def install_theme():
 
 
 def label(text, css=None, **kwargs):
-    widget = Gtk.Label(label=text, xalign=0, **kwargs)
+    widget = Gtk.Label(label=tr(text), xalign=0, **kwargs)
     if css:
         for name in css.split():
             widget.add_css_class(name)
@@ -139,11 +140,12 @@ def card(title=None):
 
 
 def accessible(widget, name):
-    widget.update_property([Gtk.AccessibleProperty.LABEL], [name])
+    widget.update_property([Gtk.AccessibleProperty.LABEL], [tr(name)])
     return widget
 
 
 def icon_button(icon, title, callback):
+    title = tr(title)
     button = Gtk.Button(icon_name=icon, tooltip_text=title)
     accessible(button, title)
     button.connect('clicked', lambda *_: callback())
@@ -154,18 +156,18 @@ def selection_content(button, title, content=None):
     """Show selection through a clear control boundary and active surface."""
     row = Gtk.Box(spacing=8, hexpand=True)
     if content is None:
-        content = Gtk.Label(label=title, wrap=True, max_width_chars=24, xalign=0, hexpand=True)
+        content = Gtk.Label(label=tr(title), wrap=True, max_width_chars=24, xalign=0, hexpand=True)
     row.append(content)
     button.set_child(row)
     button.add_css_class('effect-choice')
-    accessible(button, title)
+    accessible(button, tr(title))
     return button
 
 
 def ratio_link_state(button):
     """Keep the link icon and accessible tooltip aligned with its state."""
     linked = button.get_active()
-    button.set_tooltip_text('Seitenverhältnis beibehalten' if linked else 'Seitenverhältnis frei ändern')
+    button.set_tooltip_text(tr('Seitenverhältnis beibehalten' if linked else 'Seitenverhältnis frei ändern'))
     child = button.get_child()
     if isinstance(child, Gtk.Image):
         child.set_from_icon_name('insert-link-symbolic' if linked else 'edit-unlink-symbolic')

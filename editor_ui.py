@@ -1,4 +1,5 @@
 """Photo inspector with asynchronous previews and explicit reversible apply."""
+from i18n import tr
 from PIL import Image
 from gi.repository import Gtk, GLib, GdkPixbuf
 from dialog_layout import StandardDialog
@@ -72,7 +73,7 @@ class EditorUI:
             self.inspector.append(section)
         self.preview_note = label('Anpassungen als Vorschau', 'small muted', wrap=True)
 
-        self.reset_adjustments = Gtk.Button(label='Zurücksetzen')
+        self.reset_adjustments = Gtk.Button(label=tr('Zurücksetzen'))
         self.reset_adjustments.connect('clicked',lambda *_:self.reset_preview())
         self.inspector_scroll = Gtk.ScrolledWindow(vexpand=True)
         self.inspector_scroll.set_policy(Gtk.PolicyType.NEVER,Gtk.PolicyType.AUTOMATIC)
@@ -197,7 +198,7 @@ class EditorUI:
             self.preview_running = False
             if generation == self.preview_generation:
                 self.preview_note.add_css_class('error')
-                self.preview_note.set_text(f'Vorschau fehlgeschlagen: {error}')
+                self.preview_note.set_text(tr(f'Vorschau fehlgeschlagen: {error}'))
         self.submit(work,done,failed)
         return False
 
@@ -233,7 +234,7 @@ class EditorUI:
             self.editor_accept.set_sensitive(pending and not self.busy)
             self.adjust_picture.set_pixbuf(self.preview_pixbuf or self.pixbuf)
         self.preview_note.remove_css_class('error')
-        self.preview_note.set_text('Vorschau · noch nicht angewendet' if pending else 'Alle Anpassungen sind übernommen.')
+        self.preview_note.set_text(tr('Vorschau · noch nicht angewendet' if pending else 'Alle Anpassungen sind übernommen.'))
         identity = (id(self.model.image),self.model.revision)
         if identity != self.preview_identity and loaded:
             self.preview_identity = identity
@@ -243,7 +244,7 @@ class EditorUI:
             self.histogram_values = thumb.convert('RGB').histogram()
             self.histogram.queue_draw()
         self.empty_state.set_visible(not loaded)
-        self.zoom_label.set_label(f'{self.scale*100:.0f} %')
+        self.zoom_label.set_label(tr(f'{self.scale*100:.0f} %'))
 
     def draw_histogram(self, _area, cr, width, height):
         if not self.histogram_values:

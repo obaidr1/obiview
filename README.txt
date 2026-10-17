@@ -7,3 +7,6 @@ Lizenz: MIT, siehe LICENSE.
 Start aus dem Projektverzeichnis: ./start.sh
 Benutzerinstallation: /usr/bin/python3 packaging/install.py --source .
 Danach im Anwendungsmenü nach Bildblick suchen.
+
+Die Oberfläche folgt der Systemsprache. Englisch lässt sich beim Start mit
+BILDBLICK_LANGUAGE=en wählen; Deutsch mit BILDBLICK_LANGUAGE=de.
